@@ -1,0 +1,39 @@
+{
+  "name": "obsidian-book-search-plugin",
+  "version": "1.0.7",
+  "description": "This is a plugin to help you create book notes.",
+  "main": "main.js",
+  "standard-version": {
+    "t": ""
+  },
+  "keywords": [
+    "book",
+    "book note",
+    "obsidian",
+    "plugin"
+  ],
+  "author": "anpigon",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "release": "standard-version",
+    "release-test": "standard-version --dry-run",
+    "release-major": "standard-version --release-as major",
+    "release-major-test": "standard-version --dry-run --release-as major",
+    "release-minor": "standard-version --release-as minor",
+    "release-minor-test": "standard-version --dry-run --release-as minor"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.11.5",
+    "@types/node": "^16.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "builtin-modules": "^3.2.0",
+    "esbuild": "0.13.12",
+    "obsidian": "latest",
+    "tslib": "2.3.1",
+    "typescript": "4.4.4",
+    "standard-version": "^9.3.2"
+  }
+}
