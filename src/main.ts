@@ -5,7 +5,7 @@ import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
-import { makeFileName, makeFrontMater, replaceIllegalFileNameCharactersInString } from './utils/utils';
+import { makeFileName, makeFrontMater } from './utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -33,13 +33,17 @@ export default class BookSearchPlugin extends Plugin {
 
   async createNewBookNote(): Promise<void> {
     try {
+      // open modal for book search
       const book = await this.openBookSearchModal();
+
+      // create new file
       const fileName = makeFileName(book);
-      const path = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
       const frontMatter = makeFrontMater(book);
       const fileContent = `---\n${frontMatter}\n---\n`;
-      const targetFile = await this.app.vault.create(path, fileContent);
+      const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
+      const targetFile = await this.app.vault.create(filePath, fileContent);
 
+      // open file
       const activeLeaf = this.app.workspace.activeLeaf;
       if (!activeLeaf) {
         console.warn('No active leaf');
@@ -47,6 +51,8 @@ export default class BookSearchPlugin extends Plugin {
       }
       await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
       activeLeaf.setEphemeralState({ rename: 'all' });
+
+      // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
     } catch (err) {
       console.warn(err);
