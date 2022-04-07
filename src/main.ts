@@ -1,18 +1,11 @@
 import { Notice, Plugin } from 'obsidian';
 import { BookSearchModal } from './book_search_modal';
 import { BookSuggestModal } from './book_suggest_modal';
-import { CursorJumper } from './editor/corsor_jumper';
+import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
-import {
-  BookSearchSettingTab,
-  BookSearchPluginSettings,
-  DEFAULT_SETTINGS,
-} from './settings/settings';
-import {
-  makeFrontMater,
-  replaceIllegalFileNameCharactersInString,
-} from './utils/utils';
+import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
+import { makeFileName, makeFrontMater, replaceIllegalFileNameCharactersInString } from './utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -21,10 +14,8 @@ export default class BookSearchPlugin extends Plugin {
     await this.loadSettings();
 
     // This creates an icon in the left ribbon.
-    const ribbonIconEl = this.addRibbonIcon(
-      'book',
-      'Create new book note',
-      (evt: MouseEvent) => this.createNewBookNote(),
+    const ribbonIconEl = this.addRibbonIcon('book', 'Create new book note', (evt: MouseEvent) =>
+      this.createNewBookNote(),
     );
     // Perform additional things with the ribbon
     ribbonIconEl.addClass('obsidian-book-search-plugin-ribbon-class');
@@ -43,7 +34,7 @@ export default class BookSearchPlugin extends Plugin {
   async createNewBookNote(): Promise<void> {
     try {
       const book = await this.openBookSearchModal();
-      const fileName = replaceIllegalFileNameCharactersInString(book.title);
+      const fileName = makeFileName(book);
       const path = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
       const frontMatter = makeFrontMater(book);
       const fileContent = `---\n${frontMatter}\n---\n`;

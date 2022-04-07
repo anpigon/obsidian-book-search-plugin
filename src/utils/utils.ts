@@ -8,6 +8,15 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
+export function makeFileName(book: Book) {
+  const titleForFileName = replaceIllegalFileNameCharactersInString(book.title);
+  if (!book.author) {
+    return titleForFileName;
+  }
+  const authorForFileName = replaceIllegalFileNameCharactersInString(book.author);
+  return `${titleForFileName} - ${authorForFileName}`;
+}
+
 export function makeFrontMater(book: Book): string {
   return new BookModel(book).toFrontMatter();
 }
