@@ -1,11 +1,11 @@
-import { Notice, Plugin } from 'obsidian';
+import { Notice, parseFrontMatterEntry, parseFrontMatterStringArray, Plugin } from 'obsidian';
 import { BookSearchModal } from './book_search_modal';
 import { BookSuggestModal } from './book_suggest_modal';
 import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
-import { makeFileName, makeFrontMater } from './utils/utils';
+import { makeFileName, makeFrontMater, parseFrontMatter } from './utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -35,11 +35,12 @@ export default class BookSearchPlugin extends Plugin {
     try {
       // open modal for book search
       const book = await this.openBookSearchModal();
+      const frontMatterFromInserts = parseFrontMatter(this.settings.frontmatter);
 
-      // create new file
-      const fileName = makeFileName(book);
-      const frontMatter = makeFrontMater(book);
+      const frontMatter = makeFrontMater(book, frontMatterFromInserts);
       const fileContent = `---\n${frontMatter}\n---\n`;
+
+      const fileName = makeFileName(book);
       const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
       const targetFile = await this.app.vault.create(filePath, fileContent);
 

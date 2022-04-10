@@ -1,4 +1,5 @@
-import { Book, BookModel } from 'src/models/book.model';
+import { FrontMatterCache } from 'obsidian';
+import { Book, BookModel, FrontMatter } from 'src/models/book.model';
 
 export function replaceIllegalFileNameCharactersInString(string: string) {
   return string.replace(/[\\,#%&{}/*<>$":@.]*/g, '');
@@ -17,8 +18,9 @@ export function makeFileName(book: Book) {
   return `${titleForFileName} - ${authorForFileName}`;
 }
 
-export function makeFrontMater(book: Book): string {
-  return new BookModel(book).toFrontMatter();
+
+export function makeFrontMater(book: Book, frontmatter: FrontMatter): string {
+  return new BookModel(book).toFrontMatter(frontmatter);
 }
 
 export function camelToSnakeCase(str) {

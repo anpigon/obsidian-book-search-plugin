@@ -1,5 +1,9 @@
 import { camelToSnakeCase } from 'src/utils/utils';
 
+export interface FrontMatter {
+  [key: string]: string | string[];
+}
+
 export interface Book {
   title: string; // 책 제목
   author: string; // 저자
@@ -50,11 +54,19 @@ export class BookModel implements Book {
     this.isbn13 = book.isbn13 ?? '';
   }
 
-  toFrontMatter() {
-    return Object.keys(this)
-      .map(key => {
-        const value = this[key]?.toString().trim() ?? '';
-        return `${camelToSnakeCase(key)}: ${value}`;
+  toFrontMatter(addFrontMatter: FrontMatter) {
+    const frontMater = { ...this };
+    for (const key in addFrontMatter) {
+      const val = addFrontMatter[key]?.toString().trim() ?? '';
+      if (frontMater[key]) {
+        frontMater[key] = `${val} ${frontMater[key]}`;
+      } else {
+        frontMater[key] = val;
+      }
+    }
+    return Object.entries(frontMater)
+      .map(([key, val]) => {
+        return `${camelToSnakeCase(key)}: ${val?.toString().trim() ?? ''}`;
       })
       .join('\n');
   }
