@@ -5,11 +5,7 @@ export class BookSuggestModal extends SuggestModal<Book> {
   suggestion: Book[];
   onChoose: (error: Error, result?: Book) => void;
 
-  constructor(
-    app: App,
-    suggestion: Book[],
-    onChoose: (error: Error, result?: Book) => void,
-  ) {
+  constructor(app: App, suggestion: Book[], onChoose: (error: Error, result?: Book) => void) {
     super(app);
     this.suggestion = suggestion;
     this.onChoose = onChoose;
@@ -18,10 +14,11 @@ export class BookSuggestModal extends SuggestModal<Book> {
   // Returns all available suggestions.
   getSuggestions(query: string): Book[] {
     return this.suggestion.filter(book => {
+      const searchQuery = query.toLowerCase();
       return (
-        book.title.toLowerCase().includes(query.toLowerCase()) ||
-        book.author.toLowerCase().includes(query.toLowerCase()) ||
-        book.publisher.toLowerCase().includes(query.toLowerCase())
+        book.title.toLowerCase().includes(searchQuery) ||
+        book.author.toLowerCase().includes(searchQuery) ||
+        book.publisher.toLowerCase().includes(searchQuery)
       );
     });
   }
