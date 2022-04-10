@@ -14,8 +14,9 @@ Use Google Books API to get the book information.
 
 ## How to use
 
-1. Set the folder to new file location in plugin options.
-   ![](https://user-images.githubusercontent.com/3969643/161973189-e4a0b5aa-9e86-48b5-9bc9-42c3bbfc2589.png)
+1. Set the folder to new file location in plugin options. And you can also add a frontmatter that is inserted when creating a note.
+   ![](https://user-images.githubusercontent.com/3969643/162614248-c60baab1-ef26-4f68-bf78-d0bc462e6c41.png)
+
 
 2. Excute the command "Create new book note".
    ![](https://user-images.githubusercontent.com/3969643/161973483-ab007598-e0b8-433f-9697-75ee0ef74195.png)
