@@ -24,3 +24,11 @@ export function makeFrontMater(book: Book): string {
 export function camelToSnakeCase(str) {
   return str.replace(/[A-Z]/g, letter => `_${letter?.toLowerCase()}`);
 }
+
+export function parseFrontMatter(frontMatterString: string) {
+  if (!frontMatterString) return {};
+  return frontMatterString
+    .split('\n')
+    .map(item => item.split(':'))
+    .reduce((acc, [key, value]) => ((acc[key] = value?.trim() ?? ''), acc), {});
+}
