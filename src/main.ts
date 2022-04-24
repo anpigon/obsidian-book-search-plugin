@@ -45,7 +45,7 @@ export default class BookSearchPlugin extends Plugin {
       const targetFile = await this.app.vault.create(filePath, fileContent);
 
       // open file
-      const activeLeaf = this.app.workspace.activeLeaf;
+      const activeLeaf = this.app.workspace.getLeaf();
       if (!activeLeaf) {
         console.warn('No active leaf');
         return;
