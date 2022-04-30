@@ -6,11 +6,13 @@ import { FolderSuggest } from './suggesters/FolderSuggester';
 export interface BookSearchPluginSettings {
   folder: string;
   frontmatter: string;
+  content: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   folder: '',
   frontmatter: '',
+  content: '',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -42,13 +44,54 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Insert frontmatter')
+      .setName('Text to insert into frontmatter')
       .setDesc('Text to insert into the YAML frontmatter')
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.frontmatter;
         textArea.setValue(prevValue).onChange(async value => {
           const newValue = value;
           this.plugin.settings.frontmatter = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    const desc = document.createDocumentFragment();
+    desc.append(
+      'The following syntaxes are available: ',
+      desc.createEl('br'),
+      desc.createEl('code', { text: '{{title}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{author}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{category}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{publisher}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{publishDate}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{totalPage}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{coverUrl}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{isbn10}}' }),
+      ', ',
+      desc.createEl('code', { text: '{{isbn13}}' }),
+      desc.createEl('br'),
+      'Check the ',
+      desc.createEl('a', {
+        href: 'https://github.com/anpigon/obsidian-book-search-plugin#text-to-insert-into-content',
+        text: 'documentation',
+      }),
+      ' for more information.',
+    );
+    new Setting(containerEl)
+      .setName('Text to insert into content')
+      .setDesc(desc)
+      .addTextArea(textArea => {
+        const prevValue = this.plugin.settings.content;
+        textArea.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.content = newValue;
           await this.plugin.saveSettings();
         });
       });
