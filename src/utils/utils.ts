@@ -1,4 +1,3 @@
-import { FrontMatterCache } from 'obsidian';
 import { Book, BookModel, FrontMatter } from 'src/models/book.model';
 
 export function replaceIllegalFileNameCharactersInString(string: string) {
