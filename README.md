@@ -34,7 +34,9 @@ Use Google Books API to get the book information.
 ## How to use settings
 
 ### Text to insert into content
-You can add content for dataview inline metadata.
+You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).
+
+![](https://user-images.githubusercontent.com/3969643/166099265-407c62e1-16d0-460c-b9e1-eae5b5e3db19.png)
 
 #### Example template
 
