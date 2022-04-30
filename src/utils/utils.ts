@@ -18,9 +18,15 @@ export function makeFileName(book: Book) {
   return `${titleForFileName} - ${authorForFileName}`;
 }
 
-
 export function makeFrontMater(book: Book, frontmatter: FrontMatter): string {
   return new BookModel(book).toFrontMatter(frontmatter);
+}
+
+export function makeContent(book: Book, content: string): string {
+  const entries = Object.entries(book);
+  return entries
+    .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), `${content}`)
+    .replace(/{{.+}}/gi, '');
 }
 
 export function camelToSnakeCase(str) {
