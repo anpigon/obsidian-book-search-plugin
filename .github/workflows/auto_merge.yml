@@ -1,0 +1,17 @@
+name: automatic merge into develop
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          curl -X POST https://api.github.com/repos/${{ github.repository }}/merges \
+          -H "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"base":"develop","head":"master"}'
