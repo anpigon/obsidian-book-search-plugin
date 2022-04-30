@@ -17,7 +17,6 @@ Use Google Books API to get the book information.
 1. Set the folder to new file location in plugin options. And you can also add a frontmatter that is inserted when creating a note.
    ![](https://user-images.githubusercontent.com/3969643/162614248-c60baab1-ef26-4f68-bf78-d0bc462e6c41.png)
 
-
 2. Excute the command "Create new book note".
    ![](https://user-images.githubusercontent.com/3969643/161973483-ab007598-e0b8-433f-9697-75ee0ef74195.png)
 
@@ -32,11 +31,31 @@ Use Google Books API to get the book information.
 
 <br>
 
+## How to use settings
+
+### Text to insert into content
+You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).
+
+![](https://user-images.githubusercontent.com/3969643/166099265-407c62e1-16d0-460c-b9e1-eae5b5e3db19.png)
+
+#### Example template
+
+```
+# {{title}}
+
+author:: {{author}}
+publisher:: {{publisher}}
+publishDate:: {{publishDate}}
+totalPage:: {{totalPage}}
+isbn10:: {{isbn10}}
+isbn13:: {{isbn13}}
+
+![cover]({{coverUrl}})
+```
+
+<br>
+
 ## Installation
 
-
-Download the latest version of the zip file from the [release](https://github.com/anpigon/obsidian-book-search-plugin/releases).
-
-And must be cloned or unzipped into your vault's .`obsidian/plugins/` directory, then enabled in the Obsidian configuration. 
-
-It's not yet registered as a standard community plugin for downloading or updating within Obsidian.
+Search in the Obsidian Community plugin. And install it.
+![](https://user-images.githubusercontent.com/3969643/166097211-abb60f55-3d77-4de6-9e0d-b681f903aafc.png)
