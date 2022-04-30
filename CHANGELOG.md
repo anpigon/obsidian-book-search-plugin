@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.dev/anpigon/obsidian-book-search-plugin/compare/0.0.5...0.1.0) (2022-04-30)
+
+
+### Code Refactoring
+
+* remove FrontMatterCache in utils.ts ([ae9e51d](https://github.dev/anpigon/obsidian-book-search-plugin/commit/ae9e51d9f8fb58ff64d11a502f6f14c92e1fe7bb))
+
 ### [0.0.5](https://github.dev/anpigon/obsidian-book-search-plugin/compare/0.0.4...0.0.5) (2022-04-24)
 
 
