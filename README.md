@@ -39,7 +39,8 @@ You can add content for dataview inline metadata.
 #### Example template
 
 ```
-title:: {{title}}
+# {{title}}
+
 author:: {{author}}
 publisher:: {{publisher}}
 publishDate:: {{publishDate}}
