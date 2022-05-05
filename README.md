@@ -4,7 +4,7 @@
 ## Demo
 ![May-05-2022 18-01-01](https://user-images.githubusercontent.com/3969643/166892687-d36868ef-f966-41af-9bb1-88e17ea5753f.gif)
 
-[\[옵시디언 책 검색 플러그인 사용방법\]](https://steemit.com/hive-101145/@anpigon/20220407t124549019z)
+[［옵시디언 책 검색 플러그인 사용방법］](https://steemit.com/hive-101145/@anpigon/20220407t124549019z)
 
 <br>
 
