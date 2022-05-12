@@ -36,7 +36,7 @@ export default class BookSearchPlugin extends Plugin {
 
       let frontMatter = replaceVariableSyntax(book, this.settings.frontmatter);
       if (this.settings.useDefaultFrontmatter) {
-        frontMatter = makeFrontMater(book, frontMatter);
+        frontMatter = makeFrontMater(book, frontMatter, this.settings.defaultFrontmatterKeyType);
       }
       frontMatter = frontMatter.trim();
 

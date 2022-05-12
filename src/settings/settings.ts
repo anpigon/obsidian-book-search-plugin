@@ -3,11 +3,17 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import BookSearchPlugin from '../main';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 
+export enum DefaultFrontmatterKeyType {
+  snakeCase = 'Snake Case',
+  camelCase = 'Camel Case',
+}
+
 export interface BookSearchPluginSettings {
   folder: string;
   frontmatter: string;
   content: string;
   useDefaultFrontmatter: boolean;
+  defaultFrontmatterKeyType: DefaultFrontmatterKeyType;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -15,6 +21,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   frontmatter: '',
   content: '',
   useDefaultFrontmatter: true,
+  defaultFrontmatterKeyType: DefaultFrontmatterKeyType.snakeCase,
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -31,6 +38,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     containerEl.createEl('h2', { text: 'Book Search Settings' });
+
+    containerEl.createEl('h3', { text: 'General Settings' });
 
     new Setting(containerEl)
       .setName('New file location')
@@ -49,6 +58,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
+    containerEl.createEl('h3', { text: 'Frontmatter Settings' });
+
     new Setting(containerEl)
       .setName('Use the default frontmatter')
       .setDesc("If you don't want the default frontmatter to be inserted, disable it.")
@@ -56,6 +67,27 @@ export class BookSearchSettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.useDefaultFrontmatter).onChange(async value => {
           const newValue = value;
           this.plugin.settings.useDefaultFrontmatter = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    const descForKeyType = document.createDocumentFragment();
+    descForKeyType.append(
+      '- Snake Case: ',
+      descForKeyType.createEl('code', { text: 'total_page' }),
+      descForKeyType.createEl('br'),
+      '- Camel Case: ',
+      descForKeyType.createEl('code', { text: 'totalPage' }),
+    );
+    new Setting(containerEl)
+      .setName('Default frontmatter key type')
+      .setDesc(descForKeyType)
+      .addDropdown(dropDown => {
+        dropDown.addOption(DefaultFrontmatterKeyType.snakeCase, DefaultFrontmatterKeyType.snakeCase.toString());
+        dropDown.addOption(DefaultFrontmatterKeyType.camelCase, DefaultFrontmatterKeyType.camelCase.toString());
+        dropDown.setValue(this.plugin.settings.defaultFrontmatterKeyType);
+        dropDown.onChange(async value => {
+          this.plugin.settings.defaultFrontmatterKeyType = value as DefaultFrontmatterKeyType;
           await this.plugin.saveSettings();
         });
       });
@@ -71,6 +103,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
+
+    containerEl.createEl('h3', { text: 'Content Settings' });
 
     const desc = document.createDocumentFragment();
     desc.append(

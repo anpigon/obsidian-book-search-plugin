@@ -1,4 +1,5 @@
-import { Book, BookModel, FrontMatter } from 'src/models/book.model';
+import { Book, FrontMatter } from 'src/models/book.model';
+import { DefaultFrontmatterKeyType } from 'src/settings/settings';
 
 export function replaceIllegalFileNameCharactersInString(string: string) {
   return string.replace(/[\\,#%&{}/*<>$":@.]*/g, '');
@@ -17,9 +18,34 @@ export function makeFileName(book: Book) {
   return `${titleForFileName} - ${authorForFileName}`;
 }
 
-export function makeFrontMater(book: Book, frontmatter: FrontMatter | string): string {
+export function makeFrontMater(
+  book: Book,
+  frontmatter: FrontMatter | string,
+  keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
+): string {
+  const frontMater =
+    keyType === DefaultFrontmatterKeyType.camelCase
+      ? book
+      : Object.entries(book).reduce((acc, [key, value]) => {
+          acc[camelToSnakeCase(key)] = value;
+          return acc;
+        }, {});
+
   const addFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
-  return new BookModel(book).toFrontMatter(addFrontMatter);
+  for (const key in addFrontMatter) {
+    const addValue = addFrontMatter[key]?.toString().trim() ?? '';
+    if (frontMater[key] && frontMater[key] !== addValue) {
+      frontMater[key] = `${frontMater[key]} ${addValue}`;
+    } else {
+      frontMater[key] = addValue;
+    }
+  }
+
+  return Object.entries(frontMater)
+    .map(([key, val]) => {
+      return `${key}: ${val?.toString().trim() ?? ''}`;
+    })
+    .join('\n');
 }
 
 export function replaceVariableSyntax(book: Book, targetText: string): string {
