@@ -17,14 +17,15 @@ export function makeFileName(book: Book) {
   return `${titleForFileName} - ${authorForFileName}`;
 }
 
-export function makeFrontMater(book: Book, frontmatter: FrontMatter): string {
-  return new BookModel(book).toFrontMatter(frontmatter);
+export function makeFrontMater(book: Book, frontmatter: FrontMatter | string): string {
+  const addFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
+  return new BookModel(book).toFrontMatter(addFrontMatter);
 }
 
-export function makeContent(book: Book, content: string): string {
+export function replaceVariableSyntax(book: Book, targetText: string): string {
   const entries = Object.entries(book);
   return entries
-    .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), `${content}`)
+    .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), targetText)
     .replace(/{{.+}}/gi, '');
 }
 
@@ -32,10 +33,17 @@ export function camelToSnakeCase(str) {
   return str.replace(/[A-Z]/g, letter => `_${letter?.toLowerCase()}`);
 }
 
+// FIXME: to refactor
 export function parseFrontMatter(frontMatterString: string) {
   if (!frontMatterString) return {};
   return frontMatterString
     .split('\n')
     .map(item => item.split(':'))
     .reduce((acc, [key, value]) => ((acc[key] = value?.trim() ?? ''), acc), {});
+}
+
+export function toStringFrontMatter(frontMatter: FrontMatter): string {
+  return Object.entries(frontMatter)
+    .map(([key, value]) => `${key}: ${value ?? ''}`)
+    .join('\n');
 }

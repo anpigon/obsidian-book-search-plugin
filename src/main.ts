@@ -5,7 +5,7 @@ import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
-import { makeContent, makeFileName, makeFrontMater, parseFrontMatter } from './utils/utils';
+import { replaceVariableSyntax, makeFileName, makeFrontMater, parseFrontMatter } from './utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -35,10 +35,13 @@ export default class BookSearchPlugin extends Plugin {
     try {
       // open modal for book search
       const book = await this.openBookSearchModal();
-      const frontMatterFromInserts = parseFrontMatter(this.settings.frontmatter);
 
-      const frontMatter = makeFrontMater(book, frontMatterFromInserts);
-      const content = makeContent(book, this.settings.content);
+      let frontMatter = replaceVariableSyntax(book, this.settings.frontmatter);
+      if (this.settings.useDefaultFrontmatter) {
+        frontMatter = makeFrontMater(book, frontMatter);
+      }
+
+      const content = replaceVariableSyntax(book, this.settings.content);
       const fileContent = `---\n${frontMatter}\n---\n${content}`;
 
       const fileName = makeFileName(book);

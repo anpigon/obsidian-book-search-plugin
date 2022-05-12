@@ -7,12 +7,14 @@ export interface BookSearchPluginSettings {
   folder: string;
   frontmatter: string;
   content: string;
+  useDefaultFrontmatter: boolean;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   folder: '',
   frontmatter: '',
   content: '',
+  useDefaultFrontmatter: true,
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -41,6 +43,17 @@ export class BookSearchSettingTab extends PluginSettingTab {
             this.plugin.settings.folder = new_folder;
             this.plugin.saveSettings();
           });
+      });
+
+    new Setting(containerEl)
+      .setName('Use the default frontmatter')
+      .setDesc('If you don\'t want the default frontmatter to be inserted, disable it.')
+      .addToggle(toggle => {
+        toggle.setValue(this.plugin.settings.useDefaultFrontmatter).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.useDefaultFrontmatter = newValue;
+          await this.plugin.saveSettings();
+        });
       });
 
     new Setting(containerEl)
