@@ -59,7 +59,7 @@ export class BookModel implements Book {
     for (const key in addFrontMatter) {
       const val = addFrontMatter[key]?.toString().trim() ?? '';
       if (frontMater[key]) {
-        frontMater[key] = `${val} ${frontMater[key]}`;
+        frontMater[key] = val !== frontMater[key] ? `${val} ${frontMater[key]}` : frontMater[key];
       } else {
         frontMater[key] = val;
       }
