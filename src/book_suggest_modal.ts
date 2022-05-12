@@ -35,7 +35,7 @@ export class BookSuggestModal extends SuggestModal<Book> {
   }
 
   // Perform action on the selected suggestion.
-  onChooseSuggestion(book: Book, evt: MouseEvent | KeyboardEvent) {
+  onChooseSuggestion(book: Book) {
     this.onChoose(null, book);
   }
 }

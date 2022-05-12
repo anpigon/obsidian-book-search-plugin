@@ -11,9 +11,7 @@ export async function getByQuery(query: string): Promise<Book[]> {
       throw new Error('No results found.');
     }
 
-    return searchResults.items.map(({ volumeInfo }) =>
-      formatForSuggestion(volumeInfo),
-    );
+    return searchResults.items.map(({ volumeInfo }) => formatForSuggestion(volumeInfo));
   } catch (error) {
     console.warn(error);
     throw error;
@@ -26,12 +24,8 @@ function getISBN(item: VolumeInfo) {
   let isbn10_data, isbn13_data;
 
   if (item.industryIdentifiers) {
-    isbn10_data = item.industryIdentifiers.find(
-      element => element.type == 'ISBN_10',
-    );
-    isbn13_data = item.industryIdentifiers.find(
-      element => element.type == 'ISBN_13',
-    );
+    isbn10_data = item.industryIdentifiers.find(element => element.type == 'ISBN_10');
+    isbn13_data = item.industryIdentifiers.find(element => element.type == 'ISBN_13');
   }
 
   if (isbn10_data) ISBN10 = isbn10_data.identifier.trim();
@@ -49,9 +43,7 @@ function formatForSuggestion(item: VolumeInfo): Book {
     publisher: item.publisher,
     totalPage: item.pageCount,
     coverUrl: `${item.imageLinks?.thumbnail ?? ''}`.replace('http:', 'https:'),
-    publishDate: item.publishedDate
-      ? `${new Date(item.publishedDate).getFullYear()}`
-      : '',
+    publishDate: item.publishedDate ? `${new Date(item.publishedDate).getFullYear()}` : '',
     isbn10: ISBN.ISBN10,
     isbn13: ISBN.ISBN13,
   };
@@ -60,7 +52,7 @@ function formatForSuggestion(item: VolumeInfo): Book {
 
 function formatList(list?: string[]) {
   if (!list || list.length === 0 || list[0] == 'N/A') return '';
-  if (list.length === 1) return `${list[0]}`;
+  if (list.length === 1) return list[0] ?? '';
 
   return list.map(item => `"${item.trim()}"`).join(', ');
 }

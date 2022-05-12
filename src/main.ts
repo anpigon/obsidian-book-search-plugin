@@ -1,11 +1,11 @@
-import { Notice, parseFrontMatterEntry, parseFrontMatterStringArray, Plugin } from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 import { BookSearchModal } from './book_search_modal';
 import { BookSuggestModal } from './book_suggest_modal';
 import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
-import { replaceVariableSyntax, makeFileName, makeFrontMater, parseFrontMatter } from './utils/utils';
+import { replaceVariableSyntax, makeFileName, makeFrontMater } from './utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -14,9 +14,7 @@ export default class BookSearchPlugin extends Plugin {
     await this.loadSettings();
 
     // This creates an icon in the left ribbon.
-    const ribbonIconEl = this.addRibbonIcon('book', 'Create new book note', (evt: MouseEvent) =>
-      this.createNewBookNote(),
-    );
+    const ribbonIconEl = this.addRibbonIcon('book', 'Create new book note', () => this.createNewBookNote());
     // Perform additional things with the ribbon
     ribbonIconEl.addClass('obsidian-book-search-plugin-ribbon-class');
 
@@ -25,7 +23,7 @@ export default class BookSearchPlugin extends Plugin {
       id: 'open-book-search-modal',
       name: 'Create new book note',
       callback: () => this.createNewBookNote(),
-    }); //
+    });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
@@ -61,7 +59,11 @@ export default class BookSearchPlugin extends Plugin {
       await new CursorJumper(this.app).jumpToNextCursorLocation();
     } catch (err) {
       console.warn(err);
-      new Notice(err.toString());
+      try {
+        new Notice(err.toString());
+      } catch {
+        // eslint-disable
+      }
     }
   }
 
@@ -76,8 +78,6 @@ export default class BookSearchPlugin extends Plugin {
       }).open();
     });
   }
-
-  onunload() {}
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());

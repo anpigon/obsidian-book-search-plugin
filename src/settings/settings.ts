@@ -36,7 +36,11 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .setName('New file location')
       .setDesc('New book notes will be placed here.')
       .addSearch(cb => {
-        new FolderSuggest(this.app, cb.inputEl);
+        try {
+          new FolderSuggest(this.app, cb.inputEl);
+        } catch {
+          // eslint-disable
+        }
         cb.setPlaceholder('Example: folder1/folder2')
           .setValue(this.plugin.settings.folder)
           .onChange(new_folder => {
@@ -47,7 +51,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Use the default frontmatter')
-      .setDesc('If you don\'t want the default frontmatter to be inserted, disable it.')
+      .setDesc("If you don't want the default frontmatter to be inserted, disable it.")
       .addToggle(toggle => {
         toggle.setValue(this.plugin.settings.useDefaultFrontmatter).onChange(async value => {
           const newValue = value;
