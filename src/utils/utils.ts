@@ -33,13 +33,24 @@ export function camelToSnakeCase(str) {
   return str.replace(/[A-Z]/g, letter => `_${letter?.toLowerCase()}`);
 }
 
-// FIXME: to refactor
 export function parseFrontMatter(frontMatterString: string) {
   if (!frontMatterString) return {};
   return frontMatterString
     .split('\n')
-    .map(item => item.split(':'))
-    .reduce((acc, [key, value]) => ((acc[key] = value?.trim() ?? ''), acc), {});
+    .map(item => {
+      const index = item.indexOf(':');
+      if (index === -1) return [item.trim(), ''];
+
+      const key = item.slice(0, index)?.trim();
+      const value = item.slice(index + 1)?.trim();
+      return [key, value];
+    })
+    .reduce((acc, [key, value]) => {
+      if (key) {
+        acc[key] = value?.trim() ?? '';
+      }
+      return acc;
+    }, {});
 }
 
 export function toStringFrontMatter(frontMatter: FrontMatter): string {
