@@ -38,9 +38,10 @@ export default class BookSearchPlugin extends Plugin {
       if (this.settings.useDefaultFrontmatter) {
         frontMatter = makeFrontMater(book, frontMatter);
       }
+      frontMatter = frontMatter.trim();
 
       const content = replaceVariableSyntax(book, this.settings.content);
-      const fileContent = `---\n${frontMatter}\n---\n${content}`;
+      const fileContent = frontMatter ? `---\n${frontMatter}\n---\n${content}` : content;
 
       const fileName = makeFileName(book);
       const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
