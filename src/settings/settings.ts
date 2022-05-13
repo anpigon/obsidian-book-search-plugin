@@ -39,9 +39,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Book Search Settings' });
-
-    containerEl.createEl('h3', { text: 'General Settings' });
+    containerEl.createEl('h2', { text: 'General Settings' });
 
     new Setting(containerEl)
       .setName('New file location')
@@ -60,7 +58,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
-    containerEl.createEl('h3', { text: 'Frontmatter Settings' });
+    containerEl.createEl('h2', { text: 'Frontmatter Settings' });
 
     new Setting(containerEl)
       .setName('Use the default frontmatter')
@@ -106,7 +104,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
         });
       });
 
-    containerEl.createEl('h3', { text: 'Content Settings' });
+    containerEl.createEl('h2', { text: 'Content Settings' });
 
     new Setting(containerEl)
       .setName('Text to insert into content')
