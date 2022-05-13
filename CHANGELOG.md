@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.dev/anpigon/obsidian-book-search-plugin/compare/0.1.0...0.2.0) (2022-05-13)
+
+
+### Features
+
+* Added default frontmatter key type option [#11](https://github.dev/anpigon/obsidian-book-search-plugin/issues/11) ([d0806e0](https://github.dev/anpigon/obsidian-book-search-plugin/commit/d0806e0133bcd298e05adf3cb12eb822d6bc514a))
+* Added option to disable default frontmatter insertion in settings [#9](https://github.dev/anpigon/obsidian-book-search-plugin/issues/9) ([373946a](https://github.dev/anpigon/obsidian-book-search-plugin/commit/373946aeb024882e68c51032271fcd98f9486ae2))
+
+
+### Bug Fixes
+
+* remove double quotation marks from author ([3d83241](https://github.dev/anpigon/obsidian-book-search-plugin/commit/3d832411781c6ba6f17b66858a2face38f780c14))
+
+
+### Code Refactoring
+
+* frontMatter in main ([239638c](https://github.dev/anpigon/obsidian-book-search-plugin/commit/239638cb89fa697a7fcec7eb0f1a8fcc6908dadc))
+* parseFrontMatter in utils ([58b0d7a](https://github.dev/anpigon/obsidian-book-search-plugin/commit/58b0d7ad0332f14caf42f8006281f1fb06bc23ae))
+* remove unnecessary code and formatting ([8d06813](https://github.dev/anpigon/obsidian-book-search-plugin/commit/8d06813c46e73181e8fa27009308f97848f29cbb))
+* toFrontMatter ([eff81dd](https://github.dev/anpigon/obsidian-book-search-plugin/commit/eff81dd15ea4e5859dbf96833f70ae1f8d81b850))
+
 ## [0.1.0](https://github.dev/anpigon/obsidian-book-search-plugin/compare/0.0.5...0.1.0) (2022-04-30)
 
 
