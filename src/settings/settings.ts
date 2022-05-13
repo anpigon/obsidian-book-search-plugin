@@ -3,6 +3,8 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import BookSearchPlugin from '../main';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 
+const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
+
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',
   camelCase = 'Camel Case',
@@ -71,17 +73,17 @@ export class BookSearchSettingTab extends PluginSettingTab {
         });
       });
 
-    const descForKeyType = document.createDocumentFragment();
-    descForKeyType.append(
+    const keyTypeDesc = document.createDocumentFragment();
+    keyTypeDesc.append(
       '- Snake Case: ',
-      descForKeyType.createEl('code', { text: 'total_page' }),
-      descForKeyType.createEl('br'),
+      keyTypeDesc.createEl('code', { text: 'total_page' }),
+      keyTypeDesc.createEl('br'),
       '- Camel Case: ',
-      descForKeyType.createEl('code', { text: 'totalPage' }),
+      keyTypeDesc.createEl('code', { text: 'totalPage' }),
     );
     new Setting(containerEl)
       .setName('Default frontmatter key type')
-      .setDesc(descForKeyType)
+      .setDesc(keyTypeDesc)
       .addDropdown(dropDown => {
         dropDown.addOption(DefaultFrontmatterKeyType.snakeCase, DefaultFrontmatterKeyType.snakeCase.toString());
         dropDown.addOption(DefaultFrontmatterKeyType.camelCase, DefaultFrontmatterKeyType.camelCase.toString());
@@ -94,7 +96,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Text to insert into frontmatter')
-      .setDesc('Text to insert into the YAML frontmatter')
+      .setDesc(createSyntaxesDescription('#text-to-insert-into-frontmatter'))
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.frontmatter;
         textArea.setValue(prevValue).onChange(async value => {
@@ -106,38 +108,9 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     containerEl.createEl('h3', { text: 'Content Settings' });
 
-    const desc = document.createDocumentFragment();
-    desc.append(
-      'The following syntaxes are available: ',
-      desc.createEl('br'),
-      desc.createEl('code', { text: '{{title}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{author}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{category}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{publisher}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{publishDate}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{totalPage}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{coverUrl}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{isbn10}}' }),
-      ', ',
-      desc.createEl('code', { text: '{{isbn13}}' }),
-      desc.createEl('br'),
-      'Check the ',
-      desc.createEl('a', {
-        href: 'https://github.com/anpigon/obsidian-book-search-plugin#text-to-insert-into-content',
-        text: 'documentation',
-      }),
-      ' for more information.',
-    );
     new Setting(containerEl)
       .setName('Text to insert into content')
-      .setDesc(desc)
+      .setDesc(createSyntaxesDescription('#text-to-insert-into-content'))
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.content;
         textArea.setValue(prevValue).onChange(async value => {
@@ -147,4 +120,37 @@ export class BookSearchSettingTab extends PluginSettingTab {
         });
       });
   }
+}
+
+function createSyntaxesDescription(anchorLink: string) {
+  const desc = document.createDocumentFragment();
+  desc.append(
+    'The following syntaxes are available: ',
+    desc.createEl('br'),
+    desc.createEl('code', { text: '{{title}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{author}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{category}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{publisher}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{publishDate}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{totalPage}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{coverUrl}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{isbn10}}' }),
+    ', ',
+    desc.createEl('code', { text: '{{isbn13}}' }),
+    desc.createEl('br'),
+    'Check the ',
+    desc.createEl('a', {
+      href: `${docUrl}${anchorLink}`,
+      text: 'documentation',
+    }),
+    ' for more information.',
+  );
+  return desc;
 }
