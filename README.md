@@ -39,10 +39,31 @@ Use Google Books API to get the book information.
 
 ## How to use settings
 
+### Text to insert into front matter
+
+You can add the following to the default Front Matter, or create a new Front Matter with the structure you want.
+
+Use variable substitution syntax.
+
+![](https://user-images.githubusercontent.com/3969643/168297106-27b887e9-be1b-492b-96a9-554696d84abe.png)
+
+#### Example template
+
+```
+title: {{title}} - {{author}}
+publisher: {{publisher}}
+publish: {{publishDate}}
+total: {{totalPage}}
+isbn: {{isbn10}} {{isbn13}}
+cover: {{coverUrl}}
+```
+
+<br>
+
 ### Text to insert into content
 You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).
 
-![](https://user-images.githubusercontent.com/3969643/166099265-407c62e1-16d0-460c-b9e1-eae5b5e3db19.png)
+![](https://user-images.githubusercontent.com/3969643/168297600-0ae37bef-7e26-4d06-9d91-2308f62b7b96.png)
 
 #### Example template
 
@@ -65,3 +86,19 @@ isbn13:: {{isbn13}}
 
 Search in the Obsidian Community plugin. And install it.
 ![](https://user-images.githubusercontent.com/3969643/166097211-abb60f55-3d77-4de6-9e0d-b681f903aafc.png)
+
+<br>
+
+## License
+[Obsidian Book Search Plugin](https://github.com/anpigon/obsidian-book-search-plugin) is licensed under the GNU AGPLv3 license. Refer to [LICENSE](https://github.com/SilentVoid13/Templater/blob/master/LICENSE.TXT) for more information.
+
+<br>
+
+## Contributing
+Feel free to contribute.
+
+You can create an [issue](https://github.com/anpigon/obsidian-book-search-plugin/issues) to report a bug, suggest an improvement for this plugin, ask a question, etc.
+
+You can make a [pull request](https://github.com/anpigon/obsidian-book-search-plugin/pulls) to contribute to this plugin development.
+
+
