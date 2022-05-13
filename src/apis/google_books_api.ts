@@ -54,7 +54,7 @@ function formatList(list?: string[]) {
   if (!list || list.length === 0 || list[0] == 'N/A') return '';
   if (list.length === 1) return list[0] ?? '';
 
-  return list.map(item => `"${item.trim()}"`).join(', ');
+  return list.map(item => `${item.trim()}`).join(', ');
 }
 
 async function apiGet(query: string): Promise<GoogleBooksResponse> {
