@@ -8,8 +8,9 @@ export class BookSearchModal extends Modal {
   okBtnRef: ButtonComponent;
   onSubmit: (err: Error, result?: Book[]) => void;
 
-  constructor(app: App, onSubmit?: (err: Error, result?: Book[]) => void) {
+  constructor(app: App, query: string, onSubmit?: (err: Error, result?: Book[]) => void) {
     super(app);
+    this.query = query
     this.onSubmit = onSubmit;
   }
 
@@ -47,6 +48,7 @@ export class BookSearchModal extends Modal {
 
     const placeholder = 'Search by keyword or ISBN';
     const textComponent = new TextComponent(contentEl);
+    textComponent.setValue(this.query)
     textComponent.inputEl.style.width = '100%';
     textComponent
       .setPlaceholder(placeholder ?? '')

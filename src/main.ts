@@ -1,4 +1,4 @@
-import { Notice, Plugin } from 'obsidian';
+import { MarkdownView, Notice, Plugin } from 'obsidian';
 import { BookSearchModal } from './book_search_modal';
 import { BookSuggestModal } from './book_suggest_modal';
 import { CursorJumper } from './editor/cursor_jumper';
@@ -6,6 +6,8 @@ import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
 import { replaceVariableSyntax, makeFileName, makeFrontMater } from './utils/utils';
+
+type MetadataWriter = (book: Book, metadata: string) => Promise<void>;
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -25,14 +27,20 @@ export default class BookSearchPlugin extends Plugin {
       callback: () => this.createNewBookNote(),
     });
 
+    this.addCommand({
+      id: 'open-book-search-modal-to-insert',
+      name: 'Insert the metadata',
+      callback: () => this.insertMetadata(),
+    });
+
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
   }
 
-  async createNewBookNote(): Promise<void> {
+  async searchBookMetadata(query: string, writer: MetadataWriter): Promise<void> {
     try {
       // open modal for book search
-      const book = await this.openBookSearchModal();
+      const book = await this.openBookSearchModal(query);
 
       let frontMatter = replaceVariableSyntax(book, this.settings.frontmatter);
       if (this.settings.useDefaultFrontmatter) {
@@ -43,18 +51,7 @@ export default class BookSearchPlugin extends Plugin {
       const content = replaceVariableSyntax(book, this.settings.content);
       const fileContent = frontMatter ? `---\n${frontMatter}\n---\n${content}` : content;
 
-      const fileName = makeFileName(book);
-      const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
-      const targetFile = await this.app.vault.create(filePath, fileContent);
-
-      // open file
-      const activeLeaf = this.app.workspace.getLeaf();
-      if (!activeLeaf) {
-        console.warn('No active leaf');
-        return;
-      }
-      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-      activeLeaf.setEphemeralState({ rename: 'all' });
+      await writer(book, fileContent);
 
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
@@ -68,9 +65,41 @@ export default class BookSearchPlugin extends Plugin {
     }
   }
 
-  async openBookSearchModal(): Promise<Book> {
+  async insertMetadata(): Promise<void> {
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!markdownView) {
+      console.warn('Can not find an active markdown view');
+      return;
+    }
+    await this.searchBookMetadata(markdownView.file.basename, async (_, metadata) => {
+      if (!markdownView.editor) {
+        console.warn('Can not find editor from the active markdown view');
+        return;
+      }
+      markdownView.editor.replaceRange(metadata, { line: 0, ch: 0 });
+    });
+  }
+
+  async createNewBookNote(): Promise<void> {
+    await this.searchBookMetadata('', async (book, metadata) => {
+      const fileName = makeFileName(book);
+      const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
+      const targetFile = await this.app.vault.create(filePath, metadata);
+
+      // open file
+      const activeLeaf = this.app.workspace.getLeaf();
+      if (!activeLeaf) {
+        console.warn('No active leaf');
+        return;
+      }
+      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+      activeLeaf.setEphemeralState({ rename: 'all' });
+    });
+  }
+
+  async openBookSearchModal(query = ''): Promise<Book> {
     return new Promise((resolve, reject) => {
-      new BookSearchModal(this.app, (error, results) => {
+      new BookSearchModal(this.app, query, (error, results) => {
         if (error) return reject(error);
         new BookSuggestModal(this.app, results, (error2, selectedBook) => {
           if (error2) return reject(error2);
