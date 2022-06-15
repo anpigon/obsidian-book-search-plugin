@@ -1,6 +1,11 @@
 import { Book, FrontMatter } from 'src/models/book.model';
 import { DefaultFrontmatterKeyType } from 'src/settings/settings';
 
+// == Format Syntax == //
+export const NUMBER_REGEX = /^-?[0-9]*$/;
+export const DATE_REGEX = /{{DATE(\+-?[0-9]+)?}}/;
+export const DATE_REGEX_FORMATTED = /{{DATE:([^}\n\r+]*)(\+-?[0-9]+)?}}/;
+
 export function replaceIllegalFileNameCharactersInString(string: string) {
   return string.replace(/[\\,#%&{}/*<>$":@.]*/g, '');
 }
@@ -83,4 +88,54 @@ export function toStringFrontMatter(frontMatter: FrontMatter): string {
   return Object.entries(frontMatter)
     .map(([key, value]) => `${key}: ${value ?? ''}`)
     .join('\n');
+}
+
+export function getDate(input?: { format?: string; offset?: number }) {
+  let duration;
+
+  if (input.offset !== null && input.offset !== undefined && typeof input.offset === 'number') {
+    duration = window.moment.duration(input.offset, 'days');
+  }
+
+  return input.format
+    ? window.moment().add(duration).format(input.format)
+    : window.moment().add(duration).format('YYYY-MM-DD');
+}
+
+export function replaceDateInString(input: string) {
+  let output: string = input;
+
+  while (DATE_REGEX.test(output)) {
+    const dateMatch = DATE_REGEX.exec(output);
+    let offset: number;
+
+    if (dateMatch[1]) {
+      const offsetString = dateMatch[1].replace('+', '').trim();
+      const offsetIsInt = NUMBER_REGEX.test(offsetString);
+      if (offsetIsInt) offset = parseInt(offsetString);
+    }
+    output = replacer(output, DATE_REGEX, getDate({ offset: offset }));
+  }
+
+  while (DATE_REGEX_FORMATTED.test(output)) {
+    const dateMatch = DATE_REGEX_FORMATTED.exec(output);
+    const format = dateMatch[1];
+    let offset: number;
+
+    if (dateMatch[2]) {
+      const offsetString = dateMatch[2].replace('+', '').trim();
+      const offsetIsInt = NUMBER_REGEX.test(offsetString);
+      if (offsetIsInt) offset = parseInt(offsetString);
+    }
+
+    output = replacer(output, DATE_REGEX_FORMATTED, getDate({ format, offset }));
+  }
+
+  return output;
+}
+
+function replacer(str: string, reg: RegExp, replaceValue) {
+  return str.replace(reg, function () {
+    return replaceValue;
+  });
 }

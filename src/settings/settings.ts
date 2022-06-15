@@ -1,6 +1,8 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
+import { replaceDateInString } from 'src/utils/utils';
 
 import BookSearchPlugin from '../main';
+import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
@@ -12,6 +14,7 @@ export enum DefaultFrontmatterKeyType {
 
 export interface BookSearchPluginSettings {
   folder: string;
+  fileNameFormat: string;
   frontmatter: string;
   content: string;
   useDefaultFrontmatter: boolean;
@@ -20,6 +23,7 @@ export interface BookSearchPluginSettings {
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   folder: '',
+  fileNameFormat: '',
   frontmatter: '',
   content: '',
   useDefaultFrontmatter: true,
@@ -39,6 +43,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
+    containerEl.classList.add('book-search-plugin__settings');
+
     containerEl.createEl('h2', { text: 'General Settings' });
 
     new Setting(containerEl)
@@ -55,6 +61,34 @@ export class BookSearchSettingTab extends PluginSettingTab {
           .onChange(new_folder => {
             this.plugin.settings.folder = new_folder;
             this.plugin.saveSettings();
+          });
+      });
+
+    const newFileNameEl = new Setting(containerEl);
+    const newFileNameHintEl = containerEl.createEl('div');
+    newFileNameHintEl.classList.add('setting-item-description')
+    newFileNameHintEl.classList.add('book-search-plugin__settings--new_file_name_hint')
+    const newFileNameHintDesc = document.createDocumentFragment();
+    const newFileNameHintDescCode = newFileNameHintDesc.createEl('code', { text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}' })
+    newFileNameHintDesc.append(newFileNameHintDescCode);
+    newFileNameHintEl.append(newFileNameHintDesc);
+    newFileNameEl
+      .setClass('book-search-plugin__settings--new_file_name')
+      .setName('New file name')
+      .setDesc('Enter the file name format.')
+      .addSearch(cb => {
+        try {
+          new FileNameFormatSuggest(this.app, cb.inputEl);
+        } catch {
+          // eslint-disable
+        }
+        cb.setPlaceholder('Example: {{title}} - {{author}}')
+          .setValue(this.plugin.settings.fileNameFormat)
+          .onChange(newValue => {
+            this.plugin.settings.fileNameFormat = newValue;
+            this.plugin.saveSettings();
+
+            newFileNameHintDescCode.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';
           });
       });
 
