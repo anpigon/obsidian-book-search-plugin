@@ -1,3 +1,4 @@
+import { App } from 'obsidian';
 import { Book, FrontMatter } from 'src/models/book.model';
 import { DefaultFrontmatterKeyType } from 'src/settings/settings';
 
@@ -14,12 +15,15 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
-export function makeFileName(book: Book) {
+export function makeFileName(book: Book, fileNameFormat: string) {
   const titleForFileName = replaceIllegalFileNameCharactersInString(book.title);
   if (!book.author) {
     return titleForFileName;
   }
   const authorForFileName = replaceIllegalFileNameCharactersInString(book.author);
+  if(fileNameFormat) {
+    return replaceVariableSyntax(book, replaceDateInString(fileNameFormat))
+  }
   return `${titleForFileName} - ${authorForFileName}`;
 }
 

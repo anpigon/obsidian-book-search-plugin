@@ -85,7 +85,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
         cb.setPlaceholder('Example: {{title}} - {{author}}')
           .setValue(this.plugin.settings.fileNameFormat)
           .onChange(newValue => {
-            this.plugin.settings.fileNameFormat = newValue;
+            this.plugin.settings.fileNameFormat = newValue?.trim();
             this.plugin.saveSettings();
 
             newFileNameHintDescCode.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';

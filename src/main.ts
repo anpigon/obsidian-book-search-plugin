@@ -82,7 +82,7 @@ export default class BookSearchPlugin extends Plugin {
 
   async createNewBookNote(): Promise<void> {
     await this.searchBookMetadata('', async (book, metadata) => {
-      const fileName = makeFileName(book);
+      const fileName = makeFileName(book, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
       const targetFile = await this.app.vault.create(filePath, metadata);
 
