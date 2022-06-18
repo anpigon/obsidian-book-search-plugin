@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.3.0...0.4.0) (2022-06-18)
+
+
+### Features
+
+* add file name option ([83626e7](https://github.com/anpigon/obsidian-book-search-plugin/commit/83626e779be79107e388732957f8307bab311731))
+* formatting in the makeFileName function ([537f33f](https://github.com/anpigon/obsidian-book-search-plugin/commit/537f33f29afa8589eef2d84eac3a92badee2a411))
+
 ## [0.3.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.2.2...0.3.0) (2022-06-13)
 
 
