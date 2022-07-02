@@ -1,4 +1,3 @@
-import { App } from 'obsidian';
 import { Book, FrontMatter } from 'src/models/book.model';
 import { DefaultFrontmatterKeyType } from 'src/settings/settings';
 
