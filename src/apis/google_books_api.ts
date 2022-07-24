@@ -1,5 +1,5 @@
 import { request } from 'obsidian';
-import { Book } from 'src/models/book.model';
+import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books.model';
 
 const API_URL = 'https://www.googleapis.com/books/v1/volumes';

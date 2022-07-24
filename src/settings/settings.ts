@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import { replaceDateInString } from 'src/utils/utils';
+import { replaceDateInString } from '@utils/utils';
 
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
