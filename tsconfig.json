@@ -15,7 +15,15 @@
       "ES5",
       "ES6",
       "ES7"
-    ]
+    ],
+    "paths": {
+      "@settings/*": ["src/settings/*"],
+      "@models/*": ["src/models/*"],
+      "@editor/*": ["src/editor/*"],
+      "@utils/*": ["src/utils/*"],
+      "@apis/*": ["src/apis/*"],
+			"@src/*": ["src/*"],
+		}
   },
   "include": [
     "**/*.ts"
