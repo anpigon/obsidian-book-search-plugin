@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.0...0.4.1) (2022-07-24)
+
+
+### Code Refactoring
+
+* remove unused import in utils.ts ([c525934](https://github.com/anpigon/obsidian-book-search-plugin/commit/c52593443b5dcfb9cf8f3febc4d45df00f3d6a72))
+
 ## [0.4.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.3.0...0.4.0) (2022-06-18)
 
 
