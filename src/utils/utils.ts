@@ -1,5 +1,5 @@
-import { Book, FrontMatter } from 'src/models/book.model';
-import { DefaultFrontmatterKeyType } from 'src/settings/settings';
+import { Book, FrontMatter } from '@models/book.model';
+import { DefaultFrontmatterKeyType } from '@settings/settings';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
