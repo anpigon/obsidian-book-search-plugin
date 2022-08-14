@@ -108,12 +108,13 @@ Please also find a definition of the variables used in this template below (see:
 ---
 tag: 📚Book
 title: "{{title}}"
-author: "{{author}}"
-publisher: "{{publisher}}"
-publish: "{{publishDate}}"
+author: [{{author}}]
+publisher: {{publisher}}
+publish: {{publishDate}}
 total: {{totalPage}}
-isbn: "{{isbn10}} {{isbn13}}"
-cover: "{{coverUrl}}"
+isbn: {{isbn10}} {{isbn13}}
+cover: {{coverUrl}}
+status: unread
 created: {{DATE:YYYY-MM-DD HH:mm:ss}}
 updated: {{DATE:YYYY-MM-DD HH:mm:ss}}
 ---
@@ -128,19 +129,35 @@ updated: {{DATE:YYYY-MM-DD HH:mm:ss}}
 
 ## Dataview rendering
 
+<img width="1024" alt="" src="https://user-images.githubusercontent.com/3969643/184546096-82ccaae6-9893-411b-aed6-a72c54f72cb2.png">
+
 Here is the dataview query used in the demo
 
 ````
+# 📚 My Bookshelf
+
 ```dataview
 TABLE WITHOUT ID
+	status as Status,
+	rows.file.link as Book
+FROM  #📚Book
+WHERE !contains(file.path, "Templates")
+GROUP BY status
+SORT status
+```
 
-"![|60](" + cover + ")" as "Cover",
-file.link as Title,
-author as Author,
-join(list(publisher, publish)) as Publisher
+## List of all books
 
+```dataview
+TABLE WITHOUT ID
+	status as Status,
+	"![|60](" + cover + ")" as Cover,
+	link(file.link, title) as Title,
+	author as Author,
+	join(list(publisher, publish)) as Publisher
 FROM #📚Book
 WHERE !contains(file.path, "Templates")
+SORT status DESC, file.ctime ASC
 ```
 ````
 
