@@ -58,11 +58,20 @@ function formatList(list?: string[]) {
 }
 
 async function apiGet(query: string): Promise<GoogleBooksResponse> {
-  const finalURL = new URL(API_URL);
-  finalURL.searchParams.append('q', query);
+  const apiURL = new URL(API_URL);
+  apiURL.searchParams.append('q', query);
+  apiURL.searchParams.append('maxResults', '40');
+  apiURL.searchParams.append('printType', 'books');
+  // apiURL.searchParams.append('projection', 'lite');
+  // apiURL.searchParams.append('orderBy', 'newest'); // relevance, newest
+  const langRestrict = window.moment.locale();
+  if (langRestrict) {
+    apiURL.searchParams.append('langRestrict', langRestrict);
+  }
+  console.log(apiURL.href);
 
   const res = await request({
-    url: finalURL.href,
+    url: apiURL.href,
     method: 'GET',
   });
 
