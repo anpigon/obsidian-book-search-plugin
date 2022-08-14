@@ -56,47 +56,19 @@ Search in the Obsidian Community plugin. And install it.
 
 ## How to use settings
 
-### Text to insert into front matter
+### <strike>(Deprecated) Text to insert into front matter</strike>
 
-You can add the following to the default Front Matter, or create a new Front Matter with the structure you want.
-
-Use variable substitution syntax.
-
-![](https://user-images.githubusercontent.com/3969643/168297106-27b887e9-be1b-492b-96a9-554696d84abe.png)
-
-#### Example template
-
-```
-title: {{title}} - {{author}}
-publisher: {{publisher}}
-publish: {{publishDate}}
-total: {{totalPage}}
-isbn: {{isbn10}} {{isbn13}}
-cover: {{coverUrl}}
-```
+<strike>You can add the following to the default Front Matter, or create a new Front Matter with the structure you want.</strike>
 
 <br>
 
-### Text to insert into content
+### <strike>(Deprecated) Text to insert into content</strike>
 
-You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).
+<strike>You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).</strike>
 
-![](https://user-images.githubusercontent.com/3969643/168297600-0ae37bef-7e26-4d06-9d91-2308f62b7b96.png)
+<br>
 
-#### Example template
-
-```
-# {{title}}
-
-author:: {{author}}
-publisher:: {{publisher}}
-publishDate:: {{publishDate}}
-totalPage:: {{totalPage}}
-isbn10:: {{isbn10}}
-isbn13:: {{isbn13}}
-
-![cover]({{coverUrl}})
-```
+Please use the template file described below.
 
 <br>
 
@@ -112,7 +84,7 @@ author: [{{author}}]
 publisher: {{publisher}}
 publish: {{publishDate}}
 total: {{totalPage}}
-isbn: {{isbn10}} {{isbn13}}
+isbn: {{isbn10}} {{isbn1#template-variable-definition
 cover: {{coverUrl}}
 status: unread
 created: {{DATE:YYYY-MM-DD HH:mm:ss}}
@@ -165,7 +137,7 @@ The banner at the top of the document is rendered using [Obsidian-banners](https
 
 <br>
 
-## Template variable definition
+## Template variables definitions
 
 Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
 
