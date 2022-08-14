@@ -14,11 +14,11 @@ export class BookSuggestModal extends SuggestModal<Book> {
   // Returns all available suggestions.
   getSuggestions(query: string): Book[] {
     return this.suggestion.filter(book => {
-      const searchQuery = query.toLowerCase();
+      const searchQuery = query?.toLowerCase();
       return (
-        book.title.toLowerCase().includes(searchQuery) ||
-        book.author.toLowerCase().includes(searchQuery) ||
-        book.publisher.toLowerCase().includes(searchQuery)
+        book.title?.toLowerCase().includes(searchQuery) ||
+        book.author?.toLowerCase().includes(searchQuery) ||
+        book.publisher?.toLowerCase().includes(searchQuery)
       );
     });
   }
