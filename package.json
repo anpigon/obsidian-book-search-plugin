@@ -20,11 +20,11 @@
     "npm": "please use yarn"
   },
   "scripts": {
-    "dev": "node esbuild.config.mjs",
+    "dev": "node --experimental-json-modules esbuild.config.mjs",
     "test": "jest",
     "lint": "eslint . --ext .ts && tsc --noEmit -skipLibCheck",
     "lint:fix": "eslint . --ext .ts --fix",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "build": "yarn run lint && node esbuild.config.mjs production",
     "release": "standard-version",
     "release-test": "standard-version --dry-run",
     "release-major": "standard-version --release-as major",
