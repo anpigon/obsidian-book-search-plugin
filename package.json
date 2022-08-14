@@ -32,7 +32,8 @@
     "release-major": "standard-version --release-as major",
     "release-major-test": "standard-version --dry-run --release-as major",
     "release-minor": "standard-version --release-as minor",
-    "release-minor-test": "standard-version --dry-run --release-as minor"
+    "release-minor-test": "standard-version --dry-run --release-as minor",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.5",
@@ -43,10 +44,13 @@
     "builtin-modules": "^3.2.0",
     "esbuild": "0.13.12",
     "eslint": "^8.22.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
+    "lint-staged": "^13.0.3",
     "obsidian": "latest",
     "prettier": "^2.7.1",
+    "shell-quote": "^1.7.3",
     "standard-version": "^9.3.2",
     "ts-jest": "^28.0.7",
     "ts-node": "^10.9.1",
