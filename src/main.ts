@@ -5,7 +5,7 @@ import { CursorJumper } from './editor/cursor_jumper';
 import { Book } from './models/book.model';
 
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from './settings/settings';
-import { replaceVariableSyntax, makeFileName, makeFrontMater, getTemplateContents } from './utils/utils';
+import { replaceVariableSyntax, makeFileName, makeFrontMater, getTemplateContents, applyTemplateTransformations } from './utils/utils';
 
 type MetadataWriter = (book: Book, metadata: string) => Promise<void>;
 
@@ -53,7 +53,9 @@ export default class BookSearchPlugin extends Plugin {
       const templateFile = this.settings.templateFile?.trim();
       if (templateFile) {
         const templateContents = await getTemplateContents(this.app, templateFile);
-        renderedContents = replaceVariableSyntax(book, templateContents);
+        renderedContents = applyTemplateTransformations(templateContents);
+        console.log('renderedContents', renderedContents)
+        renderedContents = replaceVariableSyntax(book, renderedContents);
       } else {
         const content = replaceVariableSyntax(book, this.settings.content);
         renderedContents = frontMatter ? `---\n${frontMatter}\n---\n${content}` : content;
