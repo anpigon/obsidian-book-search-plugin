@@ -98,7 +98,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Template file location')
+      .setName('Template file')
       .setDesc('Files will be available as templates.')
       .addSearch(cb => {
         try {
