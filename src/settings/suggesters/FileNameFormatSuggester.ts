@@ -47,7 +47,7 @@ export class FileNameFormatSuggest extends TextInputSuggest<string> {
       )}${text}${currentInputValue.substr(cursorPosition)}`;
     };
 
-    this.processToken(item, (match, suggestion) => {
+    this.processToken(item, (_match, suggestion) => {
       if (item.contains(suggestion)) {
         this.inputEl.value = insert(item);
         insertedEndPosition = cursorPosition - lastInputLength + item.length;

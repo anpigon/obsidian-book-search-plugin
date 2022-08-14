@@ -1,4 +1,3 @@
-import type { Moment } from "moment";
 import { Book, FrontMatter } from '@models/book.model';
 import { DefaultFrontmatterKeyType } from '@settings/settings';
 import { App, normalizePath, Notice } from 'obsidian';
@@ -162,27 +161,27 @@ export async function getTemplateContents(app: App, templatePath: string | undef
   }
 }
 
-export function applyTemplateTransformations(
-  rawTemplateContents: string,
-): string {
- return rawTemplateContents
-    .replace(
-      /{{\s*(date|time)\s*(([+-]\d+)([yqmwdhs]))?\s*(:.+?)?}}/gi,
-      (_, _timeOrDate, calc, timeDelta, unit, momentFormat) => {
-        const now = window.moment();
-        const currentDate = window.moment().clone().set({
+export function applyTemplateTransformations(rawTemplateContents: string): string {
+  return rawTemplateContents.replace(
+    /{{\s*(date|time)\s*(([+-]\d+)([yqmwdhs]))?\s*(:.+?)?}}/gi,
+    (_, _timeOrDate, calc, timeDelta, unit, momentFormat) => {
+      const now = window.moment();
+      const currentDate = window
+        .moment()
+        .clone()
+        .set({
           hour: now.get('hour'),
           minute: now.get('minute'),
           second: now.get('second'),
         });
-        if (calc) {
-          currentDate.add(parseInt(timeDelta, 10), unit);
-        }
+      if (calc) {
+        currentDate.add(parseInt(timeDelta, 10), unit);
+      }
 
-        if (momentFormat) {
-          return currentDate.format(momentFormat.substring(1).trim());
-        }
-        return currentDate.format('YYYY-MM-DD');
-      },
-    );
+      if (momentFormat) {
+        return currentDate.format(momentFormat.substring(1).trim());
+      }
+      return currentDate.format('YYYY-MM-DD');
+    },
+  );
 }
