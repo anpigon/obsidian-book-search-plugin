@@ -1,6 +1,6 @@
 .book-search-plugin__settings .search-input-container {
   width: 100%;
-} 
+}
 
 .book-search-plugin__settings--new_file_name {
   padding-bottom: 0;
@@ -8,4 +8,14 @@
 }
 .book-search-plugin__settings--new_file_name_hint {
   margin-bottom: 20px;
+}
+.book-search-plugin__settings--panel_folding {
+}
+
+.book-search-plugin__hide {
+  display: none;
+}
+
+.book-search-plugin__show {
+  display: flex;
 }
