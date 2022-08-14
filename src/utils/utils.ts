@@ -1,5 +1,6 @@
 import { Book, FrontMatter } from '@models/book.model';
 import { DefaultFrontmatterKeyType } from '@settings/settings';
+import { App, normalizePath, Notice } from 'obsidian';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -20,8 +21,8 @@ export function makeFileName(book: Book, fileNameFormat: string) {
     return titleForFileName;
   }
   const authorForFileName = replaceIllegalFileNameCharactersInString(book.author);
-  if(fileNameFormat) {
-    return replaceVariableSyntax(book, replaceDateInString(fileNameFormat))
+  if (fileNameFormat) {
+    return replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
   }
   return `${titleForFileName} - ${authorForFileName}`;
 }
@@ -141,4 +142,21 @@ function replacer(str: string, reg: RegExp, replaceValue) {
   return str.replace(reg, function () {
     return replaceValue;
   });
+}
+
+export async function getTemplateContents(app: App, templatePath: string | undefined): Promise<string> {
+  const { metadataCache, vault } = app;
+  const normalizedTemplatePath = normalizePath(templatePath ?? '');
+  if (templatePath === '/') {
+    return Promise.resolve('');
+  }
+
+  try {
+    const templateFile = metadataCache.getFirstLinkpathDest(normalizedTemplatePath, '');
+    return templateFile ? vault.cachedRead(templateFile) : '';
+  } catch (err) {
+    console.error(`Failed to read the daily note template '${normalizedTemplatePath}'`, err);
+    new Notice('Failed to read the daily note template');
+    return '';
+  }
 }
