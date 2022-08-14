@@ -4,6 +4,7 @@ import { replaceDateInString } from '@utils/utils';
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
+import { FileSuggest } from './suggesters/FileSuggester';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
@@ -13,12 +14,13 @@ export enum DefaultFrontmatterKeyType {
 }
 
 export interface BookSearchPluginSettings {
-  folder: string;
-  fileNameFormat: string;
-  frontmatter: string;
-  content: string;
+  folder: string; // new file location
+  fileNameFormat: string; // new file name format
+  frontmatter: string; // frontmatter that is inserted into the file
+  content: string; // what is automatically written to the file.
   useDefaultFrontmatter: boolean;
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType;
+  templateFile: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -28,6 +30,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   content: '',
   useDefaultFrontmatter: true,
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType.snakeCase,
+  templateFile: '',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -89,6 +92,23 @@ export class BookSearchSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
 
             newFileNameHintDescCode.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';
+          });
+      });
+
+    new Setting(containerEl)
+      .setName('Template file location')
+      .setDesc('Files will be available as templates.')
+      .addSearch(cb => {
+        try {
+          new FileSuggest(this.app, cb.inputEl);
+        } catch {
+          // eslint-disable
+        }
+        cb.setPlaceholder('Example: templates/template-file')
+          .setValue(this.plugin.settings.templateFile)
+          .onChange(newTemplateFile => {
+            this.plugin.settings.templateFile = newTemplateFile;
+            this.plugin.saveSettings();
           });
       });
 
