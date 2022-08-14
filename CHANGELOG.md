@@ -2,28 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.5.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.1...0.5.0) (2022-08-14)
-
-
-### Features
-
-* add "Template file location" option to settings ([aa961cf](https://github.com/anpigon/obsidian-book-search-plugin/commit/aa961cf63bd242c5d77e6d16225e2528279775db))
-* add Date Conversion syntax to Template ([7f5a76b](https://github.com/anpigon/obsidian-book-search-plugin/commit/7f5a76b3e88c95393162f186ddfc210a3f01a2bf))
-* use a template for a book search ([b712c57](https://github.com/anpigon/obsidian-book-search-plugin/commit/b712c57c2f9236e72209a50adc233587cf6e0cba))
-
-
-### Bug Fixes
-
-* eslint error ([7571eb3](https://github.com/anpigon/obsidian-book-search-plugin/commit/7571eb3bad64b2b1c7b3d3f7ba6e7a5037deef99))
-* format some files ([c3aedf5](https://github.com/anpigon/obsidian-book-search-plugin/commit/c3aedf51d37c9cf916a42ff411f36e321bc2d91b))
-* use optional chaining If the author name is not in the data ([8ed5b0a](https://github.com/anpigon/obsidian-book-search-plugin/commit/8ed5b0a50058b9f0c1ecfc282f59ee7adf7109cf))
-
-
-### Code Refactoring
-
-* newFileNameEl in settings.ts ([ef95fa9](https://github.com/anpigon/obsidian-book-search-plugin/commit/ef95fa916bfb34bf33d4c20bd3110467b54868fe))
-* settings.ts ([635dade](https://github.com/anpigon/obsidian-book-search-plugin/commit/635dade0b5c387c080f78243cc2e86a3a2ad106c))
-
 ### [0.4.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.0...0.4.1) (2022-07-24)
 
 
