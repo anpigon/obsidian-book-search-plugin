@@ -33,8 +33,6 @@ Search in the Obsidian Community plugin. And install it.
 
 ![](https://user-images.githubusercontent.com/3969643/166097211-abb60f55-3d77-4de6-9e0d-b681f903aafc.png)
 
-[Link to install Book Search Plugin](obsidian://show-plugin?id=obsidian-book-search-plugin)
-
 <br>
 
 ## How to use
