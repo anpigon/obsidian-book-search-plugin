@@ -69,10 +69,12 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     const newFileNameEl = new Setting(containerEl);
     const newFileNameHintEl = containerEl.createEl('div');
-    newFileNameHintEl.classList.add('setting-item-description')
-    newFileNameHintEl.classList.add('book-search-plugin__settings--new_file_name_hint')
+    newFileNameHintEl.classList.add('setting-item-description');
+    newFileNameHintEl.classList.add('book-search-plugin__settings--new_file_name_hint');
     const newFileNameHintDesc = document.createDocumentFragment();
-    const newFileNameHintDescCode = newFileNameHintDesc.createEl('code', { text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}' })
+    const newFileNameHintDescCode = newFileNameHintDesc.createEl('code', {
+      text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}',
+    });
     newFileNameHintDesc.append(newFileNameHintDescCode);
     newFileNameHintEl.append(newFileNameHintDesc);
     newFileNameEl
@@ -147,7 +149,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Text to insert into frontmatter')
+      .setName('(Deprecated) Text to insert into frontmatter')
       .setDesc(createSyntaxesDescription('#text-to-insert-into-frontmatter'))
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.frontmatter;
@@ -161,7 +163,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
     containerEl.createEl('h2', { text: 'Content Settings' });
 
     new Setting(containerEl)
-      .setName('Text to insert into content')
+      .setName('(Deprecated) Text to insert into content')
       .setDesc(createSyntaxesDescription('#text-to-insert-into-content'))
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.content;
@@ -177,6 +179,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
 function createSyntaxesDescription(anchorLink: string) {
   const desc = document.createDocumentFragment();
   desc.append(
+    'Please use the template file.',
+    desc.createEl('br'),
     'The following syntaxes are available: ',
     desc.createEl('br'),
     desc.createEl('code', { text: '{{title}}' }),
