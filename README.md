@@ -118,7 +118,7 @@ created: {{DATE:YYYY-MM-DD HH:mm:ss}}
 updated: {{DATE:YYYY-MM-DD HH:mm:ss}}
 ---
 
-![cover]({{coverUrl}})
+![cover|150]({{coverUrl}})
 
 # {{title}}
 
