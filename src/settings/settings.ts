@@ -67,17 +67,11 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
-    const newFileNameEl = new Setting(containerEl);
-    const newFileNameHintEl = containerEl.createEl('div');
-    newFileNameHintEl.classList.add('setting-item-description');
-    newFileNameHintEl.classList.add('book-search-plugin__settings--new_file_name_hint');
-    const newFileNameHintDesc = document.createDocumentFragment();
-    const newFileNameHintDescCode = newFileNameHintDesc.createEl('code', {
+    // New File Name
+    const newFileNameHint = document.createDocumentFragment().createEl('code', {
       text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}',
     });
-    newFileNameHintDesc.append(newFileNameHintDescCode);
-    newFileNameHintEl.append(newFileNameHintDesc);
-    newFileNameEl
+    new Setting(containerEl)
       .setClass('book-search-plugin__settings--new_file_name')
       .setName('New file name')
       .setDesc('Enter the file name format.')
@@ -93,9 +87,14 @@ export class BookSearchSettingTab extends PluginSettingTab {
             this.plugin.settings.fileNameFormat = newValue?.trim();
             this.plugin.saveSettings();
 
-            newFileNameHintDescCode.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';
+            newFileNameHint.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';
           });
       });
+    containerEl
+      .createEl('div', {
+        cls: ['setting-item-description', 'book-search-plugin__settings--new_file_name_hint'],
+      })
+      .append(newFileNameHint);
 
     new Setting(containerEl)
       .setName('Template file')
