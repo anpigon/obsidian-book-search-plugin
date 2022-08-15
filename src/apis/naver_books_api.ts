@@ -1,16 +1,9 @@
 import { Book } from '@models/book.model';
-import { BaseBooksApi } from './base_api';
+import { apiGet, BaseBooksApiImpl } from './base_api';
 import { NaverBookItem, NaverBooksResponse } from './models/naver_books_response';
 
-export class NaverBooksApi extends BaseBooksApi {
-  private readonly API_URL = 'https://openapi.naver.com/v1/search/book.json';
-
-  constructor(private readonly clientId, private readonly clientSecret: string) {
-    super();
-    if (!clientId || !clientSecret) {
-      throw new Error('네이버 개발자센터에서 발급받은 `Client ID`와 `Client Secret`이 설정되지 않았습니다.');
-    }
-  }
+export class NaverBooksApi implements BaseBooksApiImpl {
+  constructor(private readonly clientId, private readonly clientSecret: string) {}
 
   async getByQuery(query: string) {
     try {
@@ -19,27 +12,27 @@ export class NaverBooksApi extends BaseBooksApi {
         display: 50,
         sort: 'sim',
       };
-      const langRestrict = window.moment.locale();
-      if (langRestrict) {
-        params['langRestrict'] = langRestrict;
-      }
       const header = {
         'X-Naver-Client-Id': this.clientId,
         'X-Naver-Client-Secret': this.clientSecret,
       };
-      const searchResults = await super.apiGet<NaverBooksResponse>(this.API_URL, params, header);
+      const searchResults = await apiGet<NaverBooksResponse>(
+        'https://openapi.naver.com/v1/search/book.json',
+        params,
+        header,
+      );
       if (searchResults.total == 0) {
         throw new Error('No results found.');
       }
-      return searchResults.items.map(this.formatForSuggestion);
+      return searchResults.items.map(this.createBookItem);
     } catch (error) {
       console.warn(error);
       throw error;
     }
   }
 
-  formatForSuggestion(item: NaverBookItem): Book {
-    const book: Book = {
+  createBookItem(item: NaverBookItem) {
+    return {
       title: item.title,
       author: item.author,
       publisher: item.publisher,
@@ -49,7 +42,6 @@ export class NaverBooksApi extends BaseBooksApi {
       description: item.description,
       isbn: item.isbn,
       ...(item.isbn?.length >= 13 ? { isbn13: item.isbn } : { isbn10: item.isbn }),
-    };
-    return book;
+    } as Book;
   }
 }

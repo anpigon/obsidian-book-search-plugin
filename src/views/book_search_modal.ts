@@ -1,20 +1,20 @@
 import { ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
 import { Book } from '@models/book.model';
-import { BaseBooksApiImpl, getServiceProvider } from '@apis/base_api';
+import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
 
 export class BookSearchModal extends Modal {
-  query: string;
-  isBusy: boolean;
-  okBtnRef: ButtonComponent;
-  onSubmit: (err: Error, result?: Book[]) => void;
-  serviceProvider: BaseBooksApiImpl;
+  private query: string;
+  private isBusy: boolean;
+  private okBtnRef: ButtonComponent;
+  private onSubmit: (err: Error, result?: Book[]) => void;
+  private serviceProvider: BaseBooksApiImpl;
 
   constructor(context: BookSearchPlugin, query: string, onSubmit?: (err: Error, result?: Book[]) => void) {
     super(context.app);
     this.query = query;
     this.onSubmit = onSubmit;
-    this.serviceProvider = getServiceProvider(context.settings);
+    this.serviceProvider = factoryServiceProvider(context.settings);
   }
 
   async searchBook() {
@@ -73,7 +73,6 @@ export class BookSearchModal extends Modal {
   }
 
   onClose() {
-    const { contentEl } = this;
-    contentEl.empty();
+    this.contentEl.empty();
   }
 }
