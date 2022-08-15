@@ -11,6 +11,7 @@ export interface Book {
   totalPage?: number | string; // 전체 페이지
   coverUrl?: string; // 커버 URL
   coverSmallUrl?: string; // 커버 URL
+  coverMediumUrl?: string; // 커버 URL
   coverLargeUrl?: string; // 커버 URL
   status?: string; // 읽기 상태(읽기전, 읽는중, 읽기완료)
   startReadDate?: string; // 읽기 시작한 일시
@@ -33,6 +34,7 @@ export class BookModel implements Book {
   totalPage?: number | string;
   coverUrl?: string;
   coverSmallUrl?: string;
+  coverMediumUrl?: string;
   coverLargeUrl?: string;
   status?: string;
   startReadDate?: string;
@@ -54,6 +56,7 @@ export class BookModel implements Book {
     this.totalPage = book.totalPage ?? '';
     this.coverUrl = book.coverUrl ?? '';
     this.coverSmallUrl = book.coverSmallUrl ?? '';
+    this.coverMediumUrl = book.coverMediumUrl ?? '';
     this.coverLargeUrl = book.coverLargeUrl ?? '';
     this.status = book.status ?? '';
     this.startReadDate = book.startReadDate ?? '';
