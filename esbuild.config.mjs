@@ -15,6 +15,7 @@ esbuild
     banner: {
       js: banner,
     },
+    minify: prod ? true : false,
     entryPoints: ['src/main.ts'],
     bundle: true,
     external: [
