@@ -10,6 +10,8 @@ export interface Book {
   publishDate?: string; // 출판일
   totalPage?: number | string; // 전체 페이지
   coverUrl?: string; // 커버 URL
+  coverSmallUrl?: string; // 커버 URL
+  coverLargeUrl?: string; // 커버 URL
   status?: string; // 읽기 상태(읽기전, 읽는중, 읽기완료)
   startReadDate?: string; // 읽기 시작한 일시
   finishReadDate?: string; // 읽기 완료한 일시
@@ -17,6 +19,9 @@ export interface Book {
   bookNote?: string; //서평 기록 여부
   isbn10?: string;
   isbn13?: string;
+  isbn?: string;
+  link?: string;
+  description?: string;
 }
 
 export class BookModel implements Book {
@@ -27,6 +32,8 @@ export class BookModel implements Book {
   publishDate?: string;
   totalPage?: number | string;
   coverUrl?: string;
+  coverSmallUrl?: string;
+  coverLargeUrl?: string;
   status?: string;
   startReadDate?: string;
   finishReadDate?: string;
@@ -34,6 +41,9 @@ export class BookModel implements Book {
   bookNote?: string;
   isbn10?: string;
   isbn13?: string;
+  isbn?: string;
+  link?: string;
+  description?: string;
 
   constructor(book: Book) {
     this.title = book.title ?? '';
@@ -43,6 +53,8 @@ export class BookModel implements Book {
     this.publishDate = book.publishDate ?? '';
     this.totalPage = book.totalPage ?? '';
     this.coverUrl = book.coverUrl ?? '';
+    this.coverSmallUrl = book.coverSmallUrl ?? '';
+    this.coverLargeUrl = book.coverLargeUrl ?? '';
     this.status = book.status ?? '';
     this.startReadDate = book.startReadDate ?? '';
     this.finishReadDate = book.finishReadDate ?? '';
@@ -50,6 +62,9 @@ export class BookModel implements Book {
     this.bookNote = book.bookNote ?? '';
     this.isbn10 = book.isbn10 ?? '';
     this.isbn13 = book.isbn13 ?? '';
+    this.isbn = book.isbn ?? '';
+    this.link = book.link ?? '';
+    this.description = book.description ?? '';
   }
 
   toJSON() {

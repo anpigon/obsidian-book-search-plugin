@@ -1,5 +1,5 @@
 import { Book } from '@models/book.model';
-import { GoogleBooksResponse, VolumeInfo } from './models/google_books.model';
+import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 import { BaseBooksApi } from './base_api';
 export class GoogleBooksApi extends BaseBooksApi {
   private readonly API_URL = 'https://www.googleapis.com/books/v1/volumes';

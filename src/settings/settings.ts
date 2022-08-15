@@ -5,6 +5,7 @@ import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
+import { ServiceProvider } from '@src/constants';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
@@ -21,6 +22,9 @@ export interface BookSearchPluginSettings {
   useDefaultFrontmatter: boolean;
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType;
   templateFile: string;
+  serviceProvider: ServiceProvider;
+  naverClientId: string;
+  naverClientSecret: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -31,6 +35,9 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   useDefaultFrontmatter: true,
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType.camelCase,
   templateFile: '',
+  serviceProvider: ServiceProvider.google,
+  naverClientId: '',
+  naverClientSecret: '',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -50,6 +57,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     createHeader(containerEl, 'General Settings');
 
+    // New file location
     new Setting(containerEl)
       .setName('New file location')
       .setDesc('New book notes will be placed here.')
@@ -96,6 +104,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       })
       .append(newFileNameHint);
 
+    // Template file
     const templateFileDesc = document.createDocumentFragment();
     templateFileDesc.createDiv({ text: 'Files will be available as templates.' });
     templateFileDesc.createEl('a', {
@@ -118,6 +127,36 @@ export class BookSearchSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
           });
       });
+
+    // Service Provider
+    let serviceProviderExtraSetting: HTMLElement;
+    new Setting(containerEl)
+      .setName('Service Provider')
+      .setDesc('Choose the service provider you want to use to search your books.')
+      .addDropdown(dropDown => {
+        dropDown.addOption(ServiceProvider.google, `${ServiceProvider.google} (Global)`);
+        dropDown.addOption(ServiceProvider.naver, `${ServiceProvider.naver} (Korean)`);
+        dropDown.setValue(this.plugin.settings.serviceProvider);
+        dropDown.onChange(async value => {
+          this.plugin.settings.serviceProvider = value as ServiceProvider;
+          await this.plugin.saveSettings();
+          if (this.plugin.settings.serviceProvider === ServiceProvider.google) {
+            serviceProviderExtraSetting.addClass('book-search-plugin__hide');
+          } else {
+            serviceProviderExtraSetting.removeClass('book-search-plugin__hide');
+          }
+        });
+      })
+      .addExtraButton(component => {
+        serviceProviderExtraSetting = component.extraSettingsEl;
+        if (this.plugin.settings.serviceProvider === ServiceProvider.google) {
+          serviceProviderExtraSetting.addClass('book-search-plugin__hide');
+        }
+        component.onClick(() => {
+          console.log('click');
+        });
+      });
+    // const naverSetting
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];
