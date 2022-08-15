@@ -96,9 +96,15 @@ export class BookSearchSettingTab extends PluginSettingTab {
       })
       .append(newFileNameHint);
 
+    const templateFileDesc = document.createDocumentFragment();
+    templateFileDesc.createDiv({ text: 'Files will be available as templates.' });
+    templateFileDesc.createEl('a', {
+      text: 'Example Template',
+      href: 'https://github.com/anpigon/obsidian-book-search-plugin#example-template',
+    });
     new Setting(containerEl)
       .setName('Template file')
-      .setDesc('Files will be available as templates.')
+      .setDesc(templateFileDesc)
       .addSearch(cb => {
         try {
           new FileSuggest(this.app, cb.inputEl);
