@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.0...0.5.1) (2022-08-15)
+
+
+### Reverts
+
+* Revert "chore(release): 0.5.0" ([efb9984](https://github.com/anpigon/obsidian-book-search-plugin/commit/efb99848701d2cfe5a52ff37c0f67db6153e44ec))
+
 ### [0.4.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.0...0.4.1) (2022-07-24)
 
 
