@@ -29,7 +29,9 @@ Use Google Books API to get the book information.
 
 ## How to install
 
-Search in the Obsidian Community plugin. And install it.
+Click the link to install the Book Search plugin: [Install Link](https://anpigon.github.io/obsidian-book-search-plugin/install.html)
+
+Or, Search in the Obsidian Community plugin. And install it.
 
 ![](https://user-images.githubusercontent.com/3969643/166097211-abb60f55-3d77-4de6-9e0d-b681f903aafc.png)
 

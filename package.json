@@ -2,6 +2,7 @@
   "name": "obsidian-book-search-plugin",
   "version": "0.5.1",
   "description": "This is a plugin to help you create book notes.",
+  "homepage": "https://anpigon.github.io/obsidian-book-search-plugin/",
   "main": "main.js",
   "standard-version": {
     "t": ""
@@ -33,7 +34,8 @@
     "release-major-test": "standard-version --dry-run --release-as major",
     "release-minor": "standard-version --release-as minor",
     "release-minor-test": "standard-version --dry-run --release-as minor",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy:pages": "gh-pages -d pages"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.5",
@@ -54,5 +56,8 @@
     "ts-node": "^10.9.1",
     "tslib": "2.3.1",
     "typescript": "4.4.4"
+  },
+  "dependencies": {
+    "gh-pages": "^4.0.0"
   }
 }
