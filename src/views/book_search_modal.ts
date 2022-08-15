@@ -1,5 +1,5 @@
 import { App, ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
-import { getByQuery } from '@apis/google_books_api';
+import { GoogleBooksApi } from '@apis/google_books_api';
 import { Book } from '@models/book.model';
 
 export class BookSearchModal extends Modal {
@@ -24,7 +24,7 @@ export class BookSearchModal extends Modal {
         this.isBusy = true;
         this.okBtnRef.setDisabled(false);
         this.okBtnRef.setButtonText('Requesting...');
-        const searchResults = await getByQuery(this.query);
+        const searchResults = await new GoogleBooksApi().getByQuery(this.query);
 
         this.onSubmit(null, searchResults);
       } catch (err) {

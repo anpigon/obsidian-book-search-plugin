@@ -1,79 +1,67 @@
-import { request } from 'obsidian';
 import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books.model';
+import { BaseBooksApi } from './base_api';
+export class GoogleBooksApi extends BaseBooksApi {
+  private readonly API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
-const API_URL = 'https://www.googleapis.com/books/v1/volumes';
+  async getByQuery(query: string) {
+    try {
+      const params = {
+        q: query,
+        maxResults: 40,
+        printType: 'books',
+      };
+      const langRestrict = window.moment.locale();
+      if (langRestrict) {
+        params['langRestrict'] = langRestrict;
+      }
+      const searchResults = await super.apiGet<GoogleBooksResponse>(this.API_URL, params);
+      if (searchResults.totalItems == 0) {
+        throw new Error('No results found.');
+      }
+      return searchResults.items.map(({ volumeInfo }) => this.formatForSuggestion(volumeInfo));
+    } catch (error) {
+      console.warn(error);
+      throw error;
+    }
+  }
 
-export async function getByQuery(query: string): Promise<Book[]> {
-  try {
-    const searchResults = await apiGet(query);
-    if (searchResults.totalItems == 0) {
-      throw new Error('No results found.');
+  getISBN(item: VolumeInfo) {
+    let ISBN10 = '';
+    let ISBN13 = '';
+    let isbn10_data, isbn13_data;
+
+    if (item.industryIdentifiers) {
+      isbn10_data = item.industryIdentifiers.find(element => element.type == 'ISBN_10');
+      isbn13_data = item.industryIdentifiers.find(element => element.type == 'ISBN_13');
     }
 
-    return searchResults.items.map(({ volumeInfo }) => formatForSuggestion(volumeInfo));
-  } catch (error) {
-    console.warn(error);
-    throw error;
-  }
-}
+    if (isbn10_data) ISBN10 = isbn10_data.identifier.trim();
+    if (isbn13_data) ISBN13 = isbn13_data.identifier.trim();
 
-function getISBN(item: VolumeInfo) {
-  let ISBN10 = '';
-  let ISBN13 = '';
-  let isbn10_data, isbn13_data;
-
-  if (item.industryIdentifiers) {
-    isbn10_data = item.industryIdentifiers.find(element => element.type == 'ISBN_10');
-    isbn13_data = item.industryIdentifiers.find(element => element.type == 'ISBN_13');
+    return { ISBN10, ISBN13 };
   }
 
-  if (isbn10_data) ISBN10 = isbn10_data.identifier.trim();
-  if (isbn13_data) ISBN13 = isbn13_data.identifier.trim();
-
-  return { ISBN10, ISBN13 };
-}
-
-function formatForSuggestion(item: VolumeInfo): Book {
-  const ISBN = getISBN(item);
-  const book: Book = {
-    title: item.title,
-    author: formatList(item.authors),
-    category: formatList(item.categories),
-    publisher: item.publisher,
-    totalPage: item.pageCount,
-    coverUrl: `${item.imageLinks?.thumbnail ?? ''}`.replace('http:', 'https:'),
-    publishDate: item.publishedDate ? `${new Date(item.publishedDate).getFullYear()}` : '',
-    isbn10: ISBN.ISBN10,
-    isbn13: ISBN.ISBN13,
-  };
-  return book;
-}
-
-function formatList(list?: string[]) {
-  if (!list || list.length === 0 || list[0] == 'N/A') return '';
-  if (list.length === 1) return list[0] ?? '';
-
-  return list.map(item => `${item.trim()}`).join(', ');
-}
-
-async function apiGet(query: string): Promise<GoogleBooksResponse> {
-  const apiURL = new URL(API_URL);
-  apiURL.searchParams.append('q', query);
-  apiURL.searchParams.append('maxResults', '40');
-  apiURL.searchParams.append('printType', 'books');
-  // apiURL.searchParams.append('projection', 'lite');
-  // apiURL.searchParams.append('orderBy', 'newest'); // relevance, newest
-  const langRestrict = window.moment.locale();
-  if (langRestrict) {
-    apiURL.searchParams.append('langRestrict', langRestrict);
+  formatForSuggestion(item: VolumeInfo): Book {
+    const ISBN = this.getISBN(item);
+    const book: Book = {
+      title: item.title,
+      author: this.formatList(item.authors),
+      category: this.formatList(item.categories),
+      publisher: item.publisher,
+      totalPage: item.pageCount,
+      coverUrl: `${item.imageLinks?.thumbnail ?? ''}`.replace('http:', 'https:'),
+      publishDate: item.publishedDate ? `${new Date(item.publishedDate).getFullYear()}` : '',
+      isbn10: ISBN.ISBN10,
+      isbn13: ISBN.ISBN13,
+    };
+    return book;
   }
-  console.log(apiURL.href);
 
-  const res = await request({
-    url: apiURL.href,
-    method: 'GET',
-  });
+  formatList(list?: string[]) {
+    if (!list || list.length === 0 || list[0] == 'N/A') return '';
+    if (list.length === 1) return list[0] ?? '';
 
-  return JSON.parse(res) as GoogleBooksResponse;
+    return list.map(item => `${item.trim()}`).join(', ');
+  }
 }
