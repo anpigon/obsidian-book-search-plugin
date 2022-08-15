@@ -100,7 +100,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
     templateFileDesc.createDiv({ text: 'Files will be available as templates.' });
     templateFileDesc.createEl('a', {
       text: 'Example Template',
-      href: 'https://github.com/anpigon/obsidian-book-search-plugin#example-template',
+      href: `${docUrl}#example-template`,
     });
     new Setting(containerEl)
       .setName('Template file')
