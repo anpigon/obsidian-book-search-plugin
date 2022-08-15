@@ -14,7 +14,7 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
-export function makeFileName(book: Book, fileNameFormat: string) {
+export function makeFileName(book: Book, fileNameFormat?: string) {
   if (fileNameFormat) {
     return replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
   }
