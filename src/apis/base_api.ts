@@ -1,8 +1,21 @@
 import { Book } from '@models/book.model';
+import { BookSearchPluginSettings } from '@settings/settings';
+import { ServiceProvider } from '@src/constants';
 import { request } from 'obsidian';
+import { GoogleBooksApi } from './google_books_api';
+import { NaverBooksApi } from './naver_books_api';
 
 export interface BaseBooksApiImpl {
   getByQuery(query: string): Promise<Book[]>;
+}
+
+export function getServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
+  if (settings.serviceProvider === ServiceProvider.google) {
+    return new GoogleBooksApi();
+  }
+  if (settings.serviceProvider === ServiceProvider.naver) {
+    return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
+  }
 }
 
 export class BaseBooksApi implements BaseBooksApiImpl {

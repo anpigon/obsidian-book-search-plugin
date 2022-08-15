@@ -7,6 +7,9 @@ export class NaverBooksApi extends BaseBooksApi {
 
   constructor(private readonly clientId, private readonly clientSecret: string) {
     super();
+    if (!clientId || !clientSecret) {
+      throw new Error('네이버 개발자센터에서 발급받은 `Client ID`와 `Client Secret`이 설정되지 않았습니다.');
+    }
   }
 
   async getByQuery(query: string) {

@@ -108,7 +108,7 @@ export default class BookSearchPlugin extends Plugin {
 
   async openBookSearchModal(query = ''): Promise<Book> {
     return new Promise((resolve, reject) => {
-      new BookSearchModal(this.app, query, (error, results) => {
+      new BookSearchModal(this, query, (error, results) => {
         if (error) return reject(error);
         new BookSuggestModal(this.app, results, (error2, selectedBook) => {
           if (error2) return reject(error2);

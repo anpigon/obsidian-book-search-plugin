@@ -1,17 +1,20 @@
-import { App, ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
-import { GoogleBooksApi } from '@apis/google_books_api';
+import { ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
 import { Book } from '@models/book.model';
+import { BaseBooksApiImpl, getServiceProvider } from '@apis/base_api';
+import BookSearchPlugin from '@src/main';
 
 export class BookSearchModal extends Modal {
   query: string;
   isBusy: boolean;
   okBtnRef: ButtonComponent;
   onSubmit: (err: Error, result?: Book[]) => void;
+  serviceProvider: BaseBooksApiImpl;
 
-  constructor(app: App, query: string, onSubmit?: (err: Error, result?: Book[]) => void) {
-    super(app);
+  constructor(context: BookSearchPlugin, query: string, onSubmit?: (err: Error, result?: Book[]) => void) {
+    super(context.app);
     this.query = query;
     this.onSubmit = onSubmit;
+    this.serviceProvider = getServiceProvider(context.settings);
   }
 
   async searchBook() {
@@ -24,7 +27,7 @@ export class BookSearchModal extends Modal {
         this.isBusy = true;
         this.okBtnRef.setDisabled(false);
         this.okBtnRef.setButtonText('Requesting...');
-        const searchResults = await new GoogleBooksApi().getByQuery(this.query);
+        const searchResults = await this.serviceProvider.getByQuery(this.query);
 
         this.onSubmit(null, searchResults);
       } catch (err) {
