@@ -6,6 +6,7 @@ import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
 import { ServiceProvider } from '@src/constants';
+import { SettingServiceProviderModal } from '@views/setting_service_provider_modal';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
@@ -41,11 +42,8 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
-  plugin: BookSearchPlugin;
-
-  constructor(app: App, plugin: BookSearchPlugin) {
+  constructor(app: App, private plugin: BookSearchPlugin) {
     super(app, plugin);
-    this.plugin = plugin;
   }
 
   display(): void {
@@ -153,10 +151,11 @@ export class BookSearchSettingTab extends PluginSettingTab {
           serviceProviderExtraSetting.addClass('book-search-plugin__hide');
         }
         component.onClick(() => {
-          console.log('click');
+          new SettingServiceProviderModal(this.app, result => {
+            console.log(result);
+          }).open();
         });
       });
-    // const naverSetting
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];
