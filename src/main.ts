@@ -1,7 +1,7 @@
 import { MarkdownView, Notice, Plugin } from 'obsidian';
 
-import { BookSearchModal } from './book_search_modal';
-import { BookSuggestModal } from './book_suggest_modal';
+import { BookSearchModal } from '@views/book_search_modal';
+import { BookSuggestModal } from '@views/book_suggest_modal';
 import { CursorJumper } from '@editor/cursor_jumper';
 import { Book } from '@models/book.model';
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';

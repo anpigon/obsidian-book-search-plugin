@@ -1,5 +1,5 @@
 import { App, SuggestModal } from 'obsidian';
-import { Book } from './models/book.model';
+import { Book } from '@models/book.model';
 
 export class BookSuggestModal extends SuggestModal<Book> {
   suggestion: Book[];

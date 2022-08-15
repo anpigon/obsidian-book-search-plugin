@@ -10,22 +10,16 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "DOM",
-      "ES5",
-      "ES6",
-      "ES7"
-    ],
+    "lib": ["DOM", "ES5", "ES6", "ES7"],
     "paths": {
       "@settings/*": ["src/settings/*"],
       "@models/*": ["src/models/*"],
       "@editor/*": ["src/editor/*"],
       "@utils/*": ["src/utils/*"],
       "@apis/*": ["src/apis/*"],
-			"@src/*": ["src/*"],
-		}
+      "@views/*": ["src/views/*"],
+      "@src/*": ["src/*"]
+    }
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"]
 }

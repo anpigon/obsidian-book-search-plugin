@@ -1,6 +1,6 @@
 import { App, ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
-import { getByQuery } from './apis/google_books_api';
-import { Book } from './models/book.model';
+import { getByQuery } from '@apis/google_books_api';
+import { Book } from '@models/book.model';
 
 export class BookSearchModal extends Modal {
   query: string;
