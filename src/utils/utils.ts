@@ -26,7 +26,7 @@ export function makeFileName(book: Book, fileNameFormat?: string) {
   return `${titleForFileName} - ${authorForFileName}`;
 }
 
-export function makeFrontMater(
+export function applyDefaultFrontMatter(
   book: Book,
   frontmatter: FrontMatter | string,
   keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
@@ -53,14 +53,16 @@ export function makeFrontMater(
     .map(([key, val]) => {
       return `${key}: ${val?.toString().trim() ?? ''}`;
     })
-    .join('\n');
+    .join('\n')
+    .trim();
 }
 
 export function replaceVariableSyntax(book: Book, targetText: string): string {
   const entries = Object.entries(book);
   return entries
     .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), targetText)
-    .replace(/{{.+}}/gi, '');
+    .replace(/{{.+}}/gi, '')
+    .trim();
 }
 
 export function camelToSnakeCase(str) {

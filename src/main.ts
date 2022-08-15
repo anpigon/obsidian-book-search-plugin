@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { MarkdownView, Notice, Plugin } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
@@ -6,7 +7,7 @@ import { CursorJumper } from '@utils/cursor_jumper';
 import { Book } from '@models/book.model';
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { getTemplateContents, applyTemplateTransformations } from '@utils/template';
-import { replaceVariableSyntax, makeFileName, makeFrontMater } from '@utils/utils';
+import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter } from '@utils/utils';
 
 type MetadataWriter = (book: Book, metadata: string) => Promise<void>;
 
@@ -38,31 +39,28 @@ export default class BookSearchPlugin extends Plugin {
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
   }
 
-  async searchBookMetadata(query: string, writer: MetadataWriter): Promise<void> {
+  async searchBookMetadata(query: string, callback: MetadataWriter): Promise<void> {
     try {
       // open modal for book search
       const book = await this.openBookSearchModal(query);
 
-      let frontMatter = replaceVariableSyntax(book, this.settings.frontmatter);
-      if (this.settings.useDefaultFrontmatter) {
-        frontMatter = makeFrontMater(book, frontMatter, this.settings.defaultFrontmatterKeyType);
-      }
-      frontMatter = frontMatter.trim();
-
       let renderedContents = '';
-
       const templateFile = this.settings.templateFile?.trim();
       if (templateFile) {
         const templateContents = await getTemplateContents(this.app, templateFile);
         renderedContents = applyTemplateTransformations(templateContents);
-        console.log('renderedContents', renderedContents);
         renderedContents = replaceVariableSyntax(book, renderedContents);
       } else {
-        const content = replaceVariableSyntax(book, this.settings.content);
-        renderedContents = frontMatter ? `---\n${frontMatter}\n---\n${content}` : content;
+        // @deprecated
+        let frontmatter = this.settings.frontmatter ? replaceVariableSyntax(book, this.settings.frontmatter) : '';
+        if (this.settings.useDefaultFrontmatter) {
+          frontmatter = applyDefaultFrontMatter(book, frontmatter, this.settings.defaultFrontmatterKeyType);
+        }
+        const content = this.settings.content ? replaceVariableSyntax(book, this.settings.content) : '';
+        renderedContents = frontmatter ? `---\n${frontmatter}\n---\n${content}` : content;
       }
 
-      await writer(book, renderedContents);
+      await callback(book, renderedContents);
 
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
@@ -94,7 +92,7 @@ export default class BookSearchPlugin extends Plugin {
   async createNewBookNote(): Promise<void> {
     await this.searchBookMetadata('', async (book, metadata) => {
       const fileName = makeFileName(book, this.settings.fileNameFormat);
-      const filePath = `${this.settings.folder.replace(/\/$/, '')}/${fileName}.md`;
+      const filePath = path.join(this.settings.folder, `${fileName}.md`);
       const targetFile = await this.app.vault.create(filePath, metadata);
 
       // open file
