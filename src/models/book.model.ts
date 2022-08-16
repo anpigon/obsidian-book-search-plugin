@@ -23,6 +23,7 @@ export interface Book {
   isbn?: string;
   link?: string;
   description?: string;
+  previewLink?: string;
 }
 
 export class BookModel implements Book {
@@ -46,6 +47,7 @@ export class BookModel implements Book {
   isbn?: string;
   link?: string;
   description?: string;
+  previewLink?: string;
 
   constructor(book: Book) {
     this.title = book.title ?? '';
@@ -68,6 +70,7 @@ export class BookModel implements Book {
     this.isbn = book.isbn ?? '';
     this.link = book.link ?? '';
     this.description = book.description ?? '';
+    this.previewLink = book.previewLink ?? '';
   }
 
   toJSON() {

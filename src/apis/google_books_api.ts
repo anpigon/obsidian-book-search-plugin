@@ -38,18 +38,18 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   }
 
   createBookItem(item: VolumeInfo): Book {
-    const coverUrl = item.imageLinks?.thumbnail?.replace('http:', 'https:') ?? '';
     const book: Book = {
       title: item.title,
       author: this.formatList(item.authors),
       category: this.formatList(item.categories),
       publisher: item.publisher,
       totalPage: item.pageCount,
-      coverUrl: coverUrl,
-      coverSmallUrl: this.convertGoogleBookImageURLSize(coverUrl, 1),
-      coverMediumUrl: this.convertGoogleBookImageURLSize(coverUrl, 2),
-      coverLargeUrl: this.convertGoogleBookImageURLSize(coverUrl, 3),
-      publishDate: item.publishedDate ? `${new Date(item.publishedDate).getFullYear()}` : '',
+      coverUrl: item.imageLinks?.thumbnail ?? '',
+      coverSmallUrl: item.imageLinks?.smallThumbnail ?? '',
+      publishDate: item.publishedDate?.slice(0, 4) || '',
+      description: item.description,
+      link: item.canonicalVolumeLink || item.infoLink,
+      previewLink: item.previewLink,
       ...this.getISBN(item.industryIdentifiers),
     };
     return book;

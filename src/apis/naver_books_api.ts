@@ -37,7 +37,7 @@ export class NaverBooksApi implements BaseBooksApiImpl {
       author: item.author,
       publisher: item.publisher,
       coverUrl: item.image,
-      publishDate: item.pubdate ? item.pubdate?.slice(0, 4) : '',
+      publishDate: item.pubdate?.slice(0, 4) || '',
       link: item.link,
       description: item.description,
       isbn: item.isbn,
