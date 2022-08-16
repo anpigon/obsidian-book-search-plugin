@@ -1,4 +1,4 @@
 export enum ServiceProvider {
-  google = 'Google',
-  naver = 'Naver',
+  google = 'google',
+  naver = 'naver',
 }

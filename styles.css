@@ -9,7 +9,8 @@
 .book-search-plugin__settings--new_file_name_hint {
   margin-bottom: 20px;
 }
-.book-search-plugin__settings--panel_folding {
+.book-search-plugin__settings--service_provider .dropdown {
+  text-transform: capitalize;
 }
 
 .book-search-plugin__hide {

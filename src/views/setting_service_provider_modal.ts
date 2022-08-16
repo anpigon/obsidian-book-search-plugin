@@ -1,36 +1,72 @@
-import { App, Modal, Setting, TextComponent } from 'obsidian';
+import { ServiceProvider } from '@src/constants';
+import BookSearchPlugin from '@src/main';
+import { Modal, Setting } from 'obsidian';
 
 export class SettingServiceProviderModal extends Modal {
-  private query: string;
+  private readonly plugin: BookSearchPlugin;
+  private readonly currentServiceProvider: ServiceProvider;
 
-  constructor(app: App, private callback: (result: string[]) => void) {
-    super(app);
+  constructor(plugin: BookSearchPlugin, private callback?: () => void) {
+    super(plugin.app);
+    this.plugin = plugin;
+    this.currentServiceProvider = plugin.settings?.serviceProvider ?? ServiceProvider.google;
+  }
+
+  get settings() {
+    return this.plugin.settings;
+  }
+
+  async saveSetting() {
+    return this.plugin.saveSettings();
+  }
+
+  saveClientId(clientId: string) {
+    if (this.currentServiceProvider === ServiceProvider.naver) {
+      this.plugin.settings['naverClientId'] = clientId;
+    }
+  }
+
+  saveClientSecret(clientSecret: string) {
+    if (this.currentServiceProvider === ServiceProvider.naver) {
+      this.settings['naverClientSecret'] = clientSecret;
+    }
+  }
+
+  get currentClientId() {
+    if (this.currentServiceProvider === ServiceProvider.naver) {
+      return this.settings.naverClientId;
+    }
+  }
+
+  get currentClientSecret() {
+    if (this.currentServiceProvider === ServiceProvider.naver) {
+      return this.settings.naverClientSecret;
+    }
   }
 
   onOpen() {
     const { contentEl } = this;
 
-    contentEl.createEl('h2', { text: 'Search Book' });
+    contentEl.createEl('h2', { text: 'Service Provider Setting' });
 
-    const placeholder = 'Search by keyword or ISBN';
-    const textComponent = new TextComponent(contentEl);
-    textComponent.setValue(this.query);
-    textComponent.inputEl.style.width = '100%';
-    textComponent.setPlaceholder(placeholder ?? '').onChange(value => (this.query = value));
-    // .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
-    contentEl.appendChild(textComponent.inputEl);
-    textComponent.inputEl.focus();
+    new Setting(contentEl).setName('Client ID').addText(text => {
+      text.setValue(this.currentClientId).onChange(value => this.saveClientId(value));
+    });
 
-    new Setting(contentEl)
-      .addButton(btn => btn.setButtonText('Cancel').onClick(() => this.close()))
-      .addButton(btn => {
-        return btn
-          .setButtonText('Ok')
-          .setCta()
-          .onClick(() => {
-            this.callback(['']);
-          });
-      });
+    new Setting(contentEl).setName('Client Secret').addText(text => {
+      text.setValue(this.currentClientSecret).onChange(value => this.saveClientSecret(value));
+    });
+
+    new Setting(contentEl).addButton(btn =>
+      btn
+        .setButtonText('Save')
+        .setCta()
+        .onClick(async () => {
+          await this.plugin.saveSettings();
+          this.close();
+          this.callback?.();
+        }),
+    );
   }
 
   onClose() {

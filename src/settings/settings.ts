@@ -46,6 +46,10 @@ export class BookSearchSettingTab extends PluginSettingTab {
     super(app, plugin);
   }
 
+  get settings() {
+    return this.plugin.settings;
+  }
+
   display(): void {
     const { containerEl } = this;
 
@@ -127,33 +131,42 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     // Service Provider
-    let serviceProviderExtraSetting: HTMLElement;
+    let serviceProviderExtraSettingButton: HTMLElement;
+    const hideServiceProviderExtraSettingButton = () => {
+      serviceProviderExtraSettingButton.addClass('book-search-plugin__hide');
+    };
+    const showServiceProviderExtraSettingButton = () => {
+      serviceProviderExtraSettingButton.removeClass('book-search-plugin__hide');
+    };
+    const toggleServiceProviderExtraSettingButton = (
+      serviceProvider: ServiceProvider = this.settings?.serviceProvider,
+    ) => {
+      if (serviceProvider === ServiceProvider.naver) {
+        showServiceProviderExtraSettingButton();
+      } else {
+        hideServiceProviderExtraSettingButton();
+      }
+    };
     new Setting(containerEl)
       .setName('Service Provider')
       .setDesc('Choose the service provider you want to use to search your books.')
+      .setClass('book-search-plugin__settings--service_provider')
       .addDropdown(dropDown => {
         dropDown.addOption(ServiceProvider.google, `${ServiceProvider.google} (Global)`);
         dropDown.addOption(ServiceProvider.naver, `${ServiceProvider.naver} (Korean)`);
-        dropDown.setValue(this.plugin.settings.serviceProvider);
+        dropDown.setValue(this.plugin.settings?.serviceProvider ?? ServiceProvider.google);
         dropDown.onChange(async value => {
-          this.plugin.settings.serviceProvider = value as ServiceProvider;
+          const newValue = value as ServiceProvider;
+          toggleServiceProviderExtraSettingButton(newValue);
+          this.settings['serviceProvider'] = newValue;
           await this.plugin.saveSettings();
-          if (this.plugin.settings.serviceProvider === ServiceProvider.google) {
-            serviceProviderExtraSetting.addClass('book-search-plugin__hide');
-          } else {
-            serviceProviderExtraSetting.removeClass('book-search-plugin__hide');
-          }
         });
       })
       .addExtraButton(component => {
-        serviceProviderExtraSetting = component.extraSettingsEl;
-        if (this.plugin.settings.serviceProvider === ServiceProvider.google) {
-          serviceProviderExtraSetting.addClass('book-search-plugin__hide');
-        }
+        serviceProviderExtraSettingButton = component.extraSettingsEl;
+        toggleServiceProviderExtraSettingButton();
         component.onClick(() => {
-          new SettingServiceProviderModal(this.app, result => {
-            console.log(result);
-          }).open();
+          new SettingServiceProviderModal(this.plugin).open();
         });
       });
 
