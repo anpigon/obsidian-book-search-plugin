@@ -8,7 +8,7 @@ export class NaverBooksApi implements BaseBooksApiImpl {
   async getByQuery(query: string) {
     try {
       const params = {
-        q: query,
+        query,
         display: 50,
         sort: 'sim',
       };
@@ -37,7 +37,7 @@ export class NaverBooksApi implements BaseBooksApiImpl {
       author: item.author,
       publisher: item.publisher,
       coverUrl: item.image,
-      publishDate: item.pubdate ? `${new Date(item.pubdate).getFullYear()}` : '',
+      publishDate: item.pubdate ? item.pubdate?.slice(0, 4) : '',
       link: item.link,
       description: item.description,
       isbn: item.isbn,

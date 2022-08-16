@@ -1,7 +1,7 @@
 import { Book } from '@models/book.model';
 import { BookSearchPluginSettings } from '@settings/settings';
 import { ServiceProvider } from '@src/constants';
-import { request } from 'obsidian';
+import { requestUrl } from 'obsidian';
 import { GoogleBooksApi } from './google_books_api';
 import { NaverBooksApi } from './naver_books_api';
 
@@ -30,7 +30,7 @@ export async function apiGet<T>(
   Object.entries(params).forEach(([key, value]) => {
     apiURL.searchParams.append(key, value?.toString());
   });
-  const res = await request({
+  const res = await requestUrl({
     url: apiURL.href,
     method: 'GET',
     headers: {
@@ -39,5 +39,5 @@ export async function apiGet<T>(
       ...headers,
     },
   });
-  return JSON.parse(res) as T;
+  return res.json as T;
 }

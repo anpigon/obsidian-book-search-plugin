@@ -28,7 +28,7 @@ export class BookSearchModal extends Modal {
         this.okBtnRef.setDisabled(false);
         this.okBtnRef.setButtonText('Requesting...');
         const searchResults = await this.serviceProvider.getByQuery(this.query);
-
+        console.log(searchResults);
         this.onSubmit(null, searchResults);
       } catch (err) {
         this.onSubmit(err);
