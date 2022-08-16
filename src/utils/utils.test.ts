@@ -34,4 +34,12 @@ describe('util.js', () => {
   it('makeFileName 4', () => {
     expect(utils.makeFileName(book, '{{author}}-{{title}}')).toBe('칼 세이건-코스모스');
   });
+
+  it('makeFileName 5', () => {
+    const newBook = {
+      ...book,
+      title: '코스모스 : 창백한 푸른점',
+    };
+    expect(utils.makeFileName(newBook, '{{title}} - {{author}}')).toBe('코스모스 창백한 푸른점 - 칼 세이건');
+  });
 });

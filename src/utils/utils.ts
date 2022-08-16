@@ -15,15 +15,13 @@ export function isISBN(str: string) {
 }
 
 export function makeFileName(book: Book, fileNameFormat?: string) {
+  let result;
   if (fileNameFormat) {
-    return replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
+    result = replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
+  } else {
+    result = !book.author ? book.title : `${book.title} - ${book.author}`;
   }
-  const titleForFileName = replaceIllegalFileNameCharactersInString(book.title);
-  if (!book.author) {
-    return titleForFileName;
-  }
-  const authorForFileName = replaceIllegalFileNameCharactersInString(book.author);
-  return `${titleForFileName} - ${authorForFileName}`;
+  return replaceIllegalFileNameCharactersInString(result);
 }
 
 export function applyDefaultFrontMatter(
