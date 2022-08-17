@@ -7,13 +7,13 @@ export class BookSearchModal extends Modal {
   private query: string;
   private isBusy: boolean;
   private okBtnRef: ButtonComponent;
-  private onSubmit: (err: Error, result?: Book[]) => void;
+  private callback: (err: Error, result?: Book[]) => void;
   private serviceProvider: BaseBooksApiImpl;
 
-  constructor(context: BookSearchPlugin, query: string, onSubmit?: (err: Error, result?: Book[]) => void) {
+  constructor(context: BookSearchPlugin, query: string, callback?: (err: Error, result?: Book[]) => void) {
     super(context.app);
     this.query = query;
-    this.onSubmit = onSubmit;
+    this.callback = callback;
     this.serviceProvider = factoryServiceProvider(context.settings);
   }
 
@@ -28,9 +28,9 @@ export class BookSearchModal extends Modal {
         this.okBtnRef.setDisabled(false);
         this.okBtnRef.setButtonText('Requesting...');
         const searchResults = await this.serviceProvider.getByQuery(this.query);
-        this.onSubmit(null, searchResults);
+        this.callback(null, searchResults);
       } catch (err) {
-        this.onSubmit(err);
+        this.callback(err);
       } finally {
         this.close();
       }
