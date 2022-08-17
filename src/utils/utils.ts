@@ -24,38 +24,38 @@ export function makeFileName(book: Book, fileNameFormat?: string) {
   return replaceIllegalFileNameCharactersInString(result);
 }
 
+export function changeSnakeCase(book: Book) {
+  return Object.entries(book).reduce((acc, [key, value]) => {
+    acc[camelToSnakeCase(key)] = value;
+    return acc;
+  }, {});
+}
+
 export function applyDefaultFrontMatter(
   book: Book,
   frontmatter: FrontMatter | string,
   keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
-): string {
-  const frontMater =
-    keyType === DefaultFrontmatterKeyType.camelCase
-      ? book
-      : Object.entries(book).reduce((acc, [key, value]) => {
-          acc[camelToSnakeCase(key)] = value;
-          return acc;
-        }, {});
+) {
+  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? book : changeSnakeCase(book);
 
-  const addFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
-  for (const key in addFrontMatter) {
-    const addValue = addFrontMatter[key]?.toString().trim() ?? '';
-    if (frontMater[key] && frontMater[key] !== addValue) {
-      frontMater[key] = `${frontMater[key]} ${addValue}`;
+  const extraFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
+  for (const key in extraFrontMatter) {
+    const value = extraFrontMatter[key]?.toString().trim() ?? '';
+    if (frontMater[key] && frontMater[key] !== value) {
+      frontMater[key] = `${frontMater[key]}, ${value}`;
     } else {
-      frontMater[key] = addValue;
+      frontMater[key] = value;
     }
   }
 
-  return Object.entries(frontMater)
-    .map(([key, val]) => {
-      return `${key}: ${val?.toString().trim() ?? ''}`;
-    })
-    .join('\n')
-    .trim();
+  return frontMater as object;
 }
 
 export function replaceVariableSyntax(book: Book, targetText: string): string {
+  if (!targetText?.trim()) {
+    return '';
+  }
+
   const entries = Object.entries(book);
   return entries
     .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), targetText)
@@ -87,10 +87,20 @@ export function parseFrontMatter(frontMatterString: string) {
     }, {});
 }
 
-export function toStringFrontMatter(frontMatter: FrontMatter): string {
+export function toStringFrontMatter(frontMatter: object): string {
   return Object.entries(frontMatter)
-    .map(([key, value]) => `${key}: ${value ?? ''}`)
-    .join('\n');
+    .map(([key, value]) => {
+      const newValue = value?.toString().trim() ?? '';
+      if (/\r|\n/.test(newValue)) {
+        return '';
+      }
+      if (/:\s/.test(newValue)) {
+        return `${key}: "${newValue.replace(/"/g, '&quot;')}"\n`;
+      }
+      return `${key}: ${newValue}\n`;
+    })
+    .join('')
+    .trim();
 }
 
 export function getDate(input?: { format?: string; offset?: number }) {

@@ -7,7 +7,7 @@ import { CursorJumper } from '@utils/cursor_jumper';
 import { Book } from '@models/book.model';
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { getTemplateContents, applyTemplateTransformations } from '@utils/template';
-import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter } from '@utils/utils';
+import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
 
 type MetadataWriter = (book: Book, metadata: string) => Promise<void>;
 
@@ -44,25 +44,7 @@ export default class BookSearchPlugin extends Plugin {
       // open modal for book search
       const searchedBooks = await this.openBookSearchModal(query);
       const selectedBook = await this.openBookSuggestModal(searchedBooks);
-
-      let renderedContents = '';
-      const templateFile = this.settings.templateFile?.trim();
-      if (templateFile) {
-        const templateContents = await getTemplateContents(this.app, templateFile);
-        renderedContents = applyTemplateTransformations(templateContents);
-        renderedContents = replaceVariableSyntax(selectedBook, renderedContents);
-      } else {
-        // @deprecated
-        let frontmatter = this.settings.frontmatter
-          ? replaceVariableSyntax(selectedBook, this.settings.frontmatter)
-          : '';
-        if (this.settings.useDefaultFrontmatter) {
-          frontmatter = applyDefaultFrontMatter(selectedBook, frontmatter, this.settings.defaultFrontmatterKeyType);
-        }
-        const content = this.settings.content ? replaceVariableSyntax(selectedBook, this.settings.content) : '';
-        renderedContents = frontmatter ? `---\n${frontmatter}\n---\n${content}` : content;
-      }
-
+      const renderedContents = await this.getRenderedContents(selectedBook);
       await callback(selectedBook, renderedContents);
 
       // cursor focus
@@ -75,6 +57,33 @@ export default class BookSearchPlugin extends Plugin {
         // eslint-disable
       }
     }
+  }
+
+  async getRenderedContents(book: Book) {
+    const {
+      templateFile,
+      useDefaultFrontmatter,
+      defaultFrontmatterKeyType,
+      frontmatter, // @deprecated
+      content, // @deprecated
+    } = this.settings;
+
+    if (templateFile) {
+      const templateContents = await getTemplateContents(this.app, templateFile);
+      return replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
+    }
+
+    let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
+    if (useDefaultFrontmatter) {
+      replacedVariableFrontmatter = toStringFrontMatter(
+        applyDefaultFrontMatter(book, replacedVariableFrontmatter, defaultFrontmatterKeyType),
+      );
+    }
+    const replacedVariableContent = replaceVariableSyntax(book, content);
+
+    return replacedVariableFrontmatter
+      ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
+      : replacedVariableContent;
   }
 
   async insertMetadata(): Promise<void> {
