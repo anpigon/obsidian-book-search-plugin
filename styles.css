@@ -20,3 +20,10 @@
 .book-search-plugin__show {
   display: flex;
 }
+
+.book-search-plugin__search-modal--input {
+  padding-bottom: 18px;
+}
+.book-search-plugin__search-modal--input input {
+  width: 100%;
+}

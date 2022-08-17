@@ -10,11 +10,11 @@ export class BookSearchModal extends Modal {
   private callback: (err: Error, result?: Book[]) => void;
   private serviceProvider: BaseBooksApiImpl;
 
-  constructor(context: BookSearchPlugin, query: string, callback?: (err: Error, result?: Book[]) => void) {
-    super(context.app);
+  constructor(plugin: BookSearchPlugin, query: string, callback?: (err: Error, result?: Book[]) => void) {
+    super(plugin.app);
     this.query = query;
     this.callback = callback;
-    this.serviceProvider = factoryServiceProvider(context.settings);
+    this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
   async searchBook() {
@@ -48,16 +48,13 @@ export class BookSearchModal extends Modal {
 
     contentEl.createEl('h2', { text: 'Search Book' });
 
-    const placeholder = 'Search by keyword or ISBN';
-    const textComponent = new TextComponent(contentEl);
-    textComponent.setValue(this.query);
-    textComponent.inputEl.style.width = '100%';
-    textComponent
-      .setPlaceholder(placeholder ?? '')
-      .onChange(value => (this.query = value))
-      .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
-    contentEl.appendChild(textComponent.inputEl);
-    textComponent.inputEl.focus();
+    contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
+      new TextComponent(settingItem)
+        .setValue(this.query)
+        .setPlaceholder('Search by keyword or ISBN')
+        .onChange(value => (this.query = value))
+        .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
+    });
 
     new Setting(contentEl)
       .addButton(btn => btn.setButtonText('Cancel').onClick(() => this.close()))
