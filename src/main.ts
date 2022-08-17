@@ -9,8 +9,6 @@ import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from
 import { getTemplateContents, applyTemplateTransformations } from '@utils/template';
 import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
 
-type MetadataWriter = (book: Book, metadata: string) => Promise<void>;
-
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
 
@@ -39,16 +37,11 @@ export default class BookSearchPlugin extends Plugin {
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
   }
 
-  async searchBookMetadata(query: string, callback: MetadataWriter): Promise<void> {
+  async searchBookMetadata(query?: string): Promise<Book> {
     try {
       // open modal for book search
       const searchedBooks = await this.openBookSearchModal(query);
-      const selectedBook = await this.openBookSuggestModal(searchedBooks);
-      const renderedContents = await this.getRenderedContents(selectedBook);
-      await callback(selectedBook, renderedContents);
-
-      // cursor focus
-      await new CursorJumper(this.app).jumpToNextCursorLocation();
+      return await this.openBookSuggestModal(searchedBooks);
     } catch (err) {
       console.warn(err);
       try {
@@ -92,30 +85,38 @@ export default class BookSearchPlugin extends Plugin {
       console.warn('Can not find an active markdown view');
       return;
     }
-    await this.searchBookMetadata(markdownView.file.basename, async (_, metadata) => {
-      if (!markdownView.editor) {
-        console.warn('Can not find editor from the active markdown view');
-        return;
-      }
-      markdownView.editor.replaceRange(metadata, { line: 0, ch: 0 });
-    });
+
+    // TODO: Try using a search query on the selected text
+    const book = await this.searchBookMetadata(markdownView.file.basename);
+
+    if (!markdownView.editor) {
+      console.warn('Can not find editor from the active markdown view');
+      return;
+    }
+
+    const renderedContents = await this.getRenderedContents(book);
+    markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
   }
 
   async createNewBookNote(): Promise<void> {
-    await this.searchBookMetadata('', async (book, metadata) => {
-      const fileName = makeFileName(book, this.settings.fileNameFormat);
-      const filePath = path.join(this.settings.folder, `${fileName}.md`);
-      const targetFile = await this.app.vault.create(filePath, metadata);
+    const book = await this.searchBookMetadata();
 
-      // open file
-      const activeLeaf = this.app.workspace.getLeaf();
-      if (!activeLeaf) {
-        console.warn('No active leaf');
-        return;
-      }
-      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-      activeLeaf.setEphemeralState({ rename: 'all' });
-    });
+    // open file
+    const activeLeaf = this.app.workspace.getLeaf();
+    if (!activeLeaf) {
+      console.warn('No active leaf');
+      return;
+    }
+
+    const renderedContents = await this.getRenderedContents(book);
+    const fileName = makeFileName(book, this.settings.fileNameFormat);
+    const filePath = path.join(this.settings.folder, fileName);
+    const targetFile = await this.app.vault.create(filePath, renderedContents);
+    await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+    activeLeaf.setEphemeralState({ rename: 'all' });
+
+    // cursor focus
+    await new CursorJumper(this.app).jumpToNextCursorLocation();
   }
 
   async openBookSearchModal(query = ''): Promise<Book[]> {

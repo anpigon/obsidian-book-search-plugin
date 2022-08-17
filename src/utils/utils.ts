@@ -21,7 +21,7 @@ export function makeFileName(book: Book, fileNameFormat?: string) {
   } else {
     result = !book.author ? book.title : `${book.title} - ${book.author}`;
   }
-  return replaceIllegalFileNameCharactersInString(result);
+  return replaceIllegalFileNameCharactersInString(result) + '.md';
 }
 
 export function changeSnakeCase(book: Book) {
