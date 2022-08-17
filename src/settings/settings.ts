@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   frontmatter: '',
   content: '',
   useDefaultFrontmatter: true,
-  defaultFrontmatterKeyType: DefaultFrontmatterKeyType.snakeCase,
+  defaultFrontmatterKeyType: DefaultFrontmatterKeyType.camelCase,
   templateFile: '',
 };
 
