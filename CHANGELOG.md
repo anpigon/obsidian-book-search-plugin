@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.1...0.5.2) (2022-08-17)
+
+
+### Features
+
+* add "Template file location" option to settings ([aa961cf](https://github.com/anpigon/obsidian-book-search-plugin/commit/aa961cf63bd242c5d77e6d16225e2528279775db))
+* add Date Conversion syntax to Template ([7f5a76b](https://github.com/anpigon/obsidian-book-search-plugin/commit/7f5a76b3e88c95393162f186ddfc210a3f01a2bf))
+* ServiceProviderModal in settings ([38ca4b2](https://github.com/anpigon/obsidian-book-search-plugin/commit/38ca4b2f195a4d78b86d7446011489983aa6a23f))
+* use a template for a book search ([b712c57](https://github.com/anpigon/obsidian-book-search-plugin/commit/b712c57c2f9236e72209a50adc233587cf6e0cba))
+
+
+### Bug Fixes
+
+* eslint error ([7571eb3](https://github.com/anpigon/obsidian-book-search-plugin/commit/7571eb3bad64b2b1c7b3d3f7ba6e7a5037deef99))
+* format some files ([c3aedf5](https://github.com/anpigon/obsidian-book-search-plugin/commit/c3aedf51d37c9cf916a42ff411f36e321bc2d91b))
+* makeFileName in utils.ts ([76cbf8d](https://github.com/anpigon/obsidian-book-search-plugin/commit/76cbf8d29379e95d9dcb85decbdb07ad0613b818))
+* naver book api ([b6f2969](https://github.com/anpigon/obsidian-book-search-plugin/commit/b6f29696d8861917049d025a15e01a608d40a927))
+* use optional chaining If the author name is not in the data ([8ed5b0a](https://github.com/anpigon/obsidian-book-search-plugin/commit/8ed5b0a50058b9f0c1ecfc282f59ee7adf7109cf))
+
+
+### Reverts
+
+* Revert "chore(release): 0.5.0" ([94429ec](https://github.com/anpigon/obsidian-book-search-plugin/commit/94429ec66f5b583d550fae1c63bfb15ed3dcd48b))
+
+
+### Code Refactoring
+
+* book search api ([ff8441c](https://github.com/anpigon/obsidian-book-search-plugin/commit/ff8441c58bec820211d38c8f1cf8da6bf19562ad))
+* bookSearchModal ([b26b460](https://github.com/anpigon/obsidian-book-search-plugin/commit/b26b460424e6b95263bd05163f67cd7f2f5f9970))
+* function searchBookMetadata in main.ts ([60b4477](https://github.com/anpigon/obsidian-book-search-plugin/commit/60b447739af0144b4607d71fa7921512c97448f6))
+* google book response ([6bdedf6](https://github.com/anpigon/obsidian-book-search-plugin/commit/6bdedf6627e816101c4ca6cee1c7320c44ac5621))
+* GoogleBooksResponse ([a00b2f3](https://github.com/anpigon/obsidian-book-search-plugin/commit/a00b2f3a08d36f001417f5f9bbad482c675a9bfe))
+* main.ts ([1d39cb5](https://github.com/anpigon/obsidian-book-search-plugin/commit/1d39cb5dfaa34a284145cb1de5a01e1b3a292997))
+* makeFileName ([8274270](https://github.com/anpigon/obsidian-book-search-plugin/commit/82742705d84478bf84c20500b53d82e79ca24efc))
+* move modal in folder ([c3f6267](https://github.com/anpigon/obsidian-book-search-plugin/commit/c3f626720da82931ff286cb2b55b0c60f9742332))
+* newFileNameEl in settings.ts ([ef95fa9](https://github.com/anpigon/obsidian-book-search-plugin/commit/ef95fa916bfb34bf33d4c20bd3110467b54868fe))
+* parse frontmatter ([a2bd894](https://github.com/anpigon/obsidian-book-search-plugin/commit/a2bd8946f8fb7c1f651501aee016333d4c68ffe2))
+* searchBookMetadata ([950d1fb](https://github.com/anpigon/obsidian-book-search-plugin/commit/950d1fb3bd3e520ac8936c03bd0606bfb9dea1f3))
+* settings.ts ([635dade](https://github.com/anpigon/obsidian-book-search-plugin/commit/635dade0b5c387c080f78243cc2e86a3a2ad106c))
+* splitting a function that opens a modal window ([e391d7b](https://github.com/anpigon/obsidian-book-search-plugin/commit/e391d7b2080511986f5748a04204c6f8868fb673))
+
 ### [0.5.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.0...0.5.1) (2022-08-15)
 
 
