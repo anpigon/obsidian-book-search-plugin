@@ -42,25 +42,28 @@ export default class BookSearchPlugin extends Plugin {
   async searchBookMetadata(query: string, callback: MetadataWriter): Promise<void> {
     try {
       // open modal for book search
-      const book = await this.openBookSearchModal(query);
+      const searchedBooks = await this.openBookSearchModal(query);
+      const selectedBook = await this.openBookSuggestModal(searchedBooks);
 
       let renderedContents = '';
       const templateFile = this.settings.templateFile?.trim();
       if (templateFile) {
         const templateContents = await getTemplateContents(this.app, templateFile);
         renderedContents = applyTemplateTransformations(templateContents);
-        renderedContents = replaceVariableSyntax(book, renderedContents);
+        renderedContents = replaceVariableSyntax(selectedBook, renderedContents);
       } else {
         // @deprecated
-        let frontmatter = this.settings.frontmatter ? replaceVariableSyntax(book, this.settings.frontmatter) : '';
+        let frontmatter = this.settings.frontmatter
+          ? replaceVariableSyntax(selectedBook, this.settings.frontmatter)
+          : '';
         if (this.settings.useDefaultFrontmatter) {
-          frontmatter = applyDefaultFrontMatter(book, frontmatter, this.settings.defaultFrontmatterKeyType);
+          frontmatter = applyDefaultFrontMatter(selectedBook, frontmatter, this.settings.defaultFrontmatterKeyType);
         }
-        const content = this.settings.content ? replaceVariableSyntax(book, this.settings.content) : '';
+        const content = this.settings.content ? replaceVariableSyntax(selectedBook, this.settings.content) : '';
         renderedContents = frontmatter ? `---\n${frontmatter}\n---\n${content}` : content;
       }
 
-      await callback(book, renderedContents);
+      await callback(selectedBook, renderedContents);
 
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
@@ -106,14 +109,18 @@ export default class BookSearchPlugin extends Plugin {
     });
   }
 
-  async openBookSearchModal(query = ''): Promise<Book> {
+  async openBookSearchModal(query = ''): Promise<Book[]> {
     return new Promise((resolve, reject) => {
-      new BookSearchModal(this, query, (error, results) => {
-        if (error) return reject(error);
-        new BookSuggestModal(this.app, results, (error2, selectedBook) => {
-          if (error2) return reject(error2);
-          resolve(selectedBook);
-        }).open();
+      return new BookSearchModal(this, query, (error, results) => {
+        return error ? reject(error) : resolve(results);
+      }).open();
+    });
+  }
+
+  async openBookSuggestModal(books: Book[]): Promise<Book> {
+    return new Promise((resolve, reject) => {
+      return new BookSuggestModal(this.app, books, (error, selectedBook) => {
+        return error ? reject(error) : resolve(selectedBook);
       }).open();
     });
   }
