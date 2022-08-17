@@ -24,32 +24,31 @@ export default class BookSearchPlugin extends Plugin {
     this.addCommand({
       id: 'open-book-search-modal',
       name: 'Create new book note',
-      callback: () => this.createNewBookNote(),
+      callback: this.createNewBookNote,
     });
 
     this.addCommand({
       id: 'open-book-search-modal-to-insert',
       name: 'Insert the metadata',
-      callback: () => this.insertMetadata(),
+      callback: this.insertMetadata,
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
   }
 
-  async searchBookMetadata(query?: string): Promise<Book> {
+  showNotice(message: unknown) {
     try {
-      // open modal for book search
-      const searchedBooks = await this.openBookSearchModal(query);
-      return await this.openBookSuggestModal(searchedBooks);
-    } catch (err) {
-      console.warn(err);
-      try {
-        new Notice(err.toString());
-      } catch {
-        // eslint-disable
-      }
+      new Notice(message?.toString());
+    } catch {
+      // eslint-disable
     }
+  }
+
+  // open modal for book search
+  async searchBookMetadata(query?: string): Promise<Book> {
+    const searchedBooks = await this.openBookSearchModal(query);
+    return await this.openBookSuggestModal(searchedBooks);
   }
 
   async getRenderedContents(book: Book) {
@@ -94,8 +93,13 @@ export default class BookSearchPlugin extends Plugin {
       return;
     }
 
-    const renderedContents = await this.getRenderedContents(book);
-    markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
+    try {
+      const renderedContents = await this.getRenderedContents(book);
+      markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
+    } catch (err) {
+      console.warn(err);
+      this.showNotice(err);
+    }
   }
 
   async createNewBookNote(): Promise<void> {
@@ -108,15 +112,23 @@ export default class BookSearchPlugin extends Plugin {
       return;
     }
 
-    const renderedContents = await this.getRenderedContents(book);
-    const fileName = makeFileName(book, this.settings.fileNameFormat);
-    const filePath = path.join(this.settings.folder, fileName);
-    const targetFile = await this.app.vault.create(filePath, renderedContents);
-    await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-    activeLeaf.setEphemeralState({ rename: 'all' });
+    try {
+      const renderedContents = await this.getRenderedContents(book);
 
-    // cursor focus
-    await new CursorJumper(this.app).jumpToNextCursorLocation();
+      // TODO: If the same file exists, it asks if you want to overwrite it.
+      // create new File
+      const fileName = makeFileName(book, this.settings.fileNameFormat);
+      const filePath = path.join(this.settings.folder, fileName);
+      const targetFile = await this.app.vault.create(filePath, renderedContents);
+      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+      activeLeaf.setEphemeralState({ rename: 'all' });
+
+      // cursor focus
+      await new CursorJumper(this.app).jumpToNextCursorLocation();
+    } catch (err) {
+      console.warn(err);
+      this.showNotice(err);
+    }
   }
 
   async openBookSearchModal(query = ''): Promise<Book[]> {
