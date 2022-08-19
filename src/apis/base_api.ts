@@ -15,7 +15,8 @@ export function factoryServiceProvider(settings: BookSearchPluginSettings): Base
   }
   if (settings.serviceProvider === ServiceProvider.naver) {
     if (!settings.naverClientId || !settings.naverClientSecret) {
-      throw new Error('네이버 개발자센터에서 `Client ID`와 `Client Secret`를 발급받아 설정해주세요.');
+      // TODO: Let's create a custom error class
+      throw new Error('네이버 개발자센터에서 "Client ID"와 "Client Secret"를 발급받아 설정해주세요.');
     }
     return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
   }

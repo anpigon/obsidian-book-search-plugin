@@ -79,21 +79,21 @@ export default class BookSearchPlugin extends Plugin {
   }
 
   async insertMetadata(): Promise<void> {
-    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!markdownView) {
-      console.warn('Can not find an active markdown view');
-      return;
-    }
-
-    // TODO: Try using a search query on the selected text
-    const book = await this.searchBookMetadata(markdownView.file.basename);
-
-    if (!markdownView.editor) {
-      console.warn('Can not find editor from the active markdown view');
-      return;
-    }
-
     try {
+      const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!markdownView) {
+        console.warn('Can not find an active markdown view');
+        return;
+      }
+
+      // TODO: Try using a search query on the selected text
+      const book = await this.searchBookMetadata(markdownView.file.basename);
+
+      if (!markdownView.editor) {
+        console.warn('Can not find editor from the active markdown view');
+        return;
+      }
+
       const renderedContents = await this.getRenderedContents(book);
       markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
     } catch (err) {
@@ -103,16 +103,16 @@ export default class BookSearchPlugin extends Plugin {
   }
 
   async createNewBookNote(): Promise<void> {
-    const book = await this.searchBookMetadata();
-
-    // open file
-    const activeLeaf = this.app.workspace.getLeaf();
-    if (!activeLeaf) {
-      console.warn('No active leaf');
-      return;
-    }
-
     try {
+      const book = await this.searchBookMetadata();
+
+      // open file
+      const activeLeaf = this.app.workspace.getLeaf();
+      if (!activeLeaf) {
+        console.warn('No active leaf');
+        return;
+      }
+
       const renderedContents = await this.getRenderedContents(book);
 
       // TODO: If the same file exists, it asks if you want to overwrite it.
@@ -126,7 +126,7 @@ export default class BookSearchPlugin extends Plugin {
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
     } catch (err) {
-      console.warn(err);
+      // console.warn(err);
       this.showNotice(err);
     }
   }
