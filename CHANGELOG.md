@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.2...0.5.3) (2022-08-19)
+
+
+### Bug Fixes
+
+* the problem that the error toast message is not displayed ([592149e](https://github.com/anpigon/obsidian-book-search-plugin/commit/592149e599ca589e5389e41fd3d1c375ab308e64))
+
 ### [0.5.2](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.4.1...0.5.2) (2022-08-17)
 
 
