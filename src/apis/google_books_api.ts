@@ -15,8 +15,8 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         params['langRestrict'] = langRestrict;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
-      if (searchResults.totalItems == 0) {
-        throw new Error('No results found.');
+      if (!searchResults?.totalItems) {
+        return [];
       }
       return searchResults.items.map(({ volumeInfo }) => this.createBookItem(volumeInfo));
     } catch (error) {

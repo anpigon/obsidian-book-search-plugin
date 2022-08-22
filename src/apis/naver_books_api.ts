@@ -21,8 +21,8 @@ export class NaverBooksApi implements BaseBooksApiImpl {
         params,
         header,
       );
-      if (searchResults.total == 0) {
-        throw new Error('No results found.');
+      if (!searchResults?.total) {
+        return [];
       }
       return searchResults.items.map(this.createBookItem);
     } catch (error) {

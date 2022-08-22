@@ -1,4 +1,4 @@
-import { ButtonComponent, Modal, Setting, TextComponent } from 'obsidian';
+import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian';
 import { Book } from '@models/book.model';
 import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
@@ -17,6 +17,12 @@ export class BookSearchModal extends Modal {
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
+  setBusy(busy: boolean) {
+    this.isBusy = busy;
+    this.okBtnRef.setDisabled(busy);
+    this.okBtnRef.setButtonText(busy ? 'Requesting...' : 'Search');
+  }
+
   async searchBook() {
     if (!this.query) {
       throw new Error('No query entered.');
@@ -24,16 +30,20 @@ export class BookSearchModal extends Modal {
 
     if (!this.isBusy) {
       try {
-        this.isBusy = true;
-        this.okBtnRef.setDisabled(false);
-        this.okBtnRef.setButtonText('Requesting...');
+        this.setBusy(true);
         const searchResults = await this.serviceProvider.getByQuery(this.query);
+        this.setBusy(false);
+
+        if (!searchResults?.length) {
+          new Notice(`No results found for "${this.query}"`); // Couldn't find the book.
+          return;
+        }
+
         this.callback(null, searchResults);
       } catch (err) {
         this.callback(err);
-      } finally {
-        this.close();
       }
+      this.close();
     }
   }
 
@@ -56,16 +66,14 @@ export class BookSearchModal extends Modal {
         .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
     });
 
-    new Setting(contentEl)
-      .addButton(btn => btn.setButtonText('Cancel').onClick(() => this.close()))
-      .addButton(btn => {
-        return (this.okBtnRef = btn
-          .setButtonText('Ok')
-          .setCta()
-          .onClick(() => {
-            this.searchBook();
-          }));
-      });
+    new Setting(contentEl).addButton(btn => {
+      return (this.okBtnRef = btn
+        .setButtonText('Search')
+        .setCta()
+        .onClick(() => {
+          this.searchBook();
+        }));
+    });
   }
 
   onClose() {
