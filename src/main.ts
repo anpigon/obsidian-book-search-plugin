@@ -24,13 +24,13 @@ export default class BookSearchPlugin extends Plugin {
     this.addCommand({
       id: 'open-book-search-modal',
       name: 'Create new book note',
-      callback: this.createNewBookNote,
+      callback: () => this.createNewBookNote(),
     });
 
     this.addCommand({
       id: 'open-book-search-modal-to-insert',
       name: 'Insert the metadata',
-      callback: this.insertMetadata,
+      callback: () => this.insertMetadata(),
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
