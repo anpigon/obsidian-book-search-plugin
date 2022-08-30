@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.6](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.5...0.5.6) (2022-08-30)
+
+
+### Bug Fixes
+
+* Error creating notes on mobile ([acaaf3f](https://github.com/anpigon/obsidian-book-search-plugin/commit/acaaf3f13e2f9dc5b34a182d32d18c5b6ab700c5))
+
+
+### Code Refactoring
+
+* clean up the response model file ([ef37fa6](https://github.com/anpigon/obsidian-book-search-plugin/commit/ef37fa6390b2158072134bc3d1b18c63a411b959))
+
 ### [0.5.5](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.4...0.5.5) (2022-08-22)
 
 
