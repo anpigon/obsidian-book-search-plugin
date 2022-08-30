@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { MarkdownView, Notice, Plugin } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
@@ -35,6 +34,8 @@ export default class BookSearchPlugin extends Plugin {
 
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new BookSearchSettingTab(this.app, this));
+
+    console.log(`Book Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`);
   }
 
   showNotice(message: unknown) {
@@ -118,7 +119,7 @@ export default class BookSearchPlugin extends Plugin {
       // TODO: If the same file exists, it asks if you want to overwrite it.
       // create new File
       const fileName = makeFileName(book, this.settings.fileNameFormat);
-      const filePath = path.join(this.settings.folder, fileName);
+      const filePath = `${this.settings.folder}/${fileName}`;
       const targetFile = await this.app.vault.create(filePath, renderedContents);
       await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
       activeLeaf.setEphemeralState({ rename: 'all' });
@@ -126,7 +127,7 @@ export default class BookSearchPlugin extends Plugin {
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
     } catch (err) {
-      // console.warn(err);
+      console.warn(err);
       this.showNotice(err);
     }
   }
