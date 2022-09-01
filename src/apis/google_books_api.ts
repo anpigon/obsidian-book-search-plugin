@@ -40,6 +40,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   createBookItem(item: VolumeInfo): Book {
     const book: Book = {
       title: item.title,
+      subtitle: item.subtitle,
       author: this.formatList(item.authors),
       category: this.formatList(item.categories),
       publisher: item.publisher,
