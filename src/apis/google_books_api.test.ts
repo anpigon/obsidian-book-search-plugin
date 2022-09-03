@@ -101,10 +101,10 @@ describe('Book creation', () => {
   });
 
   it('ISBN 10', () => {
-    expect(book.isbn10).toEqual(volumeInfo.industryIdentifiers[0]);
+    expect(book.isbn10).toEqual(volumeInfo.industryIdentifiers[0].identifier);
   });
 
   it('ISBN 13', () => {
-    expect(book.isbn13).toEqual(volumeInfo.industryIdentifiers[1]);
+    expect(book.isbn13).toEqual(volumeInfo.industryIdentifiers[1].identifier);
   });
 });

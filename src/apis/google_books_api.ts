@@ -47,7 +47,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       totalPage: item.pageCount,
       coverUrl: item.imageLinks?.thumbnail ?? '',
       coverSmallUrl: item.imageLinks?.smallThumbnail ?? '',
-      publishDate: item.publishedDate?.slice(0, 4) || '',
+      publishDate: item.publishedDate || '',
       description: item.description,
       link: item.canonicalVolumeLink || item.infoLink,
       previewLink: item.previewLink,
