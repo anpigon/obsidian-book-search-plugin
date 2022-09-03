@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.7](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.6...0.5.7) (2022-09-03)
+
+
+### Features
+
+* support subtitles for Google Books ([f5df652](https://github.com/anpigon/obsidian-book-search-plugin/commit/f5df652387d2e6e55f15e13c7b98cdb7605c95c3))
+
+
+### Bug Fixes
+
+* google_books_api.test.ts ([89c8259](https://github.com/anpigon/obsidian-book-search-plugin/commit/89c825905ea3f44500af9f60ac9172fa6ae4cb30))
+
 ### [0.5.6](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.5...0.5.6) (2022-08-30)
 
 
