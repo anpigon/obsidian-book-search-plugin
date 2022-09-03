@@ -1,18 +1,13 @@
 # Obsidian Book Search Plugin
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/anpigon/obsidian-book-search-plugin/Release%20Obsidian%20plugin?logo=github&style=for-the-badge)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/anpigon/obsidian-book-search-plugin?style=for-the-badge&sort=semver)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/anpigon/obsidian-book-search-plugin/Release%20Obsidian%20plugin?logo=github)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/anpigon/obsidian-book-search-plugin?sort=semver)
 
 Easily create book notes.
 
 ## Demo
 
 https://user-images.githubusercontent.com/3969643/184918274-8ad24546-2e01-4288-a855-c8eeb1feca7d.mp4
-
-If this plugin helped you and you wish to contribute :)
-
-<a href="https://www.buymeacoffee.com/anpigon" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>&nbsp;
-<a href="https://anpigon.github.io/buymeacoffee/"><img src="https://user-images.githubusercontent.com/3969643/184924261-f0224843-08fa-4bce-af70-dc5db589979f.png" height="41"></a>
 
 <br>
 
@@ -24,13 +19,11 @@ Use to query book using :
 
 Use Google Books API to get the book information.
 
-[블로그: 옵시디언 책 검색 플러그인 사용방법](https://anpigon.tistory.com/165)
-
 <br>
 
 ## How to install
 
-Click the link to install the Book Search plugin: [Install Link](https://anpigon.github.io/obsidian-book-search-plugin/install.html)
+Click the link to install the Book Search plugin: [Install Link](https://obsidian.md/plugins?id=obsidian-book-search-plugin)
 
 Or, Search in the Obsidian Community plugin. And install it.
 
@@ -186,3 +179,14 @@ Feel free to contribute.
 You can create an [issue](https://github.com/anpigon/obsidian-book-search-plugin/issues) to report a bug, suggest an improvement for this plugin, ask a question, etc.
 
 You can make a [pull request](https://github.com/anpigon/obsidian-book-search-plugin/pulls) to contribute to this plugin development.
+
+<br>
+
+## Support
+
+If this plugin helped you and you wish to contribute :)
+
+Buy me coffee on [buymeacoffee.com/anpigon](https://www.buymeacoffee.com/anpigon)
+
+<a href="https://www.buymeacoffee.com/anpigon" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60"></a>&nbsp;
+<a href="https://anpigon.github.io/buymeacoffee/"><img src="https://user-images.githubusercontent.com/3969643/184924261-f0224843-08fa-4bce-af70-dc5db589979f.png" height="60"></a>
