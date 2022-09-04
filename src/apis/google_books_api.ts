@@ -42,6 +42,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       title: item.title,
       subtitle: item.subtitle,
       author: this.formatList(item.authors),
+      authors: item.authors,
       category: this.formatList(item.categories),
       publisher: item.publisher,
       totalPage: item.pageCount,

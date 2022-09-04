@@ -52,16 +52,42 @@ export function applyDefaultFrontMatter(
   return frontMater as object;
 }
 
-export function replaceVariableSyntax(book: Book, targetText: string): string {
-  if (!targetText?.trim()) {
+export function replaceVariableSyntax(book: Book, text: string): string {
+  if (!text?.trim()) {
     return '';
   }
 
   const entries = Object.entries(book);
+
   return entries
-    .reduce((text, [key, val = '']) => text.replace(new RegExp(`{{${key}}}`, 'ig'), val), targetText)
-    .replace(/{{.+}}/gi, '')
+    .reduce((result, [key, val = '']) => {
+      return result.replace(new RegExp(`{{${key}}}`, 'ig'), val);
+    }, text)
+    .replace(/{{\w+}}/gi, '')
     .trim();
+}
+
+export function generatorInlineScriptsTemplates(book: Book, text: string) {
+  const commandRegex = /<%(?:=)(.+)%>/g;
+  const ctor = getFunctionConstructor();
+  const matchedList = [...text.matchAll(commandRegex)];
+  return matchedList.reduce((result, [matched, script]) => {
+    try {
+      const outputs = new ctor(
+        [
+          'const [book] = arguments',
+          `const output = ${script}`,
+          'if(typeof output === "string") return output',
+          'if(Array.isArray(output)) return `[${output.map(val => `"${val}"`).join(", ")}]`',
+          'return JSON.stringify(output)',
+        ].join(';'),
+      )(book);
+      return result.replace(matched, outputs);
+    } catch (err) {
+      console.warn(err);
+    }
+    return result;
+  }, text);
 }
 
 export function camelToSnakeCase(str) {
@@ -160,4 +186,21 @@ export async function useTemplaterPluginInFile(app: App, file: TFile) {
   if (templater && !templater?.settings['trigger_on_file_creation']) {
     await templater.templater.overwrite_file_commands(file);
   }
+}
+
+export function getFunctionConstructor(): typeof Function {
+  try {
+    return new Function('return (function(){}).constructor')();
+  } catch (err) {
+    console.warn(err);
+    if (err instanceof SyntaxError) {
+      throw Error('Bad template syntax');
+    } else {
+      throw err;
+    }
+  }
+}
+
+export function generateCommandRegex(): RegExp {
+  return /<%(?:=)\s*(\(?\s*book\s*\)?\s*=>\s*.+)%>/g;
 }

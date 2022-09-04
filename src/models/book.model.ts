@@ -6,6 +6,7 @@ export interface Book {
   title: string; // 책 제목
   subtitle?: string;
   author: string; // 저자
+  authors: string[];
   category?: string; // 카테고리
   publisher?: string; // 출판사
   publishDate?: string; // 출판일
@@ -30,6 +31,7 @@ export interface Book {
 export class BookModel implements Book {
   title: string;
   author: string;
+  authors: string[];
   category?: string;
   publisher?: string;
   publishDate?: string;

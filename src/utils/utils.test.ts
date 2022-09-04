@@ -7,6 +7,7 @@ describe('util.js', () => {
   const book: Book = {
     title: '코스모스',
     author: '칼 세이건',
+    authors: ['칼 세이건'],
   };
 
   it('replaceIllegalFileNameCharactersInString', () => {

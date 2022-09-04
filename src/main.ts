@@ -12,6 +12,7 @@ import {
   applyDefaultFrontMatter,
   toStringFrontMatter,
   useTemplaterPluginInFile,
+  generatorInlineScriptsTemplates,
 } from '@utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
@@ -69,7 +70,8 @@ export default class BookSearchPlugin extends Plugin {
 
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
-      return replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
+      const replacedVariable = replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
+      return generatorInlineScriptsTemplates(book, replacedVariable);
     }
 
     let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
