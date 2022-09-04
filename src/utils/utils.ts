@@ -1,5 +1,6 @@
 import { Book, FrontMatter } from '@models/book.model';
 import { DefaultFrontmatterKeyType } from '@settings/settings';
+import { App, TFile } from 'obsidian';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -151,4 +152,12 @@ function replacer(str: string, reg: RegExp, replaceValue) {
   return str.replace(reg, function () {
     return replaceValue;
   });
+}
+
+export async function useTemplaterPluginInFile(app: App, file: TFile) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const templater = (app as any).plugins.plugins['templater-obsidian'];
+  if (templater && !templater?.settings['trigger_on_file_creation']) {
+    await templater.templater.overwrite_file_commands(file);
+  }
 }

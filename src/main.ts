@@ -6,7 +6,13 @@ import { CursorJumper } from '@utils/cursor_jumper';
 import { Book } from '@models/book.model';
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { getTemplateContents, applyTemplateTransformations } from '@utils/template';
-import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
+import {
+  replaceVariableSyntax,
+  makeFileName,
+  applyDefaultFrontMatter,
+  toStringFrontMatter,
+  useTemplaterPluginInFile,
+} from '@utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -121,6 +127,11 @@ export default class BookSearchPlugin extends Plugin {
       const fileName = makeFileName(book, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder}/${fileName}`;
       const targetFile = await this.app.vault.create(filePath, renderedContents);
+
+      // if use Templater plugin
+      await useTemplaterPluginInFile(this.app, targetFile);
+
+      // open file
       await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
       activeLeaf.setEphemeralState({ rename: 'all' });
 
