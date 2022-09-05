@@ -15,6 +15,6 @@ module.exports = {
     '@utils/(.*)': '<rootDir>/src/utils/$1',
     '@apis/(.*)': '<rootDir>/src/apis/$1',
     '@src/(.*)': '<rootDir>/src/$1',
-    obsidian: '<rootDir>/test/mock_obsidian.js',
+    obsidian: '<rootDir>/test/mock_obsidian.ts',
   },
 };
