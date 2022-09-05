@@ -4,23 +4,23 @@ import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
 
 export class BookSearchModal extends Modal {
-  private query: string;
-  private isBusy: boolean;
-  private okBtnRef: ButtonComponent;
-  private callback: (err: Error, result?: Book[]) => void;
+  private isBusy = false;
+  private okBtnRef?: ButtonComponent;
   private serviceProvider: BaseBooksApiImpl;
 
-  constructor(plugin: BookSearchPlugin, query: string, callback?: (err: Error, result?: Book[]) => void) {
+  constructor(
+    plugin: BookSearchPlugin,
+    private query: string,
+    private callback: (error: Error | null, result?: Book[]) => void,
+  ) {
     super(plugin.app);
-    this.query = query;
-    this.callback = callback;
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
   setBusy(busy: boolean) {
     this.isBusy = busy;
-    this.okBtnRef.setDisabled(busy);
-    this.okBtnRef.setButtonText(busy ? 'Requesting...' : 'Search');
+    this.okBtnRef?.setDisabled(busy);
+    this.okBtnRef?.setButtonText(busy ? 'Requesting...' : 'Search');
   }
 
   async searchBook() {
@@ -41,7 +41,7 @@ export class BookSearchModal extends Modal {
 
         this.callback(null, searchResults);
       } catch (err) {
-        this.callback(err);
+        this.callback(err as Error);
       }
       this.close();
     }

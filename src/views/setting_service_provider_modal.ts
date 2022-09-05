@@ -36,12 +36,14 @@ export class SettingServiceProviderModal extends Modal {
     if (this.currentServiceProvider === ServiceProvider.naver) {
       return this.settings.naverClientId;
     }
+    return '';
   }
 
   get currentClientSecret() {
     if (this.currentServiceProvider === ServiceProvider.naver) {
       return this.settings.naverClientSecret;
     }
+    return '';
   }
 
   onOpen() {

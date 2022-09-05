@@ -95,17 +95,12 @@ class Suggest<T> {
 }
 
 export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
-  protected app: App;
-  protected inputEl: HTMLInputElement | HTMLTextAreaElement;
-
   private popper: PopperInstance;
   private scope: Scope;
   private suggestEl: HTMLElement;
   private suggest: Suggest<T>;
 
-  constructor(app: App, inputEl: HTMLInputElement | HTMLTextAreaElement) {
-    this.app = app;
-    this.inputEl = inputEl;
+  constructor(protected app: App, protected inputEl: HTMLInputElement | HTMLTextAreaElement) {
     this.scope = new Scope();
 
     this.suggestEl = createDiv('suggestion-container');

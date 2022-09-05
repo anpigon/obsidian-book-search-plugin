@@ -2,13 +2,12 @@ import { App, SuggestModal } from 'obsidian';
 import { Book } from '@models/book.model';
 
 export class BookSuggestModal extends SuggestModal<Book> {
-  suggestion: Book[];
-  onChoose: (error: Error, result?: Book) => void;
-
-  constructor(app: App, suggestion: Book[], onChoose: (error: Error, result?: Book) => void) {
+  constructor(
+    app: App,
+    private readonly suggestion: Book[],
+    private onChoose: (error: Error | null, result?: Book) => void,
+  ) {
     super(app);
-    this.suggestion = suggestion;
-    this.onChoose = onChoose;
   }
 
   // Returns all available suggestions.
