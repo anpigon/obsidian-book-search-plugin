@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin, stringifyYaml, stripHeading } from 'obsidian';
+import { MarkdownView, Notice, Plugin } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
 import { BookSuggestModal } from '@views/book_suggest_modal';
