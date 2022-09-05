@@ -78,7 +78,6 @@ export function generatorInlineScriptsTemplates(book: Book, text: string) {
           'const [book] = arguments',
           `const output = ${script}`,
           'if(typeof output === "string") return output',
-          'if(Array.isArray(output)) return `[${output.map(val => `"${val}"`).join(", ")}]`',
           'return JSON.stringify(output)',
         ].join(';'),
       )(book);
