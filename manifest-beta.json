@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-book-search-plugin",
 	"name": "Book Search",
-	"version": "0.5.8-beta.1",
+	"version": "0.5.8-beta.2",
 	"minAppVersion": "0.15.0",
 	"description": "Helps you find books and create notes.",
 	"author": "anpigon",
