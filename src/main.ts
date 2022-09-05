@@ -1,19 +1,17 @@
-import { MarkdownView, Notice, Plugin } from 'obsidian';
+import { MarkdownView, Notice, Plugin, stringifyYaml, stripHeading } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
 import { BookSuggestModal } from '@views/book_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { Book } from '@models/book.model';
 import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
-import { getTemplateContents, applyTemplateTransformations } from '@utils/template';
 import {
-  replaceVariableSyntax,
-  makeFileName,
-  applyDefaultFrontMatter,
-  toStringFrontMatter,
+  getTemplateContents,
+  applyTemplateTransformations,
   useTemplaterPluginInFile,
-  generatorInlineScriptsTemplates,
-} from '@utils/utils';
+  executeInlineScriptsTemplates,
+} from '@utils/template';
+import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
 
 export default class BookSearchPlugin extends Plugin {
   settings: BookSearchPluginSettings;
@@ -71,7 +69,7 @@ export default class BookSearchPlugin extends Plugin {
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
       const replacedVariable = replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
-      return generatorInlineScriptsTemplates(book, replacedVariable);
+      return executeInlineScriptsTemplates(book, replacedVariable);
     }
 
     let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
