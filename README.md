@@ -157,7 +157,8 @@ Please find here a definition of the possible variables to be used in your templ
 | ----------- | ------------------------------------------------------- |
 | title       | The title of the book.                                  |
 | author      | The name of the book author. It can be multiple people. |
-| category    | book category                                           |
+| category    | Book category.                                          |
+| description | Book description.                                       |
 | publisher   | The publisher of the book.                              |
 | totalPage   | The total number of pages in the book.                  |
 | coverUrl    | Book cover image URL.                                   |
