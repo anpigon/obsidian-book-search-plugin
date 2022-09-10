@@ -26,6 +26,7 @@ export interface BookSearchPluginSettings {
   serviceProvider: ServiceProvider;
   naverClientId: string;
   naverClientSecret: string;
+  localePreference: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -39,6 +40,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   serviceProvider: ServiceProvider.google,
   naverClientId: '',
   naverClientSecret: '',
+  localePreference: 'default',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -132,19 +134,32 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     // Service Provider
     let serviceProviderExtraSettingButton: HTMLElement;
+    let preferredLocaleDropdownSetting: Setting;
     const hideServiceProviderExtraSettingButton = () => {
       serviceProviderExtraSettingButton.addClass('book-search-plugin__hide');
     };
     const showServiceProviderExtraSettingButton = () => {
       serviceProviderExtraSettingButton.removeClass('book-search-plugin__hide');
     };
-    const toggleServiceProviderExtraSettingButton = (
+    const hideServiceProviderExtraSettingDropdown = () => {
+      if (preferredLocaleDropdownSetting !== undefined) {
+        preferredLocaleDropdownSetting.settingEl.addClass('book-search-plugin__hide');
+      }
+    };
+    const showServiceProviderExtraSettingDropdown = () => {
+      if (preferredLocaleDropdownSetting !== undefined) {
+        preferredLocaleDropdownSetting.settingEl.removeClass('book-search-plugin__hide');
+      }
+    };
+    const toggleServiceProviderExtraSettings = (
       serviceProvider: ServiceProvider = this.settings?.serviceProvider,
     ) => {
       if (serviceProvider === ServiceProvider.naver) {
         showServiceProviderExtraSettingButton();
+        hideServiceProviderExtraSettingDropdown();
       } else {
         hideServiceProviderExtraSettingButton();
+        showServiceProviderExtraSettingDropdown();
       }
     };
     new Setting(containerEl)
@@ -157,18 +172,40 @@ export class BookSearchSettingTab extends PluginSettingTab {
         dropDown.setValue(this.plugin.settings?.serviceProvider ?? ServiceProvider.google);
         dropDown.onChange(async value => {
           const newValue = value as ServiceProvider;
-          toggleServiceProviderExtraSettingButton(newValue);
+          toggleServiceProviderExtraSettings(newValue);
           this.settings['serviceProvider'] = newValue;
           await this.plugin.saveSettings();
         });
       })
       .addExtraButton(component => {
         serviceProviderExtraSettingButton = component.extraSettingsEl;
-        toggleServiceProviderExtraSettingButton();
+        toggleServiceProviderExtraSettings();
         component.onClick(() => {
           new SettingServiceProviderModal(this.plugin).open();
         });
       });
+
+    preferredLocaleDropdownSetting = new Setting(containerEl)
+      .setName('Preferred locale')
+      .setDesc('Sets the preferred locale to use when searching for books.')
+      .addDropdown(dropDown => {
+        const defaultLocale = window.moment.locale();
+        dropDown.addOption(defaultLocale, `${defaultLocale} (Default Locale)`);
+        window.moment.locales().forEach((locale) => {
+          dropDown.addOption(locale, locale);
+        });
+        const setValue = this.settings.localePreference;
+        if (setValue === 'default') {
+          dropDown.setValue(defaultLocale);
+        } else {
+          dropDown.setValue(setValue);
+        }
+        dropDown.onChange(async value => {
+          const newValue = value;
+          this.settings.localePreference = newValue;
+          await this.plugin.saveSettings();
+        });
+      })
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];

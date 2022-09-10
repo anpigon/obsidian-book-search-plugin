@@ -3,6 +3,8 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
+  constructor(private readonly localePreference: string,) {}
+
   async getByQuery(query: string) {
     try {
       const params = {
@@ -10,8 +12,10 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         maxResults: 40,
         printType: 'books',
       };
-      const langRestrict = window.moment.locale();
-      if (langRestrict) {
+      const langRestrict = this.localePreference;
+      if (langRestrict === 'default') {
+        params['langRestrict'] = window.moment.locale();
+      } else {
         params['langRestrict'] = langRestrict;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
