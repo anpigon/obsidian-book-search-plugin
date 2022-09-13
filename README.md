@@ -15,8 +15,8 @@ Easily create book notes.
 ### Features
 
 - Add locale selection for Google searches.
-- Can use the template plugin with.
-- Enables inline scripts for templates.
+- Can use the [Templater plugin](https://github.com/SilentVoid13/Templater) with.
+- Enables [Inline scripts](https://github.com/anpigon/obsidian-book-search-plugin#inline-script) for templates.
 
 <br>
 
