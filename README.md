@@ -6,6 +6,20 @@
 
 Easily create book notes.
 
+<br>
+
+## Changelog
+
+### [0.5.8](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.8-beta.2...0.5.8) (2022-09-13)
+
+### Features
+
+- Add locale selection for Google searches.
+- Can use the template plugin with.
+- Enables inline scripts for templates.
+
+<br>
+
 ## Demo
 
 https://user-images.githubusercontent.com/3969643/184918274-8ad24546-2e01-4288-a855-c8eeb1feca7d.mp4
@@ -165,6 +179,38 @@ Please find here a definition of the possible variables to be used in your templ
 | publishDate | The year the book was published.                        |
 | isbn10      | ISBN10                                                  |
 | isbn13      | ISBN13                                                  |
+
+<br>
+
+## Advanced
+
+### Inline Script
+
+#### To print out a book object:
+
+````
+```json
+<%=book%>
+```
+````
+
+or
+
+````
+```json
+<%=JSON.stringify(book, null, 2)%>
+```
+````
+
+#### When you want to list or link authors:
+
+```
+---
+authors: <%=book.authors.map(author=>`\n  - ${author}`).join('')%>
+---
+
+authors: <%=book.authors.map(author => `[[${author}]]`).join(', ')%>
+```
 
 <br>
 
