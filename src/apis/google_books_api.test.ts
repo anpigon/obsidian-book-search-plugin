@@ -49,7 +49,7 @@ describe('Book creation', () => {
     canonicalVolumeLink: 'https://play.google.com/store/books/details?id=QVjPsd1UukEC',
   };
 
-  const api: GoogleBooksApi = new GoogleBooksApi();
+  const api: GoogleBooksApi = new GoogleBooksApi('default');
   const book: Book = api.createBookItem(volumeInfo);
 
   it('Title', () => {

@@ -134,6 +134,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     // Service Provider
     let serviceProviderExtraSettingButton: HTMLElement;
+    // eslint-disable-next-line prefer-const
     let preferredLocaleDropdownSetting: Setting;
     const hideServiceProviderExtraSettingButton = () => {
       serviceProviderExtraSettingButton.addClass('book-search-plugin__hide');
@@ -151,9 +152,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
         preferredLocaleDropdownSetting.settingEl.removeClass('book-search-plugin__hide');
       }
     };
-    const toggleServiceProviderExtraSettings = (
-      serviceProvider: ServiceProvider = this.settings?.serviceProvider,
-    ) => {
+    const toggleServiceProviderExtraSettings = (serviceProvider: ServiceProvider = this.settings?.serviceProvider) => {
       if (serviceProvider === ServiceProvider.naver) {
         showServiceProviderExtraSettingButton();
         hideServiceProviderExtraSettingDropdown();
@@ -191,7 +190,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addDropdown(dropDown => {
         const defaultLocale = window.moment.locale();
         dropDown.addOption(defaultLocale, `${defaultLocale} (Default Locale)`);
-        window.moment.locales().forEach((locale) => {
+        window.moment.locales().forEach(locale => {
           dropDown.addOption(locale, locale);
         });
         const setValue = this.settings.localePreference;
@@ -205,7 +204,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
           this.settings.localePreference = newValue;
           await this.plugin.saveSettings();
         });
-      })
+      });
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];

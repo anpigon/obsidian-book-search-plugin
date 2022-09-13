@@ -3,7 +3,7 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
-  constructor(private readonly localePreference: string,) {}
+  constructor(private readonly localePreference: string) {}
 
   async getByQuery(query: string) {
     try {
