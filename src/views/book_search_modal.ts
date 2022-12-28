@@ -48,7 +48,7 @@ export class BookSearchModal extends Modal {
   }
 
   submitEnterCallback(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !event.isComposing) {
       this.searchBook();
     }
   }
