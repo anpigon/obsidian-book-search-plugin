@@ -110,7 +110,7 @@ author: [{{author}}]
 publisher: {{publisher}}
 publish: {{publishDate}}
 total: {{totalPage}}
-isbn: {{isbn10}} {{isbn1#template-variable-definition
+isbn: {{isbn10}} {{isbn13}}
 cover: {{coverUrl}}
 status: unread
 created: {{DATE:YYYY-MM-DD HH:mm:ss}}
