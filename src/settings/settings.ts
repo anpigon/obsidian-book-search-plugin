@@ -53,23 +53,31 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     createHeader(containerEl, 'General Settings');
 
-    // New file location
-    new Setting(containerEl)
-      .setName('New file location')
-      .setDesc('New game notes will be placed here.')
-      .addSearch(cb => {
-        try {
-          new FolderSuggest(this.app, cb.inputEl);
-        } catch {
-          // eslint-disable
-        }
-        cb.setPlaceholder('Example: folder1/folder2')
-          .setValue(this.plugin.settings.folder)
-          .onChange(new_folder => {
-            this.plugin.settings.folder = new_folder;
-            this.plugin.saveSettings();
-          });
+    new Setting(containerEl).setName('RAWG Api Key').addTextArea(textArea => {
+      const prevValue = this.plugin.settings.rawgApiKey;
+      textArea.setValue(prevValue).onChange(async value => {
+        const newValue = value;
+        this.plugin.settings.rawgApiKey = newValue;
+        await this.plugin.saveSettings();
       });
+    }),
+      // New file location
+      new Setting(containerEl)
+        .setName('New file location')
+        .setDesc('New game notes will be placed here.')
+        .addSearch(cb => {
+          try {
+            new FolderSuggest(this.app, cb.inputEl);
+          } catch {
+            // eslint-disable
+          }
+          cb.setPlaceholder('Example: folder1/folder2')
+            .setValue(this.plugin.settings.folder)
+            .onChange(new_folder => {
+              this.plugin.settings.folder = new_folder;
+              this.plugin.saveSettings();
+            });
+        });
 
     // New File Name
     const newFileNameHint = document.createDocumentFragment().createEl('code', {
