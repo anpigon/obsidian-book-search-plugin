@@ -1,4 +1,4 @@
-import { Book } from '@models/book.model';
+import { Game } from '@models/game.model';
 import { App, normalizePath, Notice, TFile } from 'obsidian';
 
 export async function getTemplateContents(app: App, templatePath: string | undefined): Promise<string> {
@@ -43,7 +43,7 @@ export function applyTemplateTransformations(rawTemplateContents: string): strin
   );
 }
 
-export function executeInlineScriptsTemplates(book: Book, text: string) {
+export function executeInlineScriptsTemplates(game: Game, text: string) {
   const commandRegex = /<%(?:=)(.+)%>/g;
   const ctor = getFunctionConstructor();
   const matchedList = [...text.matchAll(commandRegex)];
@@ -51,12 +51,12 @@ export function executeInlineScriptsTemplates(book: Book, text: string) {
     try {
       const outputs = new ctor(
         [
-          'const [book] = arguments',
+          'const [game] = arguments',
           `const output = ${script}`,
           'if(typeof output === "string") return output',
           'return JSON.stringify(output)',
         ].join(';'),
-      )(book);
+      )(game);
       return result.replace(matched, outputs);
     } catch (err) {
       console.warn(err);

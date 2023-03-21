@@ -1,19 +1,20 @@
 {
-  "name": "obsidian-book-search-plugin",
-  "version": "0.5.9",
-  "description": "This is a plugin to help you create book notes.",
-  "homepage": "https://anpigon.github.io/obsidian-book-search-plugin/",
+  "name": "obsidian-game-search-plugin",
+  "version": "0.1.0",
+  "description": "This is a plugin to help you create game notes.",
+  "homepage": "https://github.com/CMorooney/obsidian-game-search-plugin",
   "main": "main.js",
   "standard-version": {
     "t": ""
   },
   "keywords": [
-    "book",
-    "book note",
+    "game",
+    "game note",
+    "video games",
     "obsidian",
     "plugin"
   ],
-  "author": "anpigon",
+  "author": "Calvin forked from anpigon",
   "license": "MIT",
   "engines": {
     "node": ">= 16",

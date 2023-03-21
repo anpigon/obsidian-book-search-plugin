@@ -1,21 +1,19 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
-import BookSearchPlugin from '../main';
+import GameSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
-import { ServiceProvider } from '@src/constants';
-import { SettingServiceProviderModal } from '@views/setting_service_provider_modal';
 
-const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
+const docUrl = 'https://github.com/CMorooney/obsidian-game-search-plugin';
 
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',
   camelCase = 'Camel Case',
 }
 
-export interface BookSearchPluginSettings {
+export interface GameSearchPluginSettings {
   folder: string; // new file location
   fileNameFormat: string; // new file name format
   frontmatter: string; // frontmatter that is inserted into the file
@@ -23,13 +21,10 @@ export interface BookSearchPluginSettings {
   useDefaultFrontmatter: boolean;
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType;
   templateFile: string;
-  serviceProvider: ServiceProvider;
-  naverClientId: string;
-  naverClientSecret: string;
-  localePreference: string;
+  rawgApiKey: string;
 }
 
-export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
+export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   folder: '',
   fileNameFormat: '',
   frontmatter: '',
@@ -37,14 +32,11 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   useDefaultFrontmatter: true,
   defaultFrontmatterKeyType: DefaultFrontmatterKeyType.camelCase,
   templateFile: '',
-  serviceProvider: ServiceProvider.google,
-  naverClientId: '',
-  naverClientSecret: '',
-  localePreference: 'default',
+  rawgApiKey: '',
 };
 
-export class BookSearchSettingTab extends PluginSettingTab {
-  constructor(app: App, private plugin: BookSearchPlugin) {
+export class GameSearchSettingTab extends PluginSettingTab {
+  constructor(app: App, private plugin: GameSearchPlugin) {
     super(app, plugin);
   }
 
@@ -57,14 +49,14 @@ export class BookSearchSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.classList.add('book-search-plugin__settings');
+    containerEl.classList.add('game-search-plugin__settings');
 
     createHeader(containerEl, 'General Settings');
 
     // New file location
     new Setting(containerEl)
       .setName('New file location')
-      .setDesc('New book notes will be placed here.')
+      .setDesc('New game notes will be placed here.')
       .addSearch(cb => {
         try {
           new FolderSuggest(this.app, cb.inputEl);
@@ -84,7 +76,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}',
     });
     new Setting(containerEl)
-      .setClass('book-search-plugin__settings--new_file_name')
+      .setClass('game-search-plugin__settings--new_file_name')
       .setName('New file name')
       .setDesc('Enter the file name format.')
       .addSearch(cb => {
@@ -93,18 +85,18 @@ export class BookSearchSettingTab extends PluginSettingTab {
         } catch {
           // eslint-disable
         }
-        cb.setPlaceholder('Example: {{title}} - {{author}}')
+        cb.setPlaceholder('Example: {{name}} - {{release}}')
           .setValue(this.plugin.settings.fileNameFormat)
           .onChange(newValue => {
             this.plugin.settings.fileNameFormat = newValue?.trim();
             this.plugin.saveSettings();
 
-            newFileNameHint.innerHTML = replaceDateInString(newValue) || '{{title}} - {{author}}';
+            newFileNameHint.innerHTML = replaceDateInString(newValue) || '{{name}} - {{release}}';
           });
       });
     containerEl
       .createEl('div', {
-        cls: ['setting-item-description', 'book-search-plugin__settings--new_file_name_hint'],
+        cls: ['setting-item-description', 'game-search-plugin__settings--new_file_name_hint'],
       })
       .append(newFileNameHint);
 
@@ -132,86 +124,12 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
-    // Service Provider
-    let serviceProviderExtraSettingButton: HTMLElement;
-    // eslint-disable-next-line prefer-const
-    let preferredLocaleDropdownSetting: Setting;
-    const hideServiceProviderExtraSettingButton = () => {
-      serviceProviderExtraSettingButton.addClass('book-search-plugin__hide');
-    };
-    const showServiceProviderExtraSettingButton = () => {
-      serviceProviderExtraSettingButton.removeClass('book-search-plugin__hide');
-    };
-    const hideServiceProviderExtraSettingDropdown = () => {
-      if (preferredLocaleDropdownSetting !== undefined) {
-        preferredLocaleDropdownSetting.settingEl.addClass('book-search-plugin__hide');
-      }
-    };
-    const showServiceProviderExtraSettingDropdown = () => {
-      if (preferredLocaleDropdownSetting !== undefined) {
-        preferredLocaleDropdownSetting.settingEl.removeClass('book-search-plugin__hide');
-      }
-    };
-    const toggleServiceProviderExtraSettings = (serviceProvider: ServiceProvider = this.settings?.serviceProvider) => {
-      if (serviceProvider === ServiceProvider.naver) {
-        showServiceProviderExtraSettingButton();
-        hideServiceProviderExtraSettingDropdown();
-      } else {
-        hideServiceProviderExtraSettingButton();
-        showServiceProviderExtraSettingDropdown();
-      }
-    };
-    new Setting(containerEl)
-      .setName('Service Provider')
-      .setDesc('Choose the service provider you want to use to search your books.')
-      .setClass('book-search-plugin__settings--service_provider')
-      .addDropdown(dropDown => {
-        dropDown.addOption(ServiceProvider.google, `${ServiceProvider.google} (Global)`);
-        dropDown.addOption(ServiceProvider.naver, `${ServiceProvider.naver} (Korean)`);
-        dropDown.setValue(this.plugin.settings?.serviceProvider ?? ServiceProvider.google);
-        dropDown.onChange(async value => {
-          const newValue = value as ServiceProvider;
-          toggleServiceProviderExtraSettings(newValue);
-          this.settings['serviceProvider'] = newValue;
-          await this.plugin.saveSettings();
-        });
-      })
-      .addExtraButton(component => {
-        serviceProviderExtraSettingButton = component.extraSettingsEl;
-        toggleServiceProviderExtraSettings();
-        component.onClick(() => {
-          new SettingServiceProviderModal(this.plugin).open();
-        });
-      });
-
-    preferredLocaleDropdownSetting = new Setting(containerEl)
-      .setName('Preferred locale')
-      .setDesc('Sets the preferred locale to use when searching for books.')
-      .addDropdown(dropDown => {
-        const defaultLocale = window.moment.locale();
-        dropDown.addOption(defaultLocale, `${defaultLocale} (Default Locale)`);
-        window.moment.locales().forEach(locale => {
-          dropDown.addOption(locale, locale);
-        });
-        const setValue = this.settings.localePreference;
-        if (setValue === 'default') {
-          dropDown.setValue(defaultLocale);
-        } else {
-          dropDown.setValue(setValue);
-        }
-        dropDown.onChange(async value => {
-          const newValue = value;
-          this.settings.localePreference = newValue;
-          await this.plugin.saveSettings();
-        });
-      });
-
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];
     createFoldingHeader(containerEl, 'Frontmatter Settings', formatterSettingsChildren);
     formatterSettingsChildren.push(
       new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
+        .setClass('game-search-plugin__hide')
         .setName('Use the default frontmatter')
         .setDesc("If you don't want the default frontmatter to be inserted, disable it.")
         .addToggle(toggle => {
@@ -222,7 +140,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
         }),
       new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
+        .setClass('game-search-plugin__hide')
         .setName('Default frontmatter key type')
         .setDesc(createKeyTypeDesc())
         .addDropdown(dropDown => {
@@ -235,7 +153,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
         }),
       new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
+        .setClass('game-search-plugin__hide')
         .setName('(Deprecated) Text to insert into frontmatter')
         .setDesc(createSyntaxesDescription('#text-to-insert-into-frontmatter'))
         .addTextArea(textArea => {
@@ -253,7 +171,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
     createFoldingHeader(containerEl, 'Content Settings', contentSettingsChildren);
     contentSettingsChildren.push(
       new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
+        .setClass('game-search-plugin__hide')
         .setName('(Deprecated) Text to insert into content')
         .setDesc(createSyntaxesDescription('#text-to-insert-into-content'))
         .addTextArea(textArea => {
@@ -290,7 +208,7 @@ function createFoldingHeader(containerEl: HTMLElement, title: string, formatterS
   return createHeader(containerEl, title).addToggle(toggle => {
     toggle.onChange(checked => {
       formatterSettingsChildren.forEach(({ settingEl }) => {
-        settingEl.toggleClass('book-search-plugin__show', checked);
+        settingEl.toggleClass('game-search-plugin__show', checked);
       });
     });
   });

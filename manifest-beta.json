@@ -1,10 +1,10 @@
 {
-	"id": "obsidian-book-search-plugin",
-	"name": "Book Search",
-	"version": "0.5.8",
+	"id": "obsidian-game-search-plugin",
+	"name": "Game Search",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Helps you find books and create notes.",
-	"author": "anpigon",
-	"authorUrl": "https://github.com/anpigon",
+	"description": "Helps you find Games and create notes.",
+	"author": "Calving forked from anpigon",
+	"authorUrl": "https://github.com/CMorooney/obsidian-game-search-plugin",
 	"isDesktopOnly": false
 }

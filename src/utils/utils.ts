@@ -1,4 +1,4 @@
-import { Book, FrontMatter } from '@models/book.model';
+import { Game, FrontMatter } from '@models/game.model';
 import { DefaultFrontmatterKeyType } from '@settings/settings';
 
 // == Format Syntax == //
@@ -14,29 +14,29 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
-export function makeFileName(book: Book, fileNameFormat?: string) {
+export function makeFileName(game: Game, fileNameFormat?: string) {
   let result;
   if (fileNameFormat) {
-    result = replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
+    result = replaceVariableSyntax(game, replaceDateInString(fileNameFormat));
   } else {
-    result = !book.author ? book.title : `${book.title} - ${book.author}`;
+    result = !game.released ? game.name : `${game.name} - ${game.released}`;
   }
   return replaceIllegalFileNameCharactersInString(result) + '.md';
 }
 
-export function changeSnakeCase(book: Book) {
-  return Object.entries(book).reduce((acc, [key, value]) => {
+export function changeSnakeCase(game: Game) {
+  return Object.entries(game).reduce((acc, [key, value]) => {
     acc[camelToSnakeCase(key)] = value;
     return acc;
   }, {});
 }
 
 export function applyDefaultFrontMatter(
-  book: Book,
+  game: Game,
   frontmatter: FrontMatter | string,
   keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
 ) {
-  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? book : changeSnakeCase(book);
+  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? game : changeSnakeCase(game);
 
   const extraFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
   for (const key in extraFrontMatter) {
@@ -51,12 +51,12 @@ export function applyDefaultFrontMatter(
   return frontMater as object;
 }
 
-export function replaceVariableSyntax(book: Book, text: string): string {
+export function replaceVariableSyntax(game: Game, text: string): string {
   if (!text?.trim()) {
     return '';
   }
 
-  const entries = Object.entries(book);
+  const entries = Object.entries(game);
 
   return entries
     .reduce((result, [key, val = '']) => {

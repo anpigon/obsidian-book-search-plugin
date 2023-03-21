@@ -1,29 +1,29 @@
-.book-search-plugin__settings .search-input-container {
+game-search-plugin__settings .search-input-container {
   width: 100%;
 }
 
-.book-search-plugin__settings--new_file_name {
+.game-search-plugin__settings--new_file_name {
   padding-bottom: 0;
   margin-bottom: 0;
 }
-.book-search-plugin__settings--new_file_name_hint {
+.game-search-plugin__settings--new_file_name_hint {
   margin-bottom: 20px;
 }
-.book-search-plugin__settings--service_provider .dropdown {
+.game-search-plugin__settings--service_provider .dropdown {
   text-transform: capitalize;
 }
 
-.book-search-plugin__hide {
+.game-search-plugin__hide {
   display: none;
 }
 
-.book-search-plugin__show {
+.game-search-plugin__show {
   display: flex;
 }
 
-.book-search-plugin__search-modal--input {
+.game-search-plugin__search-modal--input {
   padding-bottom: 18px;
 }
-.book-search-plugin__search-modal--input input {
+.game-search-plugin__search-modal--input input {
   width: 100%;
 }
