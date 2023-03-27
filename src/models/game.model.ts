@@ -18,25 +18,81 @@ export interface Game {
   released: string;
   tba: boolean;
   background_image: string;
-  rating: number;
+  rating: Rating;
   rating_top: number;
-  ratings: any[];
+  ratings: Rating[];
   ratings_count: number;
   reviews_text_count: number;
   added: number;
-  added_by_status: any;
+  added_by_status: AddedByStatus;
   metacritic: number;
   playtime: number; // in hours
   suggestions_count: number;
   updated: string;
-  esrb_rating?: any;
-  platforms: any[];
-  stores: any[];
+  esrb_rating?: ESRBRating;
+  platforms: Platform[];
+  stores: Store[];
   score: number;
-  tags: any[];
+  tags: Tag[];
   saturated_color: string; // hex value w/o '#'
   dominant_color: string; // hex value w/o '#'
-  genres: any[];
-  parent_platforms: any[];
-  short_screenshots: any[];
+  genres: Genre[];
+  parent_platforms: Platform[];
+  short_screenshots: ScreenShot[];
+}
+
+interface Platform {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Store {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Rating {
+  id: number;
+  title: string;
+  count: number;
+  percent: number;
+}
+
+interface AddedByStatus {
+  beaten: number;
+  dropped: number;
+  owned: number;
+  playing: number;
+  toplay: number;
+  yet: number;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  language: string;
+  games_count: number;
+  image_background: string;
+}
+
+interface ESRBRating {
+  id: number;
+  name: string;
+  slug: string;
+  name_en: string;
+  name_ru: string;
+}
+
+interface ScreenShot {
+  id: number;
+  image: string;
+}
+
+interface Genre {
+  id: number;
+  name: string;
+  slug: string;
 }
