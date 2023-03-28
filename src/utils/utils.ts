@@ -1,4 +1,4 @@
-import { Game, releaseYearForGame } from '@models/game.model';
+import { Game, Genre, releaseYearForGame } from '@models/game.model';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -34,6 +34,10 @@ export function replaceVariableSyntax(game: Game, text: string): string {
   if (!text?.trim()) {
     return '';
   }
+
+  game.genres.toString = function (this: Genre[]) {
+    return this.map(g => g.name).join(', ');
+  };
 
   const entries = Object.entries(game);
 

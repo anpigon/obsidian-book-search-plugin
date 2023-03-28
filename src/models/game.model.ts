@@ -93,7 +93,7 @@ interface ScreenShot {
   image: string;
 }
 
-interface Genre {
+export interface Genre {
   id: number;
   name: string;
   slug: string;
