@@ -43,10 +43,12 @@ export const releaseYearForGame = (game: Game): string => {
   return releaseString.substring(0, releaseString.indexOf('-'));
 };
 
-interface Platform {
-  id: number;
-  name: string;
-  slug: string;
+export interface Platform {
+  platform: {
+    id: number;
+    name: string;
+    slug: string;
+  };
 }
 
 interface Store {
