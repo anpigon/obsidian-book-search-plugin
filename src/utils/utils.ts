@@ -1,4 +1,4 @@
-import { Game } from '@models/game.model';
+import { Game, releaseYearForGame } from '@models/game.model';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -18,7 +18,7 @@ export function makeFileName(game: Game, fileNameFormat?: string) {
   if (fileNameFormat) {
     result = replaceVariableSyntax(game, replaceDateInString(fileNameFormat));
   } else {
-    result = !game.released ? game.name : `${game.name} - ${game.released}`;
+    result = !game.released ? game.name : `${game.name} (${releaseYearForGame(game)})`;
   }
   return replaceIllegalFileNameCharactersInString(result) + '.md';
 }

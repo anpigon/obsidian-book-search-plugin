@@ -35,7 +35,13 @@ export interface Game {
   genres: Genre[];
   parent_platforms: Platform[];
   short_screenshots: ScreenShot[];
+  releaseYear(): string;
 }
+
+export const releaseYearForGame = (game: Game): string => {
+  const releaseString = game.released;
+  return releaseString.substring(0, releaseString.indexOf('-'));
+};
 
 interface Platform {
   id: number;

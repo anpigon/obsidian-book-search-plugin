@@ -1,5 +1,5 @@
 import { App, SuggestModal } from 'obsidian';
-import { Game } from '@models/game.model';
+import { Game, releaseYearForGame } from '@models/game.model';
 
 export class GameSuggestModal extends SuggestModal<Game> {
   constructor(
@@ -18,7 +18,7 @@ export class GameSuggestModal extends SuggestModal<Game> {
   // Renders each suggestion item.
   renderSuggestion(game: Game, el: HTMLElement) {
     const title = game.name;
-    const publishDate = game.released ? `(${game.released})` : '';
+    const publishDate = game.released ? `(${releaseYearForGame(game)})` : '';
     el.createEl('div', { text: title });
     el.createEl('small', { text: publishDate });
   }
