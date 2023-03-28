@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-export interface FrontMatter {
-  [key: string]: string | string[];
-}
-
 export interface RAWGResponse<T> {
   count: number;
   next: string;

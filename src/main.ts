@@ -11,7 +11,7 @@ import {
   useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
 } from '@utils/template';
-import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
+import { replaceVariableSyntax, makeFileName } from '@utils/utils';
 
 export default class GameSearchPlugin extends Plugin {
   settings: GameSearchPluginSettings;
@@ -58,31 +58,11 @@ export default class GameSearchPlugin extends Plugin {
   }
 
   async getRenderedContents(game: Game) {
-    const {
-      templateFile,
-      useDefaultFrontmatter,
-      defaultFrontmatterKeyType,
-      frontmatter, // @deprecated
-      content, // @deprecated
-    } = this.settings;
+    const { templateFile } = this.settings;
 
-    if (templateFile) {
-      const templateContents = await getTemplateContents(this.app, templateFile);
-      const replacedVariable = replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
-      return executeInlineScriptsTemplates(game, replacedVariable);
-    }
-
-    let replacedVariableFrontmatter = replaceVariableSyntax(game, frontmatter); // @deprecated
-    if (useDefaultFrontmatter) {
-      replacedVariableFrontmatter = toStringFrontMatter(
-        applyDefaultFrontMatter(game, replacedVariableFrontmatter, defaultFrontmatterKeyType),
-      );
-    }
-    const replacedVariableContent = replaceVariableSyntax(game, content);
-
-    return replacedVariableFrontmatter
-      ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
-      : replacedVariableContent;
+    const templateContents = await getTemplateContents(this.app, templateFile);
+    const replacedVariable = replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
+    return executeInlineScriptsTemplates(game, replacedVariable);
   }
 
   async insertMetadata(): Promise<void> {

@@ -1,5 +1,4 @@
-import { Game, FrontMatter } from '@models/game.model';
-import { DefaultFrontmatterKeyType } from '@settings/settings';
+import { Game } from '@models/game.model';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -31,26 +30,6 @@ export function changeSnakeCase(game: Game) {
   }, {});
 }
 
-export function applyDefaultFrontMatter(
-  game: Game,
-  frontmatter: FrontMatter | string,
-  keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
-) {
-  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? game : changeSnakeCase(game);
-
-  const extraFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
-  for (const key in extraFrontMatter) {
-    const value = extraFrontMatter[key]?.toString().trim() ?? '';
-    if (frontMater[key] && frontMater[key] !== value) {
-      frontMater[key] = `${frontMater[key]}, ${value}`;
-    } else {
-      frontMater[key] = value;
-    }
-  }
-
-  return frontMater as object;
-}
-
 export function replaceVariableSyntax(game: Game, text: string): string {
   if (!text?.trim()) {
     return '';
@@ -68,42 +47,6 @@ export function replaceVariableSyntax(game: Game, text: string): string {
 
 export function camelToSnakeCase(str) {
   return str.replace(/[A-Z]/g, letter => `_${letter?.toLowerCase()}`);
-}
-
-export function parseFrontMatter(frontMatterString: string) {
-  if (!frontMatterString) return {};
-  return frontMatterString
-    .split('\n')
-    .map(item => {
-      const index = item.indexOf(':');
-      if (index === -1) return [item.trim(), ''];
-
-      const key = item.slice(0, index)?.trim();
-      const value = item.slice(index + 1)?.trim();
-      return [key, value];
-    })
-    .reduce((acc, [key, value]) => {
-      if (key) {
-        acc[key] = value?.trim() ?? '';
-      }
-      return acc;
-    }, {});
-}
-
-export function toStringFrontMatter(frontMatter: object): string {
-  return Object.entries(frontMatter)
-    .map(([key, value]) => {
-      const newValue = value?.toString().trim() ?? '';
-      if (/\r|\n/.test(newValue)) {
-        return '';
-      }
-      if (/:\s/.test(newValue)) {
-        return `${key}: "${newValue.replace(/"/g, '&quot;')}"\n`;
-      }
-      return `${key}: ${newValue}\n`;
-    })
-    .join('')
-    .trim();
 }
 
 export function getDate(input?: { format?: string; offset?: number }) {
