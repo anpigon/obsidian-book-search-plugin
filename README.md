@@ -9,7 +9,7 @@ Use to query game using :
 
 - A game title
 
-Use RAWG Game APe to get the game information.
+Use RAWG Game API to get the game information.
 
 <br>
 

@@ -67,9 +67,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
         });
 
     // New File Name
-    const newFileNameHint = document.createDocumentFragment().createEl('code', {
-      text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}} - {{author}}',
-    });
+    let newFileNameHint = replaceDateInString(this.plugin.settings.fileNameFormat) || '{{name}} - {{release}}';
     new Setting(containerEl)
       .setClass('game-search-plugin__settings--new_file_name')
       .setName('New file name')
@@ -86,14 +84,19 @@ export class GameSearchSettingTab extends PluginSettingTab {
             this.plugin.settings.fileNameFormat = newValue?.trim();
             this.plugin.saveSettings();
 
-            newFileNameHint.innerHTML = replaceDateInString(newValue) || '{{name}} - {{release}}';
+            newFileNameHint = replaceDateInString(newValue) || '{{name}} - {{release}}';
           });
       });
+
+    const newFileNameHintElement = document.createDocumentFragment().createEl('code', {
+      text: newFileNameHint,
+    });
+
     containerEl
       .createEl('div', {
         cls: ['setting-item-description', 'game-search-plugin__settings--new_file_name_hint'],
       })
-      .append(newFileNameHint);
+      .append(newFileNameHintElement);
 
     // Template file
     const templateFileDesc = document.createDocumentFragment();
