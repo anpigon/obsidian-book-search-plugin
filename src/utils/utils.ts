@@ -7,7 +7,7 @@ export const DATE_REGEX = /{{DATE(\+-?[0-9]+)?}}/;
 export const DATE_REGEX_FORMATTED = /{{DATE:([^}\n\r+]*)(\+-?[0-9]+)?}}/;
 
 export function replaceIllegalFileNameCharactersInString(text: string) {
-  return text.replace(/[\\,#%&{}/*<>$":@.]/g, '').replace(/\s+/g, ' ');
+  return text.replace(/[\\,#%&{}/*<>$":@.?]/g, '').replace(/\s+/g, ' ');
 }
 
 export function isISBN(str: string) {
