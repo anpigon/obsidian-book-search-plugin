@@ -43,3 +43,74 @@ You can use `{{DATE}}` or `{{DATE:YYYYMMDD}}` to set a unique file name.
 ### Template file
 
 You can set the template file location. There is an example template at the bottom.
+
+## Example template
+
+Please also find a definition of the variables used in this template below (see: [Template variables definitions](#template-variables-definitions)).
+
+```
+---
+tag: Game 🎮
+genres: {{genres}}
+platforms: {{platforms}}
+release_date: {{released}}
+background_image: {{background_image}}
+---
+
+![{{name}}]({{background_image}})
+
+Genres: {{genres}}
+Release Date: {{released}}
+
+```
+
+## Template variables definitions
+
+Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
+
+| name               | description                                             |
+| -------------------|---------------------------------------------------------|
+| id                 | (number) RAWG database Id                               |
+| slug               | (string) RAWG game slug                                 |
+| name               | (string) Name of the game                               |
+| released           | (string) Release date of the game                       |
+| tba                | (boolean) unknown release date flag                     |
+| background_image   | (string) background image url                           |
+| rating             | ([Rating](#rating_object))                              |
+| rating_top         | (number), highest rating                                |
+| ratings            | (array) of [Ratings](#rating_object)                    |
+| ratings_count      | (number) of ratings                                     |
+| reviews_text_count | (string) number of text reviews                         |
+| metacritic         | (number) metacritic score                               |
+| playtime           | (number) estimated playtime in hours                    |
+| updated            | (string) last updated date in RAWG database             |
+| esrb_rating        | ([ESRB](#esrb_object)) ESRB rating                      |
+| platforms          | (array) of [Platforms](#platform_object)                |
+| stores             | (array) of [Stores](#store_object)                      |
+| score              | (number)                                                |
+| tags               | (array) of [Tags](#tag_object)                          |
+| saturated_color    | (string) hex color (without `#`)                        |
+| dominant_color     | (string) hex color (without `#`)                        |
+| genres             | (array) of [Genres](#genre-object)                      |
+| short_screenshots  | (array) of [ScreenShots](#screenshot-object)            |
+
+### Rating Object
+`{ id: number, title: string, count: number, percent: number }`
+
+### ESRB Object
+`{ id: number, name: string, slug: string, name_en: string, name_ru: string }`
+
+### Platform Object
+`{ platform: { id: number, name: string, slug: string } }`
+
+### Store Object
+`{ id: number, name: string, slug: string }`
+
+### Tag Object
+`{ id: number, name: string, slug: string, language: string, games_count: number, image_background: string }`
+
+### Genre Object
+`{ id: number, name: string, slug: string }`
+
+### ScreenShot Object
+`{ id: number, name: string, slug: string }`
