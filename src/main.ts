@@ -28,13 +28,13 @@ export default class GameSearchPlugin extends Plugin {
     this.addCommand({
       id: 'open-game-search-modal',
       name: 'Create new game note',
-      editorCallback: () => this.createNewGameNote(),
+      callback: () => this.createNewGameNote(),
     });
 
     this.addCommand({
       id: 'open-game-search-modal-to-insert',
       name: 'Insert the metadata',
-      editorCallback: () => this.insertMetadata(),
+      callback: () => this.insertMetadata(),
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
