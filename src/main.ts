@@ -34,7 +34,7 @@ export default class GameSearchPlugin extends Plugin {
     this.addCommand({
       id: 'open-game-search-modal-to-insert',
       name: 'Insert the metadata',
-      callback: () => this.insertMetadata(),
+      editorCallback: () => this.insertMetadata(),
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin

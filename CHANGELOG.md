@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3
+puts `editorCallback` back when inserting game metadata into existing note -- _that_ makes sense I just wasn't using that feature as much/ever
+
 ## 0.1.2
 removes `editorCallback` for action in prefence of `callback` -- I would like to be able to create a game note without being in edit mode
 
