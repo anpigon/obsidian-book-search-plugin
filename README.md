@@ -68,31 +68,47 @@ Release Date: {{released}}
 
 Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
 
-| name               | description                                             |
-| -------------------|---------------------------------------------------------|
-| id                 | (number) RAWG database Id                               |
-| slug               | (string) RAWG game slug                                 |
-| name               | (string) Name of the game                               |
-| released           | (string) Release date of the game                       |
-| tba                | (boolean) unknown release date flag                     |
-| background_image   | (string) background image url                           |
-| rating             | ([Rating](#rating_object))                              |
-| rating_top         | (number), highest rating                                |
-| ratings            | (array) of [Ratings](#rating_object)                    |
-| ratings_count      | (number) of ratings                                     |
-| reviews_text_count | (string) number of text reviews                         |
-| metacritic         | (number) metacritic score                               |
-| playtime           | (number) estimated playtime in hours                    |
-| updated            | (string) last updated date in RAWG database             |
-| esrb_rating        | ([ESRB](#esrb_object)) ESRB rating                      |
-| platforms          | (array) of [Platforms](#platform_object)                |
-| stores             | (array) of [Stores](#store_object)                      |
-| score              | (number)                                                |
-| tags               | (array) of [Tags](#tag_object)                          |
-| saturated_color    | (string) hex color (without `#`)                        |
-| dominant_color     | (string) hex color (without `#`)                        |
-| genres             | (array) of [Genres](#genre-object)                      |
-| short_screenshots  | (array) of [ScreenShots](#screenshot-object)            |
+| name                 | description                                             |
+| ---------------------|---------------------------------------------------------|
+| id                   | (number) RAWG database Id                               |
+| slug                 | (string) RAWG game slug                                 |
+| name                 | (string) Name of the game                               |
+| name_original        | (string) Original name of the game                      |
+| description          | (string) Description of the game, html format           |
+| description_raw      | (string) Description of the game, raw text              |
+| released             | (string) Release date of the game                       |
+| tba                  | (boolean) unknown release date flag                     |
+| background_image     | (string) background image url                           |
+| rating               | ([Rating](#rating_object))                              |
+| rating_top           | (number), highest rating                                |
+| ratings              | (array) of [Ratings](#rating_object)                    |
+| ratings_count        | (number) of ratings                                     |
+| reviews_text_count   | (string) number of text reviews                         |
+| metacritic           | (number) metacritic score                               |
+| metacritic_platforms | (array) of [MetacriticPlatform](#metacritic_platform_object)) |
+| playtime             | (number) estimated playtime in hours                    |
+| updated              | (string) last updated date in RAWG database             |
+| esrb_rating          | ([ESRB](#esrb_object)) ESRB rating                      |
+| platforms            | (array) of [Platforms](#platform_object)                |
+| stores               | (array) of [Stores](#store_object)                      |
+| score                | (number)                                                |
+| tags                 | (array) of [Tags](#tag_object)                          |
+| saturated_color      | (string) hex color (without `#`)                        |
+| dominant_color       | (string) hex color (without `#`)                        |
+| genres               | (array) of [Genres](#genre-object)                      |
+| short_screenshots    | (array) of [ScreenShots](#screenshot-object)            |
+| website              | (string) url of game website if one exists              |
+| publihers            | (array) of [Publishers](#publisher-object)              |
+| developers           | (array) of [Developers](#developer-object)              |
+
+### Developer Object
+`{ id: number, name: string, slug: string, games_count: number, image_background: string }`
+
+### Publisher Object
+`{ id: number, name: string, slug: string, games_count: number, image_background: string }`
+
+### Metacritic Platform Object
+`{ metscore: number, url: string, platform: [Platform](#platform_object) }`
 
 ### Rating Object
 `{ id: number, title: string, count: number, percent: number }`
