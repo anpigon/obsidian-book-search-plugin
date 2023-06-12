@@ -72,7 +72,6 @@ export default class GameSearchPlugin extends Plugin {
         return;
       }
 
-      // TODO: Try using a search query on the selected text
       const game = await this.searchGameMetadata(markdownView.file.basename);
 
       if (!markdownView.editor) {
