@@ -1,17 +1,16 @@
 import { MarkdownView, Notice, Plugin } from 'obsidian';
-
 import { GameSearchModal } from '@views/game_search_modal';
 import { GameSuggestModal } from '@views/game_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
-import { Game } from '@models/game.model';
+import { Game, GameFromSearch } from '@models/game.model';
 import { GameSearchSettingTab, GameSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
+import { replaceVariableSyntax, makeFileName } from '@utils/utils';
 import {
   getTemplateContents,
   applyTemplateTransformations,
   useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
 } from '@utils/template';
-import { replaceVariableSyntax, makeFileName } from '@utils/utils';
 
 export default class GameSearchPlugin extends Plugin {
   settings: GameSearchPluginSettings;
@@ -73,7 +72,6 @@ export default class GameSearchPlugin extends Plugin {
         return;
       }
 
-      // TODO: Try using a search query on the selected text
       const game = await this.searchGameMetadata(markdownView.file.basename);
 
       if (!markdownView.editor) {
@@ -123,7 +121,7 @@ export default class GameSearchPlugin extends Plugin {
     }
   }
 
-  async openGameSearchModal(query = ''): Promise<Game[]> {
+  async openGameSearchModal(query = ''): Promise<GameFromSearch[]> {
     return new Promise((resolve, reject) => {
       return new GameSearchModal(this, this.settings.rawgApiKey, query, (error, results) => {
         return error ? reject(error) : resolve(results);
@@ -131,9 +129,9 @@ export default class GameSearchPlugin extends Plugin {
     });
   }
 
-  async openGameSuggestModal(games: Game[]): Promise<Game> {
+  async openGameSuggestModal(games: GameFromSearch[]): Promise<Game> {
     return new Promise((resolve, reject) => {
-      return new GameSuggestModal(this.app, games, (error, selectedGame) => {
+      return new GameSuggestModal(this.app, this.settings.rawgApiKey, games, (error, selectedGame) => {
         return error ? reject(error) : resolve(selectedGame);
       }).open();
     });

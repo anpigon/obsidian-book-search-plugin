@@ -1,6 +1,6 @@
 import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian';
 import { RAWGAPI } from '@src/apis/rawg_games_api';
-import { Game } from '@models/game.model';
+import { GameFromSearch } from '@models/game.model';
 import GameSearchPlugin from '@src/main';
 
 export class GameSearchModal extends Modal {
@@ -11,7 +11,7 @@ export class GameSearchModal extends Modal {
     plugin: GameSearchPlugin,
     private key: string,
     private query: string,
-    private callback: (error: Error | null, result?: Game[]) => void,
+    private callback: (error: Error | null, result?: GameFromSearch[]) => void,
   ) {
     super(plugin.app);
   }

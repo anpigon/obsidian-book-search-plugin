@@ -1,22 +1,24 @@
 import { App, SuggestModal } from 'obsidian';
-import { Game, releaseYearForGame } from '@models/game.model';
+import { RAWGAPI } from '@src/apis/rawg_games_api';
+import { Game, GameFromSearch, releaseYearForGame } from '@models/game.model';
 
-export class GameSuggestModal extends SuggestModal<Game> {
+export class GameSuggestModal extends SuggestModal<GameFromSearch> {
   constructor(
     app: App,
-    private readonly suggestion: Game[],
+    private key: string,
+    private readonly suggestion: GameFromSearch[],
     private onChoose: (error: Error | null, result?: Game) => void,
   ) {
     super(app);
   }
 
   // Returns all available suggestions.
-  getSuggestions(_query: string): Game[] {
+  getSuggestions(_query: string): GameFromSearch[] {
     return this.suggestion;
   }
 
   // Renders each suggestion item.
-  renderSuggestion(game: Game, el: HTMLElement) {
+  renderSuggestion(game: GameFromSearch, el: HTMLElement) {
     const title = game.name;
     const publishDate = game.released ? `(${releaseYearForGame(game)})` : '';
     el.createEl('div', { text: title });
@@ -24,7 +26,9 @@ export class GameSuggestModal extends SuggestModal<Game> {
   }
 
   // Perform action on the selected suggestion.
-  onChooseSuggestion(game: Game) {
-    this.onChoose(null, game);
+  async onChooseSuggestion(game: GameFromSearch) {
+    const api = new RAWGAPI(this.key);
+    const g = await api.getBySlug(game.slug);
+    this.onChoose(null, g);
   }
 }
