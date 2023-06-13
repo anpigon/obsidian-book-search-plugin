@@ -47,6 +47,7 @@ You can set the template file location. There is an example template at the bott
 ## Example template
 
 Please also find a definition of the variables used in this template below (see: [Template variables definitions](#template-variables-definitions)).
+note: array properties will currenly output as a comma separated string
 
 ```
 ---
@@ -61,7 +62,8 @@ background_image: {{background_image}}
 
 Genres: {{genres}}
 Release Date: {{released}}
-
+Publishers: {{publishers}}
+Developers: {{developers}}
 ```
 
 ## Template variables definitions

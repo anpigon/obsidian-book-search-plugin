@@ -37,12 +37,6 @@ export interface GameFromSearch {
   short_screenshots: ScreenShot[];
 }
 
-interface MetacriticPlatform {
-  metascore: number;
-  url: string;
-  plaform: Platform;
-}
-
 export interface Game {
   id: number;
   slug: string;
@@ -104,6 +98,12 @@ export const releaseYearForGame = (game: GameFromSearch | Game): string => {
   return releaseString.substring(0, releaseString.indexOf('-'));
 };
 
+export interface MetacriticPlatform {
+  metascore: number;
+  url: string;
+  platform: Platform;
+}
+
 export interface Platform {
   platform: {
     id: number;
@@ -112,7 +112,7 @@ export interface Platform {
   };
 }
 
-interface PlatformDetailed {
+export interface PlatformDetailed {
   platform: {
     id: number;
     name: string;
@@ -145,7 +145,7 @@ interface StoreDetailed {
   };
 }
 
-interface Developer {
+export interface Developer {
   id: number;
   name: string;
   slug: string;
@@ -199,7 +199,7 @@ export interface Genre {
   image_background?: number;
 }
 
-interface Publisher {
+export interface Publisher {
   id: number;
   name: string;
   slug: string;
