@@ -5,7 +5,8 @@ import {
   Publisher,
   Developer,
   MetacriticPlatform,
-  releaseYearForGame } from '@models/game.model';
+  releaseYearForGame,
+} from '@models/game.model';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -59,7 +60,7 @@ export function replaceVariableSyntax(game: Game, text: string): string {
   };
 
   game.metacritic_platforms.toString = function (this: MetacriticPlatform[]) {
-    return this.map(p => p.platform.platform.name + ": " + p.metascore).join(', ');
+    return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
   };
 
   const entries = Object.entries(game);
