@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+adds request to Game details endpoint of RAWG api before creating game not or inserting metadata into existing. This was mostly done so that game Publishers and Developers could be used in templating ([Issue 3](https://github.com/CMorooney/obsidian-game-search-plugin/issues/3)
+
 ## 0.1.3
 puts `editorCallback` back when inserting game metadata into existing note -- _that_ makes sense I just wasn't using that feature as much/ever
 
