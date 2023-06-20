@@ -121,6 +121,28 @@ export class GameSearchSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
           });
       });
+
+    // Regenerate files
+    const regenDesc = document.createDocumentFragment();
+    regenDesc.createDiv({
+      text: 'WARNING: this will attempt to regenerate all the game files in your selected directory and may have unintended effects.',
+    });
+    regenDesc.createDiv({
+      text: 'It will do so by checking metadata in the current files for either an `id`, `slug`, or `name` field to query the API. Any files without this metadata will be skipped.',
+    });
+    regenDesc.createDiv({
+      text: 'This function will only attempt to update/replace/regenerate the metadata of the document and leave other content untouched.',
+    });
+
+    new Setting(containerEl)
+      .setName('Regenerate files')
+      .setDesc(regenDesc)
+      .addButton(bc => {
+        bc.setButtonText('Regen');
+        bc.onClick(() => {
+          this.plugin.regenerateAllGameNotesMetadata();
+        });
+      });
   }
 }
 

@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin } from 'obsidian';
+import { MarkdownView, Notice, Plugin, TAbstractFile, TFolder, Vault } from 'obsidian';
 import { GameSearchModal } from '@views/game_search_modal';
 import { GameSuggestModal } from '@views/game_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
@@ -85,6 +85,17 @@ export default class GameSearchPlugin extends Plugin {
       console.warn(err);
       this.showNotice(err);
     }
+  }
+
+  async regenerateAllGameNotesMetadata(): Promise<void> {
+    // recurse children in directory
+    // https://marcus.se.net/obsidian-plugin-docs/reference/typescript/classes/Vault#recursechildren
+    Vault.recurseChildren(new TFolder(), (f: TAbstractFile) => {
+      console.log(f.name);
+    });
+
+    // modify files:
+    // https://marcus.se.net/obsidian-plugin-docs/reference/typescript/classes/Vault#modify
   }
 
   async createNewGameNote(): Promise<void> {
