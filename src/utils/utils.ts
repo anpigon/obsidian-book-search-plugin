@@ -17,10 +17,6 @@ export function replaceIllegalFileNameCharactersInString(text: string) {
   return text.replace(/[\\,#%&{}/*<>$":@.]/g, '').replace(/\s+/g, ' ');
 }
 
-export function isISBN(str: string) {
-  return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
-}
-
 export function makeFileName(game: Game, fileNameFormat?: string) {
   let result;
   if (fileNameFormat) {

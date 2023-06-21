@@ -28,9 +28,9 @@ export class RAWGAPI {
     }
   }
 
-  async getBySlug(slug: string): Promise<Game> {
+  async getBySlugOrId(slugOrId: string | number): Promise<Game> {
     try {
-      const apiURL = new URL('https://api.rawg.io/api/games/' + slug);
+      const apiURL = new URL('https://api.rawg.io/api/games/' + slugOrId);
       apiURL.searchParams.append('key', this.key);
 
       const res = await requestUrl({

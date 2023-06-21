@@ -1,10 +1,12 @@
-import { MarkdownView, Notice, Plugin } from 'obsidian';
+import { MarkdownView, Notice, Plugin, TAbstractFile, TFolder, TFile, Vault, normalizePath } from 'obsidian';
 import { GameSearchModal } from '@views/game_search_modal';
 import { GameSuggestModal } from '@views/game_suggest_modal';
+import { ConfirmRegenModal } from '@views/confirm_regen_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { Game, GameFromSearch } from '@models/game.model';
 import { GameSearchSettingTab, GameSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { replaceVariableSyntax, makeFileName } from '@utils/utils';
+import { RAWGAPI } from '@src/apis/rawg_games_api';
 import {
   getTemplateContents,
   applyTemplateTransformations,
@@ -12,11 +14,15 @@ import {
   executeInlineScriptsTemplates,
 } from '@utils/template';
 
+export type Nullable<T> = T | undefined | null;
+
 export default class GameSearchPlugin extends Plugin {
   settings: GameSearchPluginSettings;
+  api: RAWGAPI;
 
   async onload() {
     await this.loadSettings();
+    this.api = new RAWGAPI(this.settings.rawgApiKey);
 
     // This creates an icon in the left ribbon.
     const ribbonIconEl = this.addRibbonIcon('game', 'Create new game note', () => this.createNewGameNote());
@@ -87,9 +93,45 @@ export default class GameSearchPlugin extends Plugin {
     }
   }
 
-  async createNewGameNote(): Promise<void> {
+  async regenerateAllGameNotesMetadata(): Promise<void> {
+    new ConfirmRegenModal(this.app, () => {
+      const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
+
+      Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
+        const file = f as TFile;
+        if (!!file && file.name.includes('.md')) {
+          const noteMetadata = await this.parseFileMetadata(f as TFile);
+          const q: Nullable<string> =
+            noteMetadata.id ?? noteMetadata.Id ?? noteMetadata.slug ?? noteMetadata.Slug ?? null;
+
+          let game: Nullable<Game> = null;
+          if (q) {
+            game = await this.api.getBySlugOrId(q);
+          } else {
+            const games = await this.api.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
+            game = await this.api.getBySlugOrId(games[0].slug);
+          }
+
+          if (game) {
+            this.createNewGameNote(game, true);
+          }
+        }
+      });
+    }).open();
+  }
+
+  async parseFileMetadata(file: TFile): Promise<any> {
+    const fileManager = this.app.fileManager;
+    return new Promise<any>(accept => {
+      fileManager.processFrontMatter(file, (data: any) => {
+        accept(data);
+      });
+    });
+  }
+
+  async createNewGameNote(g: Game = null, overwriteFile = false): Promise<void> {
     try {
-      const game = await this.searchGameMetadata();
+      const game = g ?? (await this.searchGameMetadata());
 
       // open file
       const activeLeaf = this.app.workspace.getLeaf();
@@ -100,10 +142,14 @@ export default class GameSearchPlugin extends Plugin {
 
       const renderedContents = await this.getRenderedContents(game);
 
-      // TODO: If the same file exists, it asks if you want to overwrite it.
+      // If the same file exists, it asks if you want to overwrite it.
       // create new File
       const fileName = makeFileName(game, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder}/${fileName}`;
+      const existing = this.app.vault.getAbstractFileByPath(normalizePath(filePath));
+      if (existing && overwriteFile) {
+        await this.app.vault.delete(existing, true);
+      }
       const targetFile = await this.app.vault.create(filePath, renderedContents);
 
       // if use Templater plugin
@@ -123,7 +169,7 @@ export default class GameSearchPlugin extends Plugin {
 
   async openGameSearchModal(query = ''): Promise<GameFromSearch[]> {
     return new Promise((resolve, reject) => {
-      return new GameSearchModal(this, this.settings.rawgApiKey, query, (error, results) => {
+      return new GameSearchModal(this, this.api, query, (error, results) => {
         return error ? reject(error) : resolve(results);
       }).open();
     });
@@ -131,7 +177,7 @@ export default class GameSearchPlugin extends Plugin {
 
   async openGameSuggestModal(games: GameFromSearch[]): Promise<Game> {
     return new Promise((resolve, reject) => {
-      return new GameSuggestModal(this.app, this.settings.rawgApiKey, games, (error, selectedGame) => {
+      return new GameSuggestModal(this.app, this.api, games, (error, selectedGame) => {
         return error ? reject(error) : resolve(selectedGame);
       }).open();
     });

@@ -9,7 +9,7 @@ export class GameSearchModal extends Modal {
 
   constructor(
     plugin: GameSearchPlugin,
-    private key: string,
+    private api: RAWGAPI,
     private query: string,
     private callback: (error: Error | null, result?: GameFromSearch[]) => void,
   ) {
@@ -30,8 +30,7 @@ export class GameSearchModal extends Modal {
     if (!this.isBusy) {
       try {
         this.setBusy(true);
-        const api = new RAWGAPI(this.key);
-        const searchResults = await api.getByQuery(this.query);
+        const searchResults = await this.api.getByQuery(this.query);
         this.setBusy(false);
 
         if (!searchResults?.length) {
