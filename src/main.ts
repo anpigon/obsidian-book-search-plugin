@@ -1,6 +1,7 @@
 import { MarkdownView, Notice, Plugin, TAbstractFile, TFolder, TFile, Vault, normalizePath } from 'obsidian';
 import { GameSearchModal } from '@views/game_search_modal';
 import { GameSuggestModal } from '@views/game_suggest_modal';
+import { ConfirmRegenModal } from '@views/confirm_regen_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { Game, GameFromSearch } from '@models/game.model';
 import { GameSearchSettingTab, GameSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
@@ -93,28 +94,30 @@ export default class GameSearchPlugin extends Plugin {
   }
 
   async regenerateAllGameNotesMetadata(): Promise<void> {
-    const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
+    new ConfirmRegenModal(this.app, () => {
+      const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
 
-    Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
-      const file = f as TFile;
-      if (!!file && file.name.includes('.md')) {
-        const noteMetadata = await this.parseFileMetadata(f as TFile);
-        const q: Nullable<string> =
-          noteMetadata.id ?? noteMetadata.Id ?? noteMetadata.slug ?? noteMetadata.Slug ?? null;
+      Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
+        const file = f as TFile;
+        if (!!file && file.name.includes('.md')) {
+          const noteMetadata = await this.parseFileMetadata(f as TFile);
+          const q: Nullable<string> =
+            noteMetadata.id ?? noteMetadata.Id ?? noteMetadata.slug ?? noteMetadata.Slug ?? null;
 
-        let game: Nullable<Game> = null;
-        if (q) {
-          game = await this.api.getBySlugOrId(q);
-        } else {
-          const games = await this.api.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
-          game = await this.api.getBySlugOrId(games[0].slug);
+          let game: Nullable<Game> = null;
+          if (q) {
+            game = await this.api.getBySlugOrId(q);
+          } else {
+            const games = await this.api.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
+            game = await this.api.getBySlugOrId(games[0].slug);
+          }
+
+          if (game) {
+            this.createNewGameNote(game, true);
+          }
         }
-
-        if (game) {
-          this.createNewGameNote(game, true);
-        }
-      }
-    });
+      });
+    }).open();
   }
 
   async parseFileMetadata(file: TFile): Promise<any> {
