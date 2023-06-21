@@ -1,6 +1,6 @@
 {
   "name": "game-search",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "This is a plugin to help you create game notes.",
   "homepage": "https://github.com/CMorooney/obsidian-game-search-plugin",
   "main": "main.js",

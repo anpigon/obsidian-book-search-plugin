@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.5
+adds a button in the settings page to completely regenerate all files in the selected folder. This was mostly done so that folks who were not adding anything to their templates could update their template and regenerate their library ([Issue 6](https://github.com/CMorooney/obsidian-game-search-plugin/issues/6)]
+
 ## 0.1.4
 adds request to Game details endpoint of RAWG api before creating game not or inserting metadata into existing. This was mostly done so that game Publishers and Developers could be used in templating ([Issue 3](https://github.com/CMorooney/obsidian-game-search-plugin/issues/3)
 
