@@ -5,7 +5,7 @@ import { Game, GameFromSearch, releaseYearForGame } from '@models/game.model';
 export class GameSuggestModal extends SuggestModal<GameFromSearch> {
   constructor(
     app: App,
-    private key: string,
+    private api: RAWGAPI,
     private readonly suggestion: GameFromSearch[],
     private onChoose: (error: Error | null, result?: Game) => void,
   ) {
@@ -27,8 +27,7 @@ export class GameSuggestModal extends SuggestModal<GameFromSearch> {
 
   // Perform action on the selected suggestion.
   async onChooseSuggestion(game: GameFromSearch) {
-    const api = new RAWGAPI(this.key);
-    const g = await api.getBySlug(game.slug);
+    const g = await this.api.getBySlugOrId(game.slug);
     this.onChoose(null, g);
   }
 }

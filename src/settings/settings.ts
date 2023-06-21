@@ -125,13 +125,22 @@ export class GameSearchSettingTab extends PluginSettingTab {
     // Regenerate files
     const regenDesc = document.createDocumentFragment();
     regenDesc.createDiv({
-      text: 'WARNING: this will attempt to regenerate all the game files in your selected directory and may have unintended effects.',
+      text: 'WARNING',
     });
     regenDesc.createDiv({
-      text: 'It will do so by checking metadata in the current files for either an `id`, `slug`, or `name` field to query the API. Any files without this metadata will be skipped.',
+      text: 'WARNING',
     });
     regenDesc.createDiv({
-      text: 'This function will only attempt to update/replace/regenerate the metadata of the document and leave other content untouched.',
+      text: 'WARNING',
+    });
+    regenDesc.createDiv({
+      text: 'WARNING',
+    });
+    regenDesc.createDiv({
+      text: 'Clicking this button will force delete and regenerate all files in your selected folder using your latest template file. It is highly recommended to back up your notes especially if you have any game notes or content outside of your templated content.',
+    });
+    regenDesc.createDiv({
+      text: 'This will work by checking metadata in the current files for either an `id/Id`, `slug/Slug`, or `name/Name` fields to query the API. As a very last fallback it will try using the filename as a query but any files that can not be requeried in all in any of these manners will be skipped for regeneration and *not* deleted',
     });
 
     new Setting(containerEl)
