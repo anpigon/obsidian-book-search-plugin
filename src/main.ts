@@ -25,7 +25,7 @@ export default class GameSearchPlugin extends Plugin {
     this.api = new RAWGAPI(this.settings.rawgApiKey);
 
     // This creates an icon in the left ribbon.
-    const ribbonIconEl = this.addRibbonIcon('game', 'Create new game note', () => this.createNewGameNote());
+    const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
     // Perform additional things with the ribbon
     ribbonIconEl.addClass('obsidian-game-search-plugin-ribbon-class');
 
