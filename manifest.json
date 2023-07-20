@@ -1,7 +1,7 @@
 {
 	"id": "game-search",
 	"name": "Game Search",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"minAppVersion": "0.15.0",
 	"description": "Helps you find games and create notes.",
 	"author": "Calvin forked from anpigon",
