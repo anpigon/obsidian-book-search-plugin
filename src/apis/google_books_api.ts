@@ -2,6 +2,12 @@ import { Book } from '@models/book.model';
 import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Electron = require('electron');
+const {
+  remote: { safeStorage },
+} = Electron;
+
 export class GoogleBooksApi implements BaseBooksApiImpl {
   constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
 
@@ -19,7 +25,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         params['langRestrict'] = langRestrict;
       }
       if (this.apiKey !== '') {
-        params['key'] = this.apiKey;
+        params['key'] = safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(this.apiKey) : this.apiKey;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {

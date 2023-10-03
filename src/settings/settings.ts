@@ -1,10 +1,11 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
-//const Electron = require('electron');
-//const {
-//  remote: { safeStorage },
-//} = Electron;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Electron = require('electron');
+const {
+  remote: { safeStorage },
+} = Electron;
 
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
@@ -278,16 +279,25 @@ export class BookSearchSettingTab extends PluginSettingTab {
     // TODO: More Secure Saveing System
     const APISettingsChildren: Setting[] = [];
     createFoldingHeader(containerEl, 'API Settings', APISettingsChildren);
+    let tempKeyValue = '';
     APISettingsChildren.push(
       new Setting(containerEl)
         .setName('Google Book API Key')
         .setDesc('Be secure the API key.\n How the API create, please read README')
         .addText(text => {
-          const prevValue = this.plugin.settings.apiKey;
-          text.setValue(prevValue).onChange(async value => {
-            const newValue = value;
-            this.plugin.settings.apiKey = newValue;
+          text.onChange(async value => {
+            if (safeStorage.isEncryptionAvailable()) {
+              tempKeyValue = safeStorage.enctyptString(value);
+            } else {
+              tempKeyValue = value;
+            }
+          });
+        })
+        .addButton(button => {
+          button.setButtonText('Save Key').onClick(async () => {
+            this.plugin.settings.apiKey = tempKeyValue;
             await this.plugin.saveSettings();
+            new Notice('Apikey Saved');
           });
         }),
     );
