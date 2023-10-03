@@ -275,15 +275,16 @@ export class BookSearchSettingTab extends PluginSettingTab {
     );
 
     // API Settings
-    //
-    // TODO: More Secure Saveing System
     const APISettingsChildren: Setting[] = [];
-    createFoldingHeader(containerEl, 'API Settings', APISettingsChildren);
+    createFoldingHeader(containerEl, 'Google API Settings', APISettingsChildren);
     let tempKeyValue = '';
     APISettingsChildren.push(
       new Setting(containerEl)
+        .setClass('book-search-plugin__hide')
         .setName('Google Book API Key')
-        .setDesc('Be secure the API key.\n How the API create, please read README')
+        .setDesc(
+          'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
+        )
         .addText(text => {
           text.onChange(async value => {
             if (safeStorage.isEncryptionAvailable()) {
