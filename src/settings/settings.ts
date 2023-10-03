@@ -1,6 +1,11 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
+//const Electron = require('electron');
+//const {
+//  remote: { safeStorage },
+//} = Electron;
+
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
@@ -27,6 +32,7 @@ export interface BookSearchPluginSettings {
   naverClientId: string;
   naverClientSecret: string;
   localePreference: string;
+  apiKey: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -41,6 +47,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   naverClientId: '',
   naverClientSecret: '',
   localePreference: 'default',
+  apiKey: '',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -261,6 +268,25 @@ export class BookSearchSettingTab extends PluginSettingTab {
           textArea.setValue(prevValue).onChange(async value => {
             const newValue = value;
             this.plugin.settings.content = newValue;
+            await this.plugin.saveSettings();
+          });
+        }),
+    );
+
+    // API Settings
+    //
+    // TODO: More Secure Saveing System
+    const APISettingsChildren: Setting[] = [];
+    createFoldingHeader(containerEl, 'API Settings', APISettingsChildren);
+    APISettingsChildren.push(
+      new Setting(containerEl)
+        .setName('Google Book API Key')
+        .setDesc('Be secure the API key.\n How the API create, please read README')
+        .addText(text => {
+          const prevValue = this.plugin.settings.apiKey;
+          text.setValue(prevValue).onChange(async value => {
+            const newValue = value;
+            this.plugin.settings.apiKey = newValue;
             await this.plugin.saveSettings();
           });
         }),

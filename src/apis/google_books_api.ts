@@ -3,7 +3,7 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
-  constructor(private readonly localePreference: string) {}
+  constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
 
   async getByQuery(query: string) {
     try {
@@ -17,6 +17,9 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         params['langRestrict'] = window.moment.locale();
       } else {
         params['langRestrict'] = langRestrict;
+      }
+      if (this.apiKey !== '') {
+        params['key'] = this.apiKey;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {
