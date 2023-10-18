@@ -298,7 +298,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
           'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
         )
         .addText(text => {
-          text.onChange(async value => {
+          text.inputEl.type = 'password';
+          text.setValue(this.plugin.settings.apiKey).onChange(async value => {
             if (safeStorage.isEncryptionAvailable()) {
               tempKeyValue = safeStorage.encryptString(value).toString('hex');
             } else {
