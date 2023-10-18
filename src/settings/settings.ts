@@ -1,12 +1,6 @@
 import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Electron = require('electron');
-const {
-  remote: { safeStorage },
-} = Electron;
-
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
@@ -15,6 +9,8 @@ import { ServiceProvider } from '@src/constants';
 import { SettingServiceProviderModal } from '@views/setting_service_provider_modal';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
+
+const safeStorage = global.electron?.remote.safeStorage;
 
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',
@@ -300,7 +296,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
         .addText(text => {
           text.inputEl.type = 'password';
           text.setValue(this.plugin.settings.apiKey).onChange(async value => {
-            if (safeStorage.isEncryptionAvailable()) {
+            // TODO: Find methods available on desktop and mobile
+            if (safeStorage && safeStorage.isEncryptionAvailable()) {
               tempKeyValue = safeStorage.encryptString(value).toString('hex');
             } else {
               tempKeyValue = value;
