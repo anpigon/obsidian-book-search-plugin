@@ -300,7 +300,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
         .addText(text => {
           text.onChange(async value => {
             if (safeStorage.isEncryptionAvailable()) {
-              tempKeyValue = safeStorage.enctyptString(value);
+              tempKeyValue = safeStorage.encryptString(value).toString('hex');
             } else {
               tempKeyValue = value;
             }

@@ -25,7 +25,9 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         params['langRestrict'] = langRestrict;
       }
       if (this.apiKey !== '') {
-        params['key'] = safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(this.apiKey) : this.apiKey;
+        params['key'] = safeStorage.isEncryptionAvailable()
+          ? safeStorage.decryptString(Buffer.from(this.apiKey, 'hex'))
+          : this.apiKey;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {
