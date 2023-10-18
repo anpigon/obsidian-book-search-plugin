@@ -123,33 +123,27 @@ export default class BookSearchPlugin extends Plugin {
       // if use Templater plugin
       await useTemplaterPluginInFile(this.app, targetFile);
       this.openNewBookNote(targetFile);
-
     } catch (err) {
       console.warn(err);
       this.showNotice(err);
     }
   }
 
-
   async openNewBookNote(targetFile: TFile) {
-      if (!this.settings.openPageOnCompletion)
-        return;
+    if (!this.settings.openPageOnCompletion) return;
 
+    // open file
+    const activeLeaf = this.app.workspace.getLeaf();
+    if (!activeLeaf) {
+      console.warn('No active leaf');
+      return;
+    }
 
-      // open file
-      const activeLeaf = this.app.workspace.getLeaf();
-      if (!activeLeaf) {
-        console.warn('No active leaf');
-        return;
-      }
-      
-      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-      activeLeaf.setEphemeralState({ rename: 'all' });
-      // cursor focus
-      await new CursorJumper(this.app).jumpToNextCursorLocation();
+    await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+    activeLeaf.setEphemeralState({ rename: 'all' });
+    // cursor focus
+    await new CursorJumper(this.app).jumpToNextCursorLocation();
   }
-
-
 
   async openBookSearchModal(query = ''): Promise<Book[]> {
     return new Promise((resolve, reject) => {

@@ -42,7 +42,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   naverClientId: '',
   naverClientSecret: '',
   localePreference: 'default',
-  openPageOnCompletion: true
+  openPageOnCompletion: true,
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -209,17 +209,14 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("Open New Book Note")
-      .setDesc("Enable or disable the automatic opening of the note on creation.")
+      .setName('Open New Book Note')
+      .setDesc('Enable or disable the automatic opening of the note on creation.')
       .addToggle(toggle =>
-          toggle
-          .setValue(this.plugin.settings.openPageOnCompletion)
-          .onChange(async value => {
-            this.plugin.settings.openPageOnCompletion = value;
-            await this.plugin.saveSettings();
-          })
+        toggle.setValue(this.plugin.settings.openPageOnCompletion).onChange(async value => {
+          this.plugin.settings.openPageOnCompletion = value;
+          await this.plugin.saveSettings();
+        }),
       );
-
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];
