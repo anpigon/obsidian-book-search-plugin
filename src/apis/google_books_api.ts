@@ -2,7 +2,7 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
-const safeStorage = global.electron?.remote.safeStorage;
+const safeStorage = (window as any).electron?.remote.safeStorage;
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
   constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
