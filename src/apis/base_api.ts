@@ -11,7 +11,7 @@ export interface BaseBooksApiImpl {
 
 export function factoryServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
   if (settings.serviceProvider === ServiceProvider.google) {
-    return new GoogleBooksApi(settings.localePreference);
+    return new GoogleBooksApi(settings.localePreference, settings.apiKey);
   }
   if (settings.serviceProvider === ServiceProvider.naver) {
     if (!settings.naverClientId || !settings.naverClientSecret) {

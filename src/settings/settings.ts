@@ -1,5 +1,11 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Electron = require('electron');
+const {
+  remote: { safeStorage },
+} = Electron;
 
 import BookSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
@@ -27,6 +33,7 @@ export interface BookSearchPluginSettings {
   naverClientId: string;
   naverClientSecret: string;
   localePreference: string;
+  apiKey: string;
   openPageOnCompletion: boolean;
 }
 
@@ -42,6 +49,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   naverClientId: '',
   naverClientSecret: '',
   localePreference: 'default',
+  apiKey: '',
   openPageOnCompletion: true,
 };
 
@@ -274,6 +282,35 @@ export class BookSearchSettingTab extends PluginSettingTab {
             const newValue = value;
             this.plugin.settings.content = newValue;
             await this.plugin.saveSettings();
+          });
+        }),
+    );
+
+    // API Settings
+    const APISettingsChildren: Setting[] = [];
+    createFoldingHeader(containerEl, 'Google API Settings', APISettingsChildren);
+    let tempKeyValue = '';
+    APISettingsChildren.push(
+      new Setting(containerEl)
+        .setClass('book-search-plugin__hide')
+        .setName('Google Book API Key')
+        .setDesc(
+          'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
+        )
+        .addText(text => {
+          text.onChange(async value => {
+            if (safeStorage.isEncryptionAvailable()) {
+              tempKeyValue = safeStorage.enctyptString(value);
+            } else {
+              tempKeyValue = value;
+            }
+          });
+        })
+        .addButton(button => {
+          button.setButtonText('Save Key').onClick(async () => {
+            this.plugin.settings.apiKey = tempKeyValue;
+            await this.plugin.saveSettings();
+            new Notice('Apikey Saved');
           });
         }),
     );
