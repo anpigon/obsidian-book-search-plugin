@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin } from 'obsidian';
+import { MarkdownView, Notice, Plugin, TFile } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
 import { BookSuggestModal } from '@views/book_suggest_modal';
@@ -112,14 +112,6 @@ export default class BookSearchPlugin extends Plugin {
   async createNewBookNote(): Promise<void> {
     try {
       const book = await this.searchBookMetadata();
-
-      // open file
-      const activeLeaf = this.app.workspace.getLeaf();
-      if (!activeLeaf) {
-        console.warn('No active leaf');
-        return;
-      }
-
       const renderedContents = await this.getRenderedContents(book);
 
       // TODO: If the same file exists, it asks if you want to overwrite it.
@@ -130,17 +122,27 @@ export default class BookSearchPlugin extends Plugin {
 
       // if use Templater plugin
       await useTemplaterPluginInFile(this.app, targetFile);
-
-      // open file
-      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-      activeLeaf.setEphemeralState({ rename: 'all' });
-
-      // cursor focus
-      await new CursorJumper(this.app).jumpToNextCursorLocation();
+      this.openNewBookNote(targetFile);
     } catch (err) {
       console.warn(err);
       this.showNotice(err);
     }
+  }
+
+  async openNewBookNote(targetFile: TFile) {
+    if (!this.settings.openPageOnCompletion) return;
+
+    // open file
+    const activeLeaf = this.app.workspace.getLeaf();
+    if (!activeLeaf) {
+      console.warn('No active leaf');
+      return;
+    }
+
+    await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+    activeLeaf.setEphemeralState({ rename: 'all' });
+    // cursor focus
+    await new CursorJumper(this.app).jumpToNextCursorLocation();
   }
 
   async openBookSearchModal(query = ''): Promise<Book[]> {
