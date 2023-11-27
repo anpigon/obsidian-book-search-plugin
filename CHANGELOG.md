@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8
+
+Fixes issue with game titles that include
+the pipe character or a question mark.
+([Issue 15](https://github.com/CMorooney/obsidian-game-search-plugin/issues/15))
+
 ## 0.1.7
 
 Fixes issue with Tags variable serialization
