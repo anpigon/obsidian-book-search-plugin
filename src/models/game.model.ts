@@ -169,7 +169,7 @@ interface AddedByStatus {
   yet: number;
 }
 
-interface Tag {
+export interface Tag {
   id: number;
   name: string;
   slug: string;

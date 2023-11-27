@@ -5,6 +5,7 @@ import {
   Publisher,
   Developer,
   MetacriticPlatform,
+  Tag,
   releaseYearForGame,
 } from '@models/game.model';
 
@@ -54,7 +55,7 @@ export function replaceVariableSyntax(game: Game, text: string): string {
   game.publishers.toString = function (this: Publisher[]) {
     return this.map(p => p.name).join(', ');
   };
-	
+
   game.tags.toString = function (this: Tag[]) {
     return this.map(p => p.name).join(', ');
   };
