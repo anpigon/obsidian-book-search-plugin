@@ -170,6 +170,7 @@ Please find here a definition of the possible variables to be used in your templ
 | name        | description                                             |
 | ----------- | ------------------------------------------------------- |
 | title       | The title of the book.                                  |
+| subtitle    | The subtitle of the book.                               |
 | author      | The name of the book author. It can be multiple people. |
 | category    | Book category.                                          |
 | description | Book description.                                       |
@@ -184,9 +185,11 @@ Please find here a definition of the possible variables to be used in your templ
 
 ## Advanced
 
+You can add the following syntax to your template
+
 ### Inline Script
 
-#### To print out a book object:
+#### If you want to see all the book data in JSON format:
 
 ````
 ```json
@@ -205,10 +208,12 @@ or
 #### When you want to list or link authors:
 
 ```
----
 authors: <%=book.authors.map(author=>`\n  - ${author}`).join('')%>
----
+```
 
+or linked:
+
+```
 authors: <%=book.authors.map(author => `[[${author}]]`).join(', ')%>
 ```
 
