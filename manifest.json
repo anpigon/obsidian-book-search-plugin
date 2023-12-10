@@ -1,10 +1,13 @@
 {
-	"id": "obsidian-book-search-plugin",
-	"name": "Book Search",
-	"version": "0.5.11",
-	"minAppVersion": "0.15.0",
-	"description": "Helps you find books and create notes.",
-	"author": "anpigon",
-	"authorUrl": "https://github.com/anpigon",
-	"isDesktopOnly": false
+  "id": "obsidian-book-search-plugin",
+  "name": "Book Search",
+  "version": "0.5.11",
+  "minAppVersion": "1.4.5",
+  "description": "Helps you find books and create notes.",
+  "author": "anpigon",
+  "authorUrl": "https://github.com/anpigon",
+  "isDesktopOnly": false,
+  "fundingUrl": {
+    "Buy Me a Coffee": "https://www.buymeacoffee.com/anpigon"
+  }
 }
