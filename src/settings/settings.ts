@@ -10,7 +10,7 @@ import { SettingServiceProviderModal } from '@views/setting_service_provider_mod
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
-const safeStorage = (window as any).electron?.remote.safeStorage;
+const safeStorage = window.electron?.remote.safeStorage;
 
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',
