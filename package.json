@@ -43,7 +43,7 @@
     "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "builtin-modules": "^3.2.0",
+    "builtin-modules": "^3.3.0",
     "esbuild": "0.13.12",
     "eslint": "^8.55.0",
     "gh-pages": "^4.0.0",
