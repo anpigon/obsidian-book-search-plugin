@@ -1,10 +1,10 @@
-import { RAWGListResponse, GameFromSearch, Game } from '@models/game.model';
+import { RAWGListResponse, RAWGGameFromSearch, RAWGGame } from '@models/rawg_game.model';
 import { requestUrl } from 'obsidian';
 
 export class RAWGAPI {
   constructor(private readonly key: string) {}
 
-  async getByQuery(query: string): Promise<GameFromSearch[]> {
+  async getByQuery(query: string): Promise<RAWGGameFromSearch[]> {
     try {
       const apiURL = new URL('https://api.rawg.io/api/games');
       apiURL.searchParams.append('key', this.key);
@@ -15,7 +15,7 @@ export class RAWGAPI {
         method: 'GET',
       });
 
-      const searchResults = res.json as RAWGListResponse<GameFromSearch>;
+      const searchResults = res.json as RAWGListResponse<RAWGGameFromSearch>;
 
       if (!searchResults?.count) {
         return [];
@@ -28,7 +28,7 @@ export class RAWGAPI {
     }
   }
 
-  async getBySlugOrId(slugOrId: string | number): Promise<Game> {
+  async getBySlugOrId(slugOrId: string | number): Promise<RAWGGame> {
     try {
       const apiURL = new URL('https://api.rawg.io/api/games/' + slugOrId);
       apiURL.searchParams.append('key', this.key);
@@ -38,7 +38,7 @@ export class RAWGAPI {
         method: 'GET',
       });
 
-      const searchResults = res.json as Game;
+      const searchResults = res.json as RAWGGame;
 
       if (searchResults == null) {
         throw new Error('game not found or error parsing data');

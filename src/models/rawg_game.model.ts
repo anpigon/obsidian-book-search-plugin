@@ -7,44 +7,44 @@ export interface RAWGListResponse<T> {
   results: T[];
 }
 
-export interface GameFromSearch {
+export interface RAWGGameFromSearch {
   id: number;
   slug: string;
   name: string;
   released: string;
   tba: boolean;
   background_image: string;
-  rating: Rating;
+  rating: RAWGRating;
   rating_top: number;
-  ratings: Rating[];
+  ratings: RAWGRating[];
   ratings_count: number;
   reviews_text_count: number;
   added: number;
-  added_by_status: AddedByStatus;
+  added_by_status: RAWGAddedByStatus;
   metacritic: number;
   playtime: number; // in hours
   suggestions_count: number;
   updated: string;
-  esrb_rating?: ESRBRating;
-  platforms: Platform[];
-  stores: Store[];
+  esrb_rating?: RAWGESRBRating;
+  platforms: RAWGPlatform[];
+  stores: RAWGStore[];
   score: number;
-  tags: Tag[];
+  tags: RAWGTag[];
   saturated_color: string; // hex value w/o '#'
   dominant_color: string; // hex value w/o '#'
-  genres: Genre[];
-  parent_platforms: Platform[];
-  short_screenshots: ScreenShot[];
+  genres: RAWGGenre[];
+  parent_platforms: RAWGPlatform[];
+  short_screenshots: RAWGScreenShot[];
 }
 
-export interface Game {
+export interface RAWGGame {
   id: number;
   slug: string;
   name: string;
   name_original: string;
   description: string;
   metacritic: number;
-  metacritic_platforms: MetacriticPlatform[];
+  metacritic_platforms: RAWGMetacriticPlatform[];
   released: string;
   tba: boolean;
   updated: string;
@@ -53,10 +53,10 @@ export interface Game {
   website: string;
   rating: number;
   rating_top: number;
-  ratings: Rating[];
+  ratings: RAWGRating[];
   reactions: { [key: string]: number };
   added: number;
-  added_by_status: AddedByStatus;
+  added_by_status: RAWGAddedByStatus;
   playtime: number;
   screenshots_count: number;
   movies_count: number;
@@ -82,29 +82,29 @@ export interface Game {
   reviews_count: number;
   saturated_color: string; // note: hex color without '#'
   dominant_color: string; // note: hex colot without '#'
-  parent_platforms: Platform[];
-  platforms: PlatformDetailed[];
-  stores: StoreDetailed[];
-  developers: Developer[];
-  genres: Genre[];
-  tags: Tag[];
-  publishers: Publisher[];
-  esrb_rating: ESRBRating;
+  parent_platforms: RAWGPlatform[];
+  platforms: RAWGPlatformDetailed[];
+  stores: RAWGStoreDetailed[];
+  developers: RAWGDeveloper[];
+  genres: RAWGGenre[];
+  tags: RAWGTag[];
+  publishers: RAWGPublisher[];
+  esrb_rating: RAWGESRBRating;
   description_raw: string;
 }
 
-export const releaseYearForGame = (game: GameFromSearch | Game): string => {
+export const releaseYearForRAWGGame = (game: RAWGGameFromSearch | RAWGGame): string => {
   const releaseString = game.released;
   return releaseString.substring(0, releaseString.indexOf('-'));
 };
 
-export interface MetacriticPlatform {
+export interface RAWGMetacriticPlatform {
   metascore: number;
   url: string;
-  platform: Platform;
+  platform: RAWGPlatform;
 }
 
-export interface Platform {
+export interface RAWGPlatform {
   platform: {
     id: number;
     name: string;
@@ -112,7 +112,7 @@ export interface Platform {
   };
 }
 
-export interface PlatformDetailed {
+export interface RAWGPlatformDetailed {
   platform: {
     id: number;
     name: string;
@@ -126,13 +126,13 @@ export interface PlatformDetailed {
   released_at: string;
 }
 
-interface Store {
+interface RAWGStore {
   id: number;
   name: string;
   slug: string;
 }
 
-interface StoreDetailed {
+interface RAWGStoreDetailed {
   id: number;
   url: string;
   store: {
@@ -145,7 +145,7 @@ interface StoreDetailed {
   };
 }
 
-export interface Developer {
+export interface RAWGDeveloper {
   id: number;
   name: string;
   slug: string;
@@ -153,14 +153,14 @@ export interface Developer {
   image_background: string;
 }
 
-interface Rating {
+interface RAWGRating {
   id: number;
   title: string;
   count: number;
   percent: number;
 }
 
-interface AddedByStatus {
+interface RAWGAddedByStatus {
   beaten: number;
   dropped: number;
   owned: number;
@@ -169,7 +169,7 @@ interface AddedByStatus {
   yet: number;
 }
 
-export interface Tag {
+export interface RAWGTag {
   id: number;
   name: string;
   slug: string;
@@ -178,7 +178,7 @@ export interface Tag {
   image_background: string;
 }
 
-interface ESRBRating {
+interface RAWGESRBRating {
   id: number;
   name: string;
   slug: string;
@@ -186,12 +186,12 @@ interface ESRBRating {
   name_ru?: string;
 }
 
-interface ScreenShot {
+interface RAWGScreenShot {
   id: number;
   image: string;
 }
 
-export interface Genre {
+export interface RAWGGenre {
   id: number;
   name: string;
   slug: string;
@@ -199,7 +199,7 @@ export interface Genre {
   image_background?: number;
 }
 
-export interface Publisher {
+export interface RAWGPublisher {
   id: number;
   name: string;
   slug: string;

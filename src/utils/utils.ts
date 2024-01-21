@@ -1,13 +1,13 @@
 import {
-  Game,
-  Genre,
-  PlatformDetailed,
-  Publisher,
-  Developer,
-  MetacriticPlatform,
-  Tag,
-  releaseYearForGame,
-} from '@models/game.model';
+  RAWGGame,
+  RAWGGenre,
+  RAWGPlatformDetailed,
+  RAWGPublisher,
+  RAWGDeveloper,
+  RAWGMetacriticPlatform,
+  RAWGTag,
+  releaseYearForRAWGGame,
+} from '@models/rawg_game.model';
 
 // == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
@@ -18,49 +18,49 @@ export function replaceIllegalFileNameCharactersInString(text: string) {
   return text.replace(/[\\,#%&{}/*<>$":@.|?]/g, '').replace(/\s+/g, ' ');
 }
 
-export function makeFileName(game: Game, fileNameFormat?: string) {
+export function makeFileName(game: RAWGGame, fileNameFormat?: string) {
   let result;
   if (fileNameFormat) {
     result = replaceVariableSyntax(game, replaceDateInString(fileNameFormat));
   } else {
-    result = !game.released ? game.name : `${game.name} (${releaseYearForGame(game)})`;
+    result = !game.released ? game.name : `${game.name} (${releaseYearForRAWGGame(game)})`;
   }
   return replaceIllegalFileNameCharactersInString(result) + '.md';
 }
 
-export function changeSnakeCase(game: Game) {
+export function changeSnakeCase(game: RAWGGame) {
   return Object.entries(game).reduce((acc, [key, value]) => {
     acc[camelToSnakeCase(key)] = value;
     return acc;
   }, {});
 }
 
-export function replaceVariableSyntax(game: Game, text: string): string {
+export function replaceVariableSyntax(game: RAWGGame, text: string): string {
   if (!text?.trim()) {
     return '';
   }
 
-  game.genres.toString = function (this: Genre[]) {
+  game.genres.toString = function (this: RAWGGenre[]) {
     return this.map(g => g.name).join(', ');
   };
 
-  game.platforms.toString = function (this: PlatformDetailed[]) {
+  game.platforms.toString = function (this: RAWGPlatformDetailed[]) {
     return this.map(p => p.platform.name).join(', ');
   };
 
-  game.developers.toString = function (this: Developer[]) {
+  game.developers.toString = function (this: RAWGDeveloper[]) {
     return this.map(p => p.name).join(', ');
   };
 
-  game.publishers.toString = function (this: Publisher[]) {
+  game.publishers.toString = function (this: RAWGPublisher[]) {
     return this.map(p => p.name).join(', ');
   };
 
-  game.tags.toString = function (this: Tag[]) {
+  game.tags.toString = function (this: RAWGTag[]) {
     return this.map(p => p.name).join(', ');
   };
 
-  game.metacritic_platforms.toString = function (this: MetacriticPlatform[]) {
+  game.metacritic_platforms.toString = function (this: RAWGMetacriticPlatform[]) {
     return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
   };
 
