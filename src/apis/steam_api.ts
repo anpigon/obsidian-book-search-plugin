@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { requestUrl } from 'obsidian';
+import { SteamResponse, SteamGame } from '@models/steam_game.model';
 
 export class SteamAPI {
   constructor(private readonly key: string, private readonly steamId: string) {}
@@ -11,6 +12,7 @@ export class SteamAPI {
       const apiURL = new URL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/');
       apiURL.searchParams.append('key', this.key);
       apiURL.searchParams.append('steamid', this.steamId);
+      apiURL.searchParams.append('include_appinfo', 'true');
       apiURL.searchParams.append('format', 'json');
 
       const res = await requestUrl({
@@ -18,12 +20,8 @@ export class SteamAPI {
         method: 'GET',
       });
 
-      console.log('@*88888888888888888888888888888888');
-      console.dir(res.json);
-      console.log('@*88888888888888888888888888888888');
-
       // todo: parse into model
-      const searchResults = [];
+      const results = res.json as SteamResponse<SteamGame[]>;
 
       // if (!searchResults?.count) {
       //   return [];

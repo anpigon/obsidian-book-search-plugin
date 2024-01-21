@@ -26,10 +26,7 @@ export default class GameSearchPlugin extends Plugin {
     await this.loadSettings();
     this.rawgApi = new RAWGAPI(this.settings.rawgApiKey);
 
-    if (this.settings.steamApiKey && this.settings.steamUserId) {
-      this.steamApi = new SteamAPI(this.settings.steamApiKey, this.settings.steamUserId);
-      this.steamApi.getOwnedGames();
-    }
+    this.syncSteam(false);
 
     // This creates an icon in the left ribbon.
     const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
@@ -47,6 +44,12 @@ export default class GameSearchPlugin extends Plugin {
       id: 'open-game-search-modal-to-insert',
       name: 'Insert the metadata',
       editorCallback: () => this.insertMetadata(),
+    });
+
+    this.addCommand({
+      id: 'sync steam',
+      name: 'Sync Steam',
+      callback: () => this.syncSteam(true),
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
@@ -134,6 +137,18 @@ export default class GameSearchPlugin extends Plugin {
         accept(data);
       });
     });
+  }
+
+  async syncSteam(alertUninitializedApi: boolean): Promise<void> {
+    if (this.steamApi === undefined && this.settings.steamApiKey && this.settings.steamUserId) {
+      this.steamApi = new SteamAPI(this.settings.steamApiKey, this.settings.steamUserId);
+    }
+
+    if (this.steamApi !== undefined) {
+      this.steamApi.getOwnedGames();
+    } else if (alertUninitializedApi) {
+      this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
+    }
   }
 
   async createNewGameNote(g: RAWGGame = null, overwriteFile = false): Promise<void> {
