@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
-import GameSearchPlugin from '../main';
+import GameSearchPlugin, { Nullable } from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
@@ -13,6 +13,8 @@ export interface GameSearchPluginSettings {
   fileNameFormat: string; // new file name format
   templateFile: string;
   rawgApiKey: string;
+  steamApiKey: Nullable<string>;
+  steamUserId: Nullable<string>;
 }
 
 export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
@@ -20,6 +22,8 @@ export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   fileNameFormat: '',
   templateFile: '',
   rawgApiKey: '',
+  steamApiKey: null,
+  steamUserId: null,
 };
 
 export class GameSearchSettingTab extends PluginSettingTab {
@@ -40,6 +44,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     createHeader(containerEl, 'General Settings');
 
+    // RAWG Api Key
     new Setting(containerEl).setName('RAWG Api Key').addTextArea(textArea => {
       const prevValue = this.plugin.settings.rawgApiKey;
       textArea.setValue(prevValue).onChange(async value => {
@@ -48,6 +53,24 @@ export class GameSearchSettingTab extends PluginSettingTab {
         await this.plugin.saveSettings();
       });
     }),
+      // Steam Api Key
+      new Setting(containerEl).setName('Steam Api Key').addTextArea(textArea => {
+        const prevValue = this.plugin.settings.steamApiKey;
+        textArea.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.steamApiKey = newValue;
+          await this.plugin.saveSettings();
+        });
+      }),
+      // Steam user id
+      new Setting(containerEl).setName('Steam Id').addTextArea(textArea => {
+        const prevValue = this.plugin.settings.steamUserId;
+        textArea.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.steamUserId = newValue;
+          await this.plugin.saveSettings();
+        });
+      }),
       // New file location
       new Setting(containerEl)
         .setName('New file location')

@@ -7,6 +7,7 @@ import { Game, GameFromSearch } from '@models/game.model';
 import { GameSearchSettingTab, GameSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { replaceVariableSyntax, makeFileName } from '@utils/utils';
 import { RAWGAPI } from '@src/apis/rawg_games_api';
+import { SteamAPI } from '@src/apis/steam_api';
 import {
   getTemplateContents,
   applyTemplateTransformations,
@@ -18,11 +19,17 @@ export type Nullable<T> = T | undefined | null;
 
 export default class GameSearchPlugin extends Plugin {
   settings: GameSearchPluginSettings;
-  api: RAWGAPI;
+  rawgApi: RAWGAPI;
+  steamApi: Nullable<SteamAPI>;
 
   async onload() {
     await this.loadSettings();
-    this.api = new RAWGAPI(this.settings.rawgApiKey);
+    this.rawgApi = new RAWGAPI(this.settings.rawgApiKey);
+
+    if (this.settings.steamApiKey && this.settings.steamUserId) {
+      this.steamApi = new SteamAPI(this.settings.steamApiKey, this.settings.steamUserId);
+      this.steamApi.getOwnedGames();
+    }
 
     // This creates an icon in the left ribbon.
     const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
@@ -106,10 +113,10 @@ export default class GameSearchPlugin extends Plugin {
 
           let game: Nullable<Game> = null;
           if (q) {
-            game = await this.api.getBySlugOrId(q);
+            game = await this.rawgApi.getBySlugOrId(q);
           } else {
-            const games = await this.api.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
-            game = await this.api.getBySlugOrId(games[0].slug);
+            const games = await this.rawgApi.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
+            game = await this.rawgApi.getBySlugOrId(games[0].slug);
           }
 
           if (game) {
@@ -169,7 +176,7 @@ export default class GameSearchPlugin extends Plugin {
 
   async openGameSearchModal(query = ''): Promise<GameFromSearch[]> {
     return new Promise((resolve, reject) => {
-      return new GameSearchModal(this, this.api, query, (error, results) => {
+      return new GameSearchModal(this, this.rawgApi, query, (error, results) => {
         return error ? reject(error) : resolve(results);
       }).open();
     });
@@ -177,7 +184,7 @@ export default class GameSearchPlugin extends Plugin {
 
   async openGameSuggestModal(games: GameFromSearch[]): Promise<Game> {
     return new Promise((resolve, reject) => {
-      return new GameSuggestModal(this.app, this.api, games, (error, selectedGame) => {
+      return new GameSuggestModal(this.app, this.rawgApi, games, (error, selectedGame) => {
         return error ? reject(error) : resolve(selectedGame);
       }).open();
     });
