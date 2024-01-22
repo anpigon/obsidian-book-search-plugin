@@ -28,7 +28,7 @@ export class SteamAPI {
 
       return results.response.games;
     } catch (error) {
-      console.warn(error);
+      console.warn('[Game Search][Steam API]' + error);
       throw error;
     }
   }

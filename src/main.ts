@@ -23,6 +23,9 @@ export default class GameSearchPlugin extends Plugin {
   steamApi: Nullable<SteamAPI>;
 
   async onload() {
+    console.log(
+      `[Game Search][Info] version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`,
+    );
     await this.loadSettings();
     this.rawgApi = new RAWGAPI(this.settings.rawgApiKey);
 
@@ -54,8 +57,6 @@ export default class GameSearchPlugin extends Plugin {
 
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new GameSearchSettingTab(this.app, this));
-
-    console.log(`Game Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`);
   }
 
   showNotice(message: unknown) {
@@ -84,21 +85,21 @@ export default class GameSearchPlugin extends Plugin {
     try {
       const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!markdownView) {
-        console.warn('Can not find an active markdown view');
+        console.warn('[Game Search][Insert Metadata] Can not find an active markdown view');
         return;
       }
 
       const game = await this.searchGameMetadata(markdownView.file.basename);
 
       if (!markdownView.editor) {
-        console.warn('Can not find editor from the active markdown view');
+        console.warn('[Game Search][Insert Metadata] Can not find editor from the active markdown view');
         return;
       }
 
       const renderedContents = await this.getRenderedContents(game);
       markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
     } catch (err) {
-      console.warn(err);
+      console.warn('[Game Search][Insert Metadata][unexepected] ' + err);
       this.showNotice(err);
     }
   }
@@ -158,7 +159,7 @@ export default class GameSearchPlugin extends Plugin {
       // open file
       const activeLeaf = this.app.workspace.getLeaf();
       if (!activeLeaf) {
-        console.warn('No active leaf');
+        console.warn('[Game Search][Create Game Note] No active leaf');
         return;
       }
 
@@ -184,7 +185,7 @@ export default class GameSearchPlugin extends Plugin {
       // cursor focus
       await new CursorJumper(this.app).jumpToNextCursorLocation();
     } catch (err) {
-      console.warn(err);
+      console.warn('[Game Search][Create Game Note][unexpected] ' + err);
       this.showNotice(err);
     }
   }

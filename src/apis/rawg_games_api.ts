@@ -23,7 +23,7 @@ export class RAWGAPI {
 
       return searchResults.results;
     } catch (error) {
-      console.warn(error);
+      console.warn('[Game Search][RAWG API] ' + error);
       throw error;
     }
   }
@@ -46,7 +46,7 @@ export class RAWGAPI {
 
       return searchResults;
     } catch (error) {
-      console.warn(error);
+      console.warn('[Game Search][RAWG API] ' + error);
       throw error;
     }
   }
