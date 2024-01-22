@@ -141,13 +141,60 @@ export default class GameSearchPlugin extends Plugin {
   }
 
   async syncSteam(alertUninitializedApi: boolean): Promise<void> {
+    // always check to see if steamApi needs to be initialized on sync,
+    // it's possible the user has entered API credentials at any point in time.
     if (this.steamApi === undefined && this.settings.steamApiKey && this.settings.steamUserId) {
+      console.log('[Game Search][Steam Sync]: initializing steam api');
       this.steamApi = new SteamAPI(this.settings.steamApiKey, this.settings.steamUserId);
     }
 
     if (this.steamApi !== undefined) {
-      this.steamApi.getOwnedGames();
+      console.log('[Game Search][Steam Sync]: fetching owned games from steam api');
+      const ownedSteamGames = await this.steamApi.getOwnedGames();
+
+      console.log('[Game Search][Steam Sync]: begin vault game directory iteration');
+      const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
+      Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
+        const file = f as TFile;
+
+        // make sure it's a file
+        if (!!file && file.name.includes('.md')) {
+          // try and match the vault file with an ownedSteamGame
+          // note: this is a loop in a loop. super not ideal.
+          const steamGameMatch = ownedSteamGames.find(steamGame => {
+            // TODO: allow user defined regex
+            const fileNameRegexMatches = file.name.match(DEFAULT_FILENAME_REGEX);
+            if (
+              fileNameRegexMatches &&
+              fileNameRegexMatches.length > 1 &&
+              steamGame.name.trim().toLowerCase() === fileNameRegexMatches[1].trim().toLowerCase()
+            ) {
+              console.log(
+                '[Game Search][Steam Sync]: found match for vault file: ' +
+                  file.name +
+                  ' and steam game: ' +
+                  steamGame.name,
+              );
+              return true;
+            }
+            return false;
+          });
+
+          // if we found an ownedSteamGame that we think matches one
+          // of the game files in our vault,
+          // add steamId and owned platform to frontmatter
+          if (steamGameMatch !== undefined) {
+            this.app.fileManager.processFrontMatter(file, data => {
+              data.steamId = steamGameMatch.appid;
+              // TODO: allow user to define key for this
+              data.owned_platform = 'steam';
+              return data;
+            });
+          }
+        }
+      });
     } else if (alertUninitializedApi) {
+      console.warn('[Game Search][SteamSync]: steam api not initialized');
       this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
     }
   }

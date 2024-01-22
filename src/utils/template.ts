@@ -1,6 +1,12 @@
 import { RAWGGame } from '@models/rawg_game.model';
 import { App, normalizePath, Notice, TFile } from 'obsidian';
 
+// default file name is "name - (release year)" or just "name" if unreleased.
+// this regex should capture the name out of either of those defaults.
+export const DEFAULT_FILENAME_REGEX = /([A-z0-9\s-]*)(?:\s*\({1}[0-9]{4}\){1})?/;
+
+// users with differing file name templates may have to create their own regex...
+
 export async function getTemplateContents(app: App, templatePath: string | undefined): Promise<string> {
   const { metadataCache, vault } = app;
   const normalizedTemplatePath = normalizePath(templatePath ?? '');
