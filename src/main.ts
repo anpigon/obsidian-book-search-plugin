@@ -13,6 +13,7 @@ import {
   applyTemplateTransformations,
   useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
+  DEFAULT_FILENAME_REGEX,
 } from '@utils/template';
 
 export type Nullable<T> = T | undefined | null;
@@ -32,7 +33,7 @@ export default class GameSearchPlugin extends Plugin {
     this.syncSteam(false);
 
     // This creates an icon in the left ribbon.
-    const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
+    const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote(null)); // passing null/undefined for params here will force user to game search
     // Perform additional things with the ribbon
     ribbonIconEl.addClass('obsidian-game-search-plugin-ribbon-class');
 
@@ -40,7 +41,7 @@ export default class GameSearchPlugin extends Plugin {
     this.addCommand({
       id: 'open-game-search-modal',
       name: 'Create new game note',
-      callback: () => this.createNewGameNote(),
+      callback: () => this.createNewGameNote(undefined), // passing null/undefined for params here will force user to game search
     });
 
     this.addCommand({
@@ -124,7 +125,7 @@ export default class GameSearchPlugin extends Plugin {
           }
 
           if (game) {
-            this.createNewGameNote(game, true);
+            this.createNewGameNote({ game: game, overwriteFile: true, steamId: null /* TODO: proper regen */ });
           }
         }
       });
@@ -188,20 +189,42 @@ export default class GameSearchPlugin extends Plugin {
               data.steamId = steamGameMatch.appid;
               // TODO: allow user to define key for this
               data.owned_platform = 'steam';
+
+              // remove match from `ownedSteamGames` so we can
+              // iterate over the remaining ones and create notes for them
+              ownedSteamGames.remove(steamGameMatch);
               return data;
             });
           }
         }
       });
+
+      console.log('[Game Search][Steam Sync] creating new notes for ' + ownedSteamGames.length + ' owned steam games');
+
+      for (let i = 0; i < ownedSteamGames.length; i++) {
+        const steamGame = ownedSteamGames[i];
+        console.log('[Game Search][Steam Sync] creating note for ' + steamGame.name);
+        const rawgGames = await this.rawgApi.getByQuery(steamGame.name);
+        const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGames[0].slug);
+        await this.createNewGameNote({ game: rawgGameDetails, steamId: steamGame.appid, overwriteFile: false }, false);
+      }
+      this.showNotice(ownedSteamGames.length + ' owned games added from Steam Library');
     } else if (alertUninitializedApi) {
       console.warn('[Game Search][SteamSync]: steam api not initialized');
       this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
     }
   }
 
-  async createNewGameNote(g: RAWGGame = null, overwriteFile = false): Promise<void> {
+  async createNewGameNote(
+    params: Nullable<{
+      game: Nullable<RAWGGame>;
+      steamId: Nullable<number>;
+      overwriteFile: boolean;
+    }>,
+    openAfterCreate = true,
+  ): Promise<void> {
     try {
-      const game = g ?? (await this.searchGameMetadata());
+      const game = params.game ?? (await this.searchGameMetadata());
 
       // open file
       const activeLeaf = this.app.workspace.getLeaf();
@@ -217,7 +240,7 @@ export default class GameSearchPlugin extends Plugin {
       const fileName = makeFileName(game, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder}/${fileName}`;
       const existing = this.app.vault.getAbstractFileByPath(normalizePath(filePath));
-      if (existing && overwriteFile) {
+      if (existing && params.overwriteFile) {
         await this.app.vault.delete(existing, true);
       }
       const targetFile = await this.app.vault.create(filePath, renderedContents);
@@ -225,12 +248,22 @@ export default class GameSearchPlugin extends Plugin {
       // if use Templater plugin
       await useTemplaterPluginInFile(this.app, targetFile);
 
-      // open file
-      await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
-      activeLeaf.setEphemeralState({ rename: 'all' });
+      if (params.steamId) {
+        this.app.fileManager.processFrontMatter(targetFile, (data: any) => {
+          data.steamId = params.steamId;
+          data.owned_platform = 'steam';
+          return data;
+        });
+      }
 
-      // cursor focus
-      await new CursorJumper(this.app).jumpToNextCursorLocation();
+      // open file
+      if (openAfterCreate) {
+        await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
+        activeLeaf.setEphemeralState({ rename: 'all' });
+
+        // cursor focus
+        await new CursorJumper(this.app).jumpToNextCursorLocation();
+      }
     } catch (err) {
       console.warn('[Game Search][Create Game Note][unexpected] ' + err);
       this.showNotice(err);
