@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { requestUrl } from 'obsidian';
-import { SteamResponse, SteamGame } from '@models/steam_game.model';
+import { SteamResponse, OwnedSteamGames, SteamGame } from '@models/steam_game.model';
 
 export class SteamAPI {
   constructor(private readonly key: string, private readonly steamId: string) {}
 
-  async getOwnedGames(): Promise<any[]> {
+  async getOwnedGames(): Promise<SteamGame[]> {
     try {
       // todo: steam api
       const apiURL = new URL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/');
@@ -20,19 +20,16 @@ export class SteamAPI {
         method: 'GET',
       });
 
-      // todo: parse into model
-      const results = res.json as SteamResponse<SteamGame[]>;
+      const results = res.json as SteamResponse<OwnedSteamGames>;
 
-      // if (!searchResults?.count) {
-      //   return [];
-      // }
+      if (results?.response?.game_count <= 0) {
+        return [];
+      }
 
-      return searchResults;
+      return results.response.games;
     } catch (error) {
       console.warn(error);
       throw error;
     }
-
-    return [];
   }
 }

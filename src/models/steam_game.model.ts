@@ -9,6 +9,7 @@ export interface OwnedSteamGames {
 
 export interface SteamGame {
   appid: number;
+  name: string;
   playtime_disconnected: number;
   playtime_forever: number;
   playtime_linux_forever: number;
