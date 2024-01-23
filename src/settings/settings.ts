@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { replaceDateInString } from '@utils/utils';
 
 import GameSearchPlugin, { Nullable } from '../main';
@@ -15,6 +15,9 @@ export interface GameSearchPluginSettings {
   rawgApiKey: string;
   steamApiKey: Nullable<string>;
   steamUserId: Nullable<string>;
+  syncSteamOnStart: boolean;
+  metaDataForOwnedSteamGames: Nullable<Map<string, string>>;
+  metaDataForWishlistedSteamGames: Nullable<Map<string, string>>;
 }
 
 export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
@@ -24,6 +27,9 @@ export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   rawgApiKey: '',
   steamApiKey: null,
   steamUserId: null,
+  syncSteamOnStart: false,
+  metaDataForOwnedSteamGames: null,
+  metaDataForWishlistedSteamGames: null,
 };
 
 export class GameSearchSettingTab extends PluginSettingTab {
@@ -52,42 +58,24 @@ export class GameSearchSettingTab extends PluginSettingTab {
         this.plugin.settings.rawgApiKey = newValue;
         await this.plugin.saveSettings();
       });
-    }),
-      // Steam Api Key
-      new Setting(containerEl).setName('Steam Api Key').addTextArea(textArea => {
-        const prevValue = this.plugin.settings.steamApiKey;
-        textArea.setValue(prevValue).onChange(async value => {
-          const newValue = value;
-          this.plugin.settings.steamApiKey = newValue;
-          await this.plugin.saveSettings();
-        });
-      }),
-      // Steam user id
-      new Setting(containerEl).setName('Steam Id').addTextArea(textArea => {
-        const prevValue = this.plugin.settings.steamUserId;
-        textArea.setValue(prevValue).onChange(async value => {
-          const newValue = value;
-          this.plugin.settings.steamUserId = newValue;
-          await this.plugin.saveSettings();
-        });
-      }),
-      // New file location
-      new Setting(containerEl)
-        .setName('New file location')
-        .setDesc('New game notes will be placed here.')
-        .addSearch(cb => {
-          try {
-            new FolderSuggest(this.app, cb.inputEl);
-          } catch {
-            // eslint-disable
-          }
-          cb.setPlaceholder('Example: folder1/folder2')
-            .setValue(this.plugin.settings.folder)
-            .onChange(new_folder => {
-              this.plugin.settings.folder = new_folder;
-              this.plugin.saveSettings();
-            });
-        });
+    });
+    // New file location
+    new Setting(containerEl)
+      .setName('New file location')
+      .setDesc('New game notes will be placed here.')
+      .addSearch(cb => {
+        try {
+          new FolderSuggest(this.app, cb.inputEl);
+        } catch {
+          // eslint-disable
+        }
+        cb.setPlaceholder('Example: folder1/folder2')
+          .setValue(this.plugin.settings.folder)
+          .onChange(new_folder => {
+            this.plugin.settings.folder = new_folder;
+            this.plugin.saveSettings();
+          });
+      });
 
     // New File Name
     let newFileNameHint = replaceDateInString(this.plugin.settings.fileNameFormat) || '{{name}} - {{release}}';
@@ -145,6 +133,97 @@ export class GameSearchSettingTab extends PluginSettingTab {
           });
       });
 
+    createHeader(containerEl, 'Steam Settings');
+
+    // Steam sync on start
+    const syncOnStartDescription = document.createDocumentFragment();
+    syncOnStartDescription.createDiv({ text: 'performs steam sync when the plugin loads' });
+    new Setting(containerEl)
+      .setName('Sync on start')
+      .setDesc(syncOnStartDescription)
+      .addToggle(toggle => {
+        const prevValue = this.plugin.settings.syncSteamOnStart;
+        toggle.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.syncSteamOnStart = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    // Steam Api Key
+    new Setting(containerEl).setName('Steam Api Key').addTextArea(textArea => {
+      const prevValue = this.plugin.settings.steamApiKey;
+      textArea.setValue(prevValue).onChange(async value => {
+        const newValue = value;
+        this.plugin.settings.steamApiKey = newValue;
+        await this.plugin.saveSettings();
+      });
+    });
+
+    // Steam user id
+    new Setting(containerEl).setName('Steam Id').addTextArea(textArea => {
+      const prevValue = this.plugin.settings.steamUserId;
+      textArea.setValue(prevValue).onChange(async value => {
+        const newValue = value;
+        this.plugin.settings.steamUserId = newValue;
+        await this.plugin.saveSettings();
+      });
+    });
+
+    // Owned steam game extra metadata
+    const metadataForOwnedSteamGamesDescription = document.createDocumentFragment();
+    metadataForOwnedSteamGamesDescription.createDiv({ text: 'automatically add metadata to games you own on steam' });
+    metadataForOwnedSteamGamesDescription.createDiv({
+      text: 'enter each metadata key/value on a single line separated by a single colon, e.g.',
+    });
+    metadataForOwnedSteamGamesDescription.createDiv({ text: 'owned:true' });
+    metadataForOwnedSteamGamesDescription.createDiv({ text: 'owned_platform:steam' });
+    new Setting(containerEl)
+      .setName('metadata for owned Steam games')
+      .setDesc(metadataForOwnedSteamGamesDescription)
+      .addTextArea(textArea => {
+        const prevValue = this.plugin.settings.metaDataForOwnedSteamGames;
+        textArea.setValue(mapToString(prevValue)).onChange(async value => {
+          try {
+            const newValue = stringToMap(value);
+            this.plugin.settings.metaDataForOwnedSteamGames = newValue;
+            await this.plugin.saveSettings();
+          } catch (error) {
+            console.warn(error);
+            new Notice('unable to parse metadata for owned steam games');
+          }
+        });
+      });
+
+    // wishlisted steam game extra metadata
+    const metadataForWishlistedSteamGamesDescription = document.createDocumentFragment();
+    metadataForWishlistedSteamGamesDescription.createDiv({
+      text: 'automatically add metadata to games you wishlist on steam',
+    });
+    metadataForWishlistedSteamGamesDescription.createDiv({
+      text: 'enter each metadata key/value on a single line separated by a single colon, e.g.',
+    });
+    metadataForWishlistedSteamGamesDescription.createDiv({ text: 'owned:false' });
+    metadataForWishlistedSteamGamesDescription.createDiv({ text: 'status:backlog' });
+    new Setting(containerEl)
+      .setName('metadata for wishlisted Steam games')
+      .setDesc(metadataForWishlistedSteamGamesDescription)
+      .addTextArea(textArea => {
+        const prevValue = this.plugin.settings.metaDataForWishlistedSteamGames;
+        textArea.setValue(mapToString(prevValue)).onChange(async value => {
+          try {
+            const newValue = stringToMap(value);
+            this.plugin.settings.metaDataForWishlistedSteamGames = newValue;
+            await this.plugin.saveSettings();
+          } catch (error) {
+            console.warn(error);
+            new Notice('unable to parse metadata for wishlisted steam games');
+          }
+        });
+      });
+
+    createHeader(containerEl, 'Advanced/Dangerous');
+
     // Regenerate files
     const regenDesc = document.createDocumentFragment();
     regenDesc.createDiv({
@@ -176,6 +255,29 @@ export class GameSearchSettingTab extends PluginSettingTab {
         });
       });
   }
+}
+
+function mapToString(m: Map<string, string>): string {
+  if (!m || m.size <= 0 || !(m instanceof Map)) return '';
+  let s = '';
+  for (const [key, value] of m) {
+    s += key + ' : ' + value + '\n';
+  }
+  return s.trim();
+}
+
+function stringToMap(s: string): Map<string, string> {
+  const m = new Map<string, string>();
+  if (!s) return m;
+  const lines = s.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].contains(':')) {
+      const components = lines[i].split(':');
+      if (components[0] && components[1] && components[0].trim() && components[1].trim())
+        m.set(components[0], components[1]);
+    }
+  }
+  return m;
 }
 
 function createHeader(containerEl: HTMLElement, title: string) {

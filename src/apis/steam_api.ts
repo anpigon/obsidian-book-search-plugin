@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { requestUrl } from 'obsidian';
-import { SteamResponse, OwnedSteamGames, SteamGame } from '@models/steam_game.model';
+import { SteamResponse, OwnedSteamGames, SteamGame, SteamWishlistedGame } from '@models/steam_game.model';
 
 export class SteamAPI {
   constructor(private readonly key: string, private readonly steamId: string) {}
@@ -28,7 +28,25 @@ export class SteamAPI {
 
       return results.response.games;
     } catch (error) {
-      console.warn('[Game Search][Steam API]' + error);
+      console.warn('[Game Search][Steam API][getOwnedGames]' + error);
+      throw error;
+    }
+  }
+
+  async getWishlist(): Promise<Map<number, SteamWishlistedGame>> {
+    try {
+      const apiURL = new URL('https://store.steampowered.com/wishlist/profiles/' + this.steamId + '/wishlistdata/');
+      const res = await requestUrl({
+        url: apiURL.href,
+        method: 'GET',
+      });
+      const m = new Map<number, SteamWishlistedGame>();
+      for (const [k, v] of Object.entries(res.json)) {
+        m.set(parseInt(k), v as SteamWishlistedGame);
+      }
+      return m;
+    } catch (error) {
+      console.warn('[Game Search][Steam API][getWishlist]' + error);
       throw error;
     }
   }
