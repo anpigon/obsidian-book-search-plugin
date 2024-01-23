@@ -174,6 +174,64 @@ export default class GameSearchPlugin extends Plugin {
     }
   }
 
+  async findAndSyncSteamGame(name: string, steamId: number, logDescription: string): Promise<void> {
+    let rawgGame: Nullable<RAWGGameFromSearch>;
+    try {
+      rawgGame = (await this.rawgApi.getByQuery(name))[0];
+    } catch (rawgApiError) {
+      console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for ' + logDescription + ' game ' + name);
+      console.warn(rawgApiError);
+    }
+
+    if (!rawgGame) {
+      this.showNotice('Unable to sync ' + logDescription + ' game ' + name);
+      console.warn('[Game Search][Steam Sync] wishlist SKIPPING! ' + name);
+      return;
+    }
+
+    const possibleExistingFilePath = makeFileName(rawgGame, this.settings.fileNameFormat);
+    const existingGameFile = this.app.vault.getAbstractFileByPath(
+      normalizePath(this.settings.folder + '/' + possibleExistingFilePath),
+    ) as TFile;
+
+    if (existingGameFile) {
+      console.info(
+        '[Game Search][Steam Sync]: found match for vault file: ' +
+          existingGameFile.name +
+          ' and ' +
+          logDescription +
+          ' game: ' +
+          name,
+      );
+
+      this.app.fileManager.processFrontMatter(existingGameFile, data => {
+        data.steamId = steamId;
+        if (
+          this.settings.metaDataForWishlistedSteamGames &&
+          this.settings.metaDataForWishlistedSteamGames instanceof Map
+        ) {
+          for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
+            data[key.trim()] = value.trim();
+          }
+        }
+        return data;
+      });
+    } else {
+      console.info('[Game Search][Steam Sync] creating note for ' + name);
+      try {
+        const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGame.slug);
+        await this.createNewGameNote(
+          { game: rawgGameDetails, steamId: steamId, overwriteFile: false },
+          false,
+          this.settings.metaDataForWishlistedSteamGames,
+        );
+      } catch (rawgOrWriteError) {
+        console.warn('[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + name);
+        console.warn(rawgOrWriteError);
+      }
+    }
+  }
+
   async syncSteamWishlist(processedPercent: (percent: number) => void): Promise<void> {
     if (!this.steamApi) return;
     console.info('[Game Search][Steam Sync]: fetching wishlist from steam api');
@@ -182,62 +240,7 @@ export default class GameSearchPlugin extends Plugin {
     const amount = wishlistGames.size;
 
     for (const [key, value] of wishlistGames) {
-      const wishlistGame = value;
-      let rawgGame: Nullable<RAWGGameFromSearch>;
-      try {
-        rawgGame = (await this.rawgApi.getByQuery(wishlistGame.name))[0];
-      } catch (rawgApiError) {
-        console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for steam wishlist game ' + wishlistGame.name);
-        console.warn(rawgApiError);
-      }
-
-      if (!rawgGame) {
-        this.showNotice('Unable to sync steam wishlist game ' + wishlistGame.name);
-        console.warn('[Game Search][Steam Sync] wishlist SKIPPING! ' + wishlistGame.name);
-        continue;
-      }
-
-      const possibleExistingFilePath = makeFileName(rawgGame, this.settings.fileNameFormat);
-      const existingGameFile = this.app.vault.getAbstractFileByPath(
-        normalizePath(this.settings.folder + '/' + possibleExistingFilePath),
-      ) as TFile;
-
-      if (existingGameFile) {
-        console.info(
-          '[Game Search][Steam Sync]: found match for vault file: ' +
-            existingGameFile.name +
-            ' and steam wishlist game: ' +
-            wishlistGame.name,
-        );
-
-        this.app.fileManager.processFrontMatter(existingGameFile, data => {
-          data.steamId = key;
-          if (
-            this.settings.metaDataForWishlistedSteamGames &&
-            this.settings.metaDataForWishlistedSteamGames instanceof Map
-          ) {
-            for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
-              data[key.trim()] = value.trim();
-            }
-          }
-          return data;
-        });
-      } else {
-        console.info('[Game Search][Steam Sync] creating note for ' + wishlistGame.name);
-        try {
-          const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGame.slug);
-          await this.createNewGameNote(
-            { game: rawgGameDetails, steamId: key, overwriteFile: false },
-            false,
-            this.settings.metaDataForWishlistedSteamGames,
-          );
-        } catch (rawgOrWriteError) {
-          console.warn(
-            '[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + wishlistGame.name,
-          );
-          console.warn(rawgOrWriteError);
-        }
-      }
+      await this.findAndSyncSteamGame(value.name, key, 'wishlisted steam');
       processedPercent(++index / amount);
     }
   }
@@ -252,59 +255,7 @@ export default class GameSearchPlugin extends Plugin {
     const amount = ownedSteamGames.length;
 
     for (let i = 0; i < ownedSteamGames.length; i++) {
-      const steamGame = ownedSteamGames[i];
-      let rawgGame: Nullable<RAWGGameFromSearch>;
-      try {
-        rawgGame = (await this.rawgApi.getByQuery(steamGame.name))[0];
-      } catch (rawgApiError) {
-        console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for steam game ' + steamGame.name);
-        console.warn(rawgApiError);
-      }
-
-      if (!rawgGame) {
-        this.showNotice('Unable to sync steam game ' + steamGame.name);
-        console.warn('[Game Search][Steam Sync] SKIPPING! ' + steamGame.name);
-        continue;
-      }
-
-      const possibleExistingFilePath = makeFileName(rawgGame, this.settings.fileNameFormat);
-      const existingGameFile = this.app.vault.getAbstractFileByPath(
-        normalizePath(this.settings.folder + '/' + possibleExistingFilePath),
-      ) as TFile;
-
-      if (existingGameFile) {
-        console.info(
-          '[Game Search][Steam Sync]: found match for vault file: ' +
-            existingGameFile.name +
-            ' and steam game: ' +
-            steamGame.name,
-        );
-
-        this.app.fileManager.processFrontMatter(existingGameFile, data => {
-          data.steamId = steamGame.appid;
-          if (this.settings.metaDataForOwnedSteamGames && this.settings.metaDataForOwnedSteamGames instanceof Map) {
-            for (const [key, value] of this.settings.metaDataForOwnedSteamGames) {
-              data[key.trim()] = value.trim();
-            }
-          }
-          return data;
-        });
-      } else {
-        console.info('[Game Search][Steam Sync] creating note for ' + steamGame.name);
-        try {
-          const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGame.slug);
-          await this.createNewGameNote(
-            { game: rawgGameDetails, steamId: steamGame.appid, overwriteFile: false },
-            false,
-            this.settings.metaDataForOwnedSteamGames,
-          );
-        } catch (rawgOrWriteError) {
-          console.warn(
-            '[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + steamGame.name,
-          );
-          console.warn(rawgOrWriteError);
-        }
-      }
+      await this.findAndSyncSteamGame(ownedSteamGames[i].name, ownedSteamGames[i].appid, 'owned steam');
       processedPercent(++index / amount);
     }
   }
