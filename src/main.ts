@@ -13,7 +13,6 @@ import {
   applyTemplateTransformations,
   useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
-  DEFAULT_FILENAME_REGEX,
 } from '@utils/template';
 
 export type Nullable<T> = T | undefined | null;
@@ -24,7 +23,7 @@ export default class GameSearchPlugin extends Plugin {
   steamApi: Nullable<SteamAPI>;
 
   async onload() {
-    console.log(
+    console.info(
       `[Game Search][Info] version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`,
     );
     await this.loadSettings();
@@ -145,70 +144,69 @@ export default class GameSearchPlugin extends Plugin {
     // always check to see if steamApi needs to be initialized on sync,
     // it's possible the user has entered API credentials at any point in time.
     if (this.steamApi === undefined && this.settings.steamApiKey && this.settings.steamUserId) {
-      console.log('[Game Search][Steam Sync]: initializing steam api');
+      console.info('[Game Search][Steam Sync]: initializing steam api');
       this.steamApi = new SteamAPI(this.settings.steamApiKey, this.settings.steamUserId);
     }
 
     if (this.steamApi !== undefined) {
-      console.log('[Game Search][Steam Sync]: fetching owned games from steam api');
+      console.info('[Game Search][Steam Sync]: fetching owned games from steam api');
       const ownedSteamGames = await this.steamApi.getOwnedGames();
 
-      console.log('[Game Search][Steam Sync]: begin vault game directory iteration');
-      const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
-      Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
-        const file = f as TFile;
-
-        // make sure it's a file
-        if (!!file && file.name.includes('.md')) {
-          // try and match the vault file with an ownedSteamGame
-          // note: this is a loop in a loop. super not ideal.
-          const steamGameMatch = ownedSteamGames.find(steamGame => {
-            // TODO: allow user defined regex
-            const fileNameRegexMatches = file.name.match(DEFAULT_FILENAME_REGEX);
-            if (
-              fileNameRegexMatches &&
-              fileNameRegexMatches.length > 1 &&
-              steamGame.name.trim().toLowerCase() === fileNameRegexMatches[1].trim().toLowerCase()
-            ) {
-              console.log(
-                '[Game Search][Steam Sync]: found match for vault file: ' +
-                  file.name +
-                  ' and steam game: ' +
-                  steamGame.name,
-              );
-              return true;
-            }
-            return false;
-          });
-
-          // if we found an ownedSteamGame that we think matches one
-          // of the game files in our vault,
-          // add steamId and owned platform to frontmatter
-          if (steamGameMatch !== undefined) {
-            this.app.fileManager.processFrontMatter(file, data => {
-              data.steamId = steamGameMatch.appid;
-              // TODO: allow user to define key for this
-              data.owned_platform = 'steam';
-
-              // remove match from `ownedSteamGames` so we can
-              // iterate over the remaining ones and create notes for them
-              ownedSteamGames.remove(steamGameMatch);
-              return data;
-            });
-          }
-        }
-      });
-
-      console.log('[Game Search][Steam Sync] creating new notes for ' + ownedSteamGames.length + ' owned steam games');
+      console.info('[Game Search][Steam Sync]: begin steam game directory iteration');
 
       for (let i = 0; i < ownedSteamGames.length; i++) {
         const steamGame = ownedSteamGames[i];
-        console.log('[Game Search][Steam Sync] creating note for ' + steamGame.name);
-        const rawgGames = await this.rawgApi.getByQuery(steamGame.name);
-        const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGames[0].slug);
-        await this.createNewGameNote({ game: rawgGameDetails, steamId: steamGame.appid, overwriteFile: false }, false);
+        let rawgGame: Nullable<RAWGGameFromSearch>;
+        try {
+          rawgGame = (await this.rawgApi.getByQuery(steamGame.name))[0];
+        } catch (rawgApiError) {
+          console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for steam game ' + steamGame.name);
+          console.warn(rawgApiError);
+        }
+
+        if (!rawgGame) {
+          this.showNotice('Unable to sync steam game ' + steamGame.name);
+          console.warn('[Game Search][Steam Sync] SKIPPING! ' + steamGame.name);
+          continue;
+        }
+
+        const possibleExistingFilePath = makeFileName(rawgGame, this.settings.fileNameFormat);
+        const existingGameFile = this.app.vault.getAbstractFileByPath(
+          normalizePath(this.settings.folder + '/' + possibleExistingFilePath),
+        ) as TFile;
+
+        if (existingGameFile) {
+          console.info(
+            '[Game Search][Steam Sync]: found match for vault file: ' +
+              existingGameFile.name +
+              ' and steam game: ' +
+              steamGame.name,
+          );
+
+          this.app.fileManager.processFrontMatter(existingGameFile, data => {
+            data.steamId = steamGame.appid;
+            // TODO: allow user to define key for this
+            data.owned_platform = 'steam';
+            return data;
+          });
+        } else {
+          console.info('[Game Search][Steam Sync] creating note for ' + steamGame.name);
+          try {
+            const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGame.slug);
+            await this.createNewGameNote(
+              { game: rawgGameDetails, steamId: steamGame.appid, overwriteFile: false },
+              false,
+            );
+          } catch (rawgOrWriteError) {
+            console.warn(
+              '[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + steamGame.name,
+            );
+            console.warn(rawgOrWriteError);
+          }
+        }
       }
-      this.showNotice(ownedSteamGames.length + ' owned games added from Steam Library');
+
+      this.showNotice('Steam Sync Complete');
     } else if (alertUninitializedApi) {
       console.warn('[Game Search][SteamSync]: steam api not initialized');
       this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
@@ -224,7 +222,7 @@ export default class GameSearchPlugin extends Plugin {
     openAfterCreate = true,
   ): Promise<void> {
     try {
-      const game = params.game ?? (await this.searchGameMetadata());
+      const game = params?.game ?? (await this.searchGameMetadata());
 
       // open file
       const activeLeaf = this.app.workspace.getLeaf();

@@ -1,5 +1,6 @@
 import {
   RAWGGame,
+  RAWGGameFromSearch,
   RAWGGenre,
   RAWGPlatformDetailed,
   RAWGPublisher,
@@ -15,10 +16,10 @@ export const DATE_REGEX = /{{DATE(\+-?[0-9]+)?}}/;
 export const DATE_REGEX_FORMATTED = /{{DATE:([^}\n\r+]*)(\+-?[0-9]+)?}}/;
 
 export function replaceIllegalFileNameCharactersInString(text: string) {
-  return text.replace(/[\\,#%&{}/*<>$":@.|?]/g, '').replace(/\s+/g, ' ');
+  return text.replace(/[[\]\\/:?|^#]/g, '').replace(/\s+/g, ' ');
 }
 
-export function makeFileName(game: RAWGGame, fileNameFormat?: string) {
+export function makeFileName(game: RAWGGame | RAWGGameFromSearch, fileNameFormat?: string) {
   let result;
   if (fileNameFormat) {
     result = replaceVariableSyntax(game, replaceDateInString(fileNameFormat));
@@ -28,14 +29,14 @@ export function makeFileName(game: RAWGGame, fileNameFormat?: string) {
   return replaceIllegalFileNameCharactersInString(result) + '.md';
 }
 
-export function changeSnakeCase(game: RAWGGame) {
+export function changeSnakeCase(game: RAWGGame | RAWGGameFromSearch) {
   return Object.entries(game).reduce((acc, [key, value]) => {
     acc[camelToSnakeCase(key)] = value;
     return acc;
   }, {});
 }
 
-export function replaceVariableSyntax(game: RAWGGame, text: string): string {
+export function replaceVariableSyntax(game: RAWGGame | RAWGGameFromSearch, text: string): string {
   if (!text?.trim()) {
     return '';
   }
@@ -48,21 +49,22 @@ export function replaceVariableSyntax(game: RAWGGame, text: string): string {
     return this.map(p => p.platform.name).join(', ');
   };
 
-  game.developers.toString = function (this: RAWGDeveloper[]) {
-    return this.map(p => p.name).join(', ');
-  };
-
-  game.publishers.toString = function (this: RAWGPublisher[]) {
-    return this.map(p => p.name).join(', ');
-  };
-
   game.tags.toString = function (this: RAWGTag[]) {
     return this.map(p => p.name).join(', ');
   };
 
-  game.metacritic_platforms.toString = function (this: RAWGMetacriticPlatform[]) {
-    return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
-  };
+  const detailedGame = game as RAWGGame;
+  if (detailedGame) {
+    detailedGame.developers.toString = function (this: RAWGDeveloper[]) {
+      return this.map(p => p.name).join(', ');
+    };
+    detailedGame.publishers.toString = function (this: RAWGPublisher[]) {
+      return this.map(p => p.name).join(', ');
+    };
+    detailedGame.metacritic_platforms.toString = function (this: RAWGMetacriticPlatform[]) {
+      return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
+    };
+  }
 
   const entries = Object.entries(game);
 
