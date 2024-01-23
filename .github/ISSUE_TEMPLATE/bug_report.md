@@ -11,6 +11,8 @@ assignees: CMorooney
 
 **(see initial issue [here](https://github.com/CMorooney/obsidian-game-search-plugin/issues/11))**
 
+also please make sure to check [the RAWG API Status page to ensure the API is reportedly functioning](https://status.rawg.io/)
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
