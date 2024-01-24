@@ -118,25 +118,50 @@ export default class GameSearchPlugin extends Plugin {
 
   async regenerateAllGameNotesMetadata(): Promise<void> {
     new ConfirmRegenModal(this.app, () => {
+      const loadingNotice = new Notice('regenerating game metadata', 0);
+      const progress = new ProgressBarComponent(loadingNotice.noticeEl);
+
       const gamesFolder = this.app.vault.getAbstractFileByPath(normalizePath(this.settings.folder)) as TFolder;
+
+      let index = 0;
+      const fileCount = gamesFolder.children.length;
 
       Vault.recurseChildren(gamesFolder, async (f: TAbstractFile) => {
         const file = f as TFile;
         if (!!file && file.name.includes('.md')) {
-          const noteMetadata = await this.parseFileMetadata(f as TFile);
-          const q: Nullable<string> =
-            noteMetadata.id ?? noteMetadata.Id ?? noteMetadata.slug ?? noteMetadata.Slug ?? null;
+          try {
+            const noteMetadata = await this.parseFileMetadata(f as TFile);
+            const q: Nullable<string> =
+              noteMetadata.id ?? noteMetadata.Id ?? noteMetadata.slug ?? noteMetadata.Slug ?? null;
 
-          let game: Nullable<RAWGGame> = null;
-          if (q) {
-            game = await this.rawgApi.getBySlugOrId(q);
-          } else {
-            const games = await this.rawgApi.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
-            game = await this.rawgApi.getBySlugOrId(games[0].slug);
-          }
+            let game: Nullable<RAWGGame> = null;
+            if (q) {
+              game = await this.rawgApi.getBySlugOrId(q);
+            } else {
+              const games = await this.rawgApi.getByQuery(noteMetadata.name ?? noteMetadata.name ?? file.name);
+              game = await this.rawgApi.getBySlugOrId(games[0].slug);
+            }
 
-          if (game) {
-            this.createNewGameNote({ game: game, overwriteFile: true, steamId: null /* TODO: proper regen */ });
+            if (game) {
+              let existingContent = await this.app.vault.read(file);
+
+              // make sure the first instance of `---` is at the start of the file and therefor declaring metadata
+              // (and not some horizontal rule later in the file)
+              if (existingContent.indexOf('---') === 0) {
+                existingContent = existingContent.replace(/---[\S\s]*?---/, '');
+              }
+              await this.createNewGameNote(
+                { game: game, overwriteFile: true, steamId: null /* TODO: proper regen */ },
+                false, // don't open file
+              );
+              const p = ++index / fileCount;
+              progress.setValue(p * 100);
+              if (p >= 1) {
+                loadingNotice.setMessage('game notes regeneration complete');
+              }
+            }
+          } catch (error) {
+            console.error('[GameSearch][Regen] unexpected error regenerating file ' + file.name);
           }
         }
       });
@@ -267,7 +292,7 @@ export default class GameSearchPlugin extends Plugin {
       overwriteFile: boolean;
     }>,
     openAfterCreate = true,
-    extraData?: Map<string, string>,
+    extraData?: Map<string, string>, // key/values for metadata to add to file
   ): Promise<void> {
     try {
       const game = params?.game ?? (await this.searchGameMetadata());
