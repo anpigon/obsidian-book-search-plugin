@@ -143,17 +143,34 @@ export default class GameSearchPlugin extends Plugin {
             }
 
             if (game) {
+              // get the current contents of the file
               let existingContent = await this.app.vault.read(file);
+
+              // re-generate the file contents based on (ostensibly) the changed template
+              const regeneratedContent = await this.getRenderedContents(game);
+
+              // find/capture the regenerated metadata
+              let regeneratedMetadata = '';
+              if (regeneratedContent.indexOf('---') === 0) {
+                const foundRegeneratedMetadata = regeneratedContent.match(/---[\S\s]*?---/);
+                if (foundRegeneratedMetadata.length > 0) {
+                  regeneratedMetadata = foundRegeneratedMetadata[0];
+                }
+              }
+
+              // replace the metdata in the existing content with the newly generated metadata
+              // if there is no metadata in the existing file, just toss the newly generated metadata at the top of the content
 
               // make sure the first instance of `---` is at the start of the file and therefor declaring metadata
               // (and not some horizontal rule later in the file)
               if (existingContent.indexOf('---') === 0) {
-                existingContent = existingContent.replace(/---[\S\s]*?---/, '');
+                existingContent = existingContent.replace(/---[\S\s]*?---/, regeneratedMetadata);
+              } else if (regeneratedMetadata) {
+                existingContent = regeneratedMetadata + '\n' + existingContent;
               }
-              await this.createNewGameNote(
-                { game: game, overwriteFile: true, steamId: null /* TODO: proper regen */ },
-                false, // don't open file
-              );
+
+              await this.app.vault.modify(file, existingContent);
+
               const p = ++index / fileCount;
               progress.setValue(p * 100);
               if (p >= 1) {

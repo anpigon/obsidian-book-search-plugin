@@ -239,7 +239,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
       text: 'WARNING',
     });
     regenDesc.createDiv({
-      text: 'Clicking this button will force delete and regenerate all files in your selected folder using your latest template file. It is highly recommended to back up your notes especially if you have any game notes or content outside of your templated content.',
+      text: 'Clicking this button will force regenerate ALL METADATA in ALL files in your selected folder using your latest template file. No other content will be replaced in order to try and preserve any keepsake notes',
     });
     regenDesc.createDiv({
       text: 'This will work by checking metadata in the current files for either an `id/Id`, `slug/Slug`, or `name/Name` fields to query the API. As a very last fallback it will try using the filename as a query but any files that can not be requeried in all in any of these manners will be skipped for regeneration and *not* deleted',
