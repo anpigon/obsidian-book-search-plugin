@@ -134,7 +134,7 @@ export function mapToString(m: Map<string, string>): string {
   if (!m || m.size <= 0 || !(m instanceof Map)) return '';
   let s = '';
   for (const [key, value] of m) {
-    s += key + ' : ' + value + '\n';
+    s += key + ': ' + value + '\n';
   }
   return s.trim();
 }

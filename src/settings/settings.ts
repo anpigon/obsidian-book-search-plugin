@@ -15,8 +15,8 @@ export interface GameSearchPluginSettings {
   steamApiKey: Nullable<string>;
   steamUserId: Nullable<string>;
   syncSteamOnStart: boolean;
-  metaDataForOwnedSteamGames: Nullable<Map<string, string>>;
-  metaDataForWishlistedSteamGames: Nullable<Map<string, string>>;
+  metaDataForOwnedSteamGames: Nullable<string>;
+  metaDataForWishlistedSteamGames: Nullable<string>;
 }
 
 export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
@@ -182,14 +182,15 @@ export class GameSearchSettingTab extends PluginSettingTab {
       .setDesc(metadataForOwnedSteamGamesDescription)
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.metaDataForOwnedSteamGames;
-        textArea.setValue(mapToString(prevValue)).onChange(async value => {
+        textArea.setValue(prevValue).onChange(async value => {
           try {
             const newValue = stringToMap(value);
-            this.plugin.settings.metaDataForOwnedSteamGames = newValue;
-            await this.plugin.saveSettings();
+            if (newValue.size > 0) {
+              this.plugin.settings.metaDataForOwnedSteamGames = mapToString(newValue);
+              await this.plugin.saveSettings();
+            }
           } catch (error) {
             console.warn(error);
-            new Notice('unable to parse metadata for owned steam games');
           }
         });
       });
@@ -209,11 +210,13 @@ export class GameSearchSettingTab extends PluginSettingTab {
       .setDesc(metadataForWishlistedSteamGamesDescription)
       .addTextArea(textArea => {
         const prevValue = this.plugin.settings.metaDataForWishlistedSteamGames;
-        textArea.setValue(mapToString(prevValue)).onChange(async value => {
+        textArea.setValue(prevValue).onChange(async value => {
           try {
             const newValue = stringToMap(value);
-            this.plugin.settings.metaDataForWishlistedSteamGames = newValue;
-            await this.plugin.saveSettings();
+            if (newValue.size > 0) {
+              this.plugin.settings.metaDataForWishlistedSteamGames = mapToString(newValue);
+              await this.plugin.saveSettings();
+            }
           } catch (error) {
             console.warn(error);
             new Notice('unable to parse metadata for wishlisted steam games');

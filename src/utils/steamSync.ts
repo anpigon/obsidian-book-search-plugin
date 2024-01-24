@@ -3,7 +3,7 @@ import { GameSearchPluginSettings } from '@settings/settings';
 import type { Nullable } from '../main';
 import { SteamAPI } from '@src/apis/steam_api';
 import { RAWGAPI } from '@src/apis/rawg_games_api';
-import { makeFileName } from '@utils/utils';
+import { makeFileName, stringToMap } from '@utils/utils';
 import { RAWGGame, RAWGGameFromSearch } from '@models/rawg_game.model';
 
 export async function findAndSyncSteamGame(
@@ -99,7 +99,7 @@ export async function syncSteamWishlist(
       value.name,
       key,
       createNewGameNote,
-      settings.metaDataForWishlistedSteamGames,
+      stringToMap(settings.metaDataForWishlistedSteamGames),
       'wishlisted steam',
     );
     processedPercent(++index / amount);
@@ -136,7 +136,7 @@ export async function syncOwnedSteamGames(
       ownedSteamGames[i].name,
       ownedSteamGames[i].appid,
       createNewGameNote,
-      settings.metaDataForOwnedSteamGames,
+      stringToMap(settings.metaDataForOwnedSteamGames),
       'owned steam',
     );
     processedPercent(++index / amount);

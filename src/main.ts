@@ -171,17 +171,23 @@ export default class GameSearchPlugin extends Plugin {
                 if (existingMetadata.has('steamId')) {
                   regeneratedMetadata.set('steamId', existingMetadata.get('steamId'));
                 }
-                if (this.settings.metaDataForWishlistedSteamGames instanceof Map) {
-                  for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
-                    if (existingMetadata.has(key)) {
-                      regeneratedMetadata.set(key, value);
+                if (this.settings.metaDataForWishlistedSteamGames) {
+                  const wishlistMap = stringToMap(this.settings.metaDataForWishlistedSteamGames);
+                  if (wishlistMap instanceof Map) {
+                    for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
+                      if (existingMetadata.has(key)) {
+                        regeneratedMetadata.set(key, value);
+                      }
                     }
                   }
                 }
-                if (this.settings.metaDataForOwnedSteamGames instanceof Map) {
-                  for (const [key, value] of this.settings.metaDataForOwnedSteamGames) {
-                    if (existingMetadata.has(key)) {
-                      regeneratedMetadata.set(key, value);
+                if (this.settings.metaDataForOwnedSteamGames) {
+                  const ownedMap = stringToMap(this.settings.metaDataForOwnedSteamGames);
+                  if (ownedMap instanceof Map) {
+                    for (const [key, value] of stringToMap(this.settings.metaDataForOwnedSteamGames)) {
+                      if (existingMetadata.has(key)) {
+                        regeneratedMetadata.set(key, value);
+                      }
                     }
                   }
                 }
