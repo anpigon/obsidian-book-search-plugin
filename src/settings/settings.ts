@@ -1,6 +1,5 @@
 import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
-import { replaceDateInString } from '@utils/utils';
-
+import { replaceDateInString, stringToMap, mapToString } from '@utils/utils';
 import GameSearchPlugin, { Nullable } from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
@@ -255,29 +254,6 @@ export class GameSearchSettingTab extends PluginSettingTab {
         });
       });
   }
-}
-
-function mapToString(m: Map<string, string>): string {
-  if (!m || m.size <= 0 || !(m instanceof Map)) return '';
-  let s = '';
-  for (const [key, value] of m) {
-    s += key + ' : ' + value + '\n';
-  }
-  return s.trim();
-}
-
-function stringToMap(s: string): Map<string, string> {
-  const m = new Map<string, string>();
-  if (!s) return m;
-  const lines = s.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].contains(':')) {
-      const components = lines[i].split(':');
-      if (components[0] && components[1] && components[0].trim() && components[1].trim())
-        m.set(components[0], components[1]);
-    }
-  }
-  return m;
 }
 
 function createHeader(containerEl: HTMLElement, title: string) {

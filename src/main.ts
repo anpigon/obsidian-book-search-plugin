@@ -15,7 +15,7 @@ import { ConfirmRegenModal } from '@views/confirm_regen_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { RAWGGame, RAWGGameFromSearch } from '@models/rawg_game.model';
 import { GameSearchSettingTab, GameSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
-import { replaceVariableSyntax, makeFileName } from '@utils/utils';
+import { replaceVariableSyntax, makeFileName, stringToMap, mapToString } from '@utils/utils';
 import { RAWGAPI } from '@src/apis/rawg_games_api';
 import { SteamAPI } from '@src/apis/steam_api';
 import {
@@ -24,6 +24,7 @@ import {
   useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
 } from '@utils/template';
+import { syncSteamWishlist, syncOwnedSteamGames } from '@utils/steamSync';
 
 export type Nullable<T> = T | undefined | null;
 
@@ -144,17 +145,45 @@ export default class GameSearchPlugin extends Plugin {
 
             if (game) {
               // get the current contents of the file
+              // (and the current metadata)
               let existingContent = await this.app.vault.read(file);
+              let existingMetadata: Nullable<Map<string, string>> = undefined;
+              if (existingContent.indexOf('---') === 0) {
+                existingMetadata = stringToMap(existingContent.match(/---[\S\s]*?---/)[0]);
+              }
 
               // re-generate the file contents based on (ostensibly) the changed template
               const regeneratedContent = await this.getRenderedContents(game);
 
               // find/capture the regenerated metadata
-              let regeneratedMetadata = '';
+              let regeneratedMetadata: Nullable<Map<string, string>> = undefined;
               if (regeneratedContent.indexOf('---') === 0) {
                 const foundRegeneratedMetadata = regeneratedContent.match(/---[\S\s]*?---/);
                 if (foundRegeneratedMetadata.length > 0) {
-                  regeneratedMetadata = foundRegeneratedMetadata[0];
+                  regeneratedMetadata = stringToMap(foundRegeneratedMetadata[0]);
+                }
+              }
+
+              // if the existing metadata has keys that were injected
+              // as a part of the users steam sync settings we do want to
+              // preserve those
+              if (regeneratedMetadata instanceof Map && existingMetadata instanceof Map) {
+                if (existingMetadata.has('steamId')) {
+                  regeneratedMetadata.set('steamId', existingMetadata.get('steamId'));
+                }
+                if (this.settings.metaDataForWishlistedSteamGames instanceof Map) {
+                  for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
+                    if (existingMetadata.has(key)) {
+                      regeneratedMetadata.set(key, value);
+                    }
+                  }
+                }
+                if (this.settings.metaDataForOwnedSteamGames instanceof Map) {
+                  for (const [key, value] of this.settings.metaDataForOwnedSteamGames) {
+                    if (existingMetadata.has(key)) {
+                      regeneratedMetadata.set(key, value);
+                    }
+                  }
                 }
               }
 
@@ -164,9 +193,12 @@ export default class GameSearchPlugin extends Plugin {
               // make sure the first instance of `---` is at the start of the file and therefor declaring metadata
               // (and not some horizontal rule later in the file)
               if (existingContent.indexOf('---') === 0) {
-                existingContent = existingContent.replace(/---[\S\s]*?---/, regeneratedMetadata);
+                existingContent = existingContent.replace(
+                  /---[\S\s]*?---/,
+                  '---\n' + mapToString(regeneratedMetadata) + '\n---',
+                );
               } else if (regeneratedMetadata) {
-                existingContent = regeneratedMetadata + '\n' + existingContent;
+                existingContent = '---\n' + mapToString(regeneratedMetadata) + '\n---\n' + existingContent;
               }
 
               await this.app.vault.modify(file, existingContent);
@@ -185,15 +217,6 @@ export default class GameSearchPlugin extends Plugin {
     }).open();
   }
 
-  async parseFileMetadata(file: TFile): Promise<any> {
-    const fileManager = this.app.fileManager;
-    return new Promise<any>(accept => {
-      fileManager.processFrontMatter(file, (data: any) => {
-        accept(data);
-      });
-    });
-  }
-
   async syncSteam(alertUninitializedApi: boolean): Promise<void> {
     // always check to see if steamApi needs to be initialized on sync,
     // it's possible the user has entered API credentials at any point in time.
@@ -205,10 +228,27 @@ export default class GameSearchPlugin extends Plugin {
     if (this.steamApi !== undefined) {
       const loadingNotice = new Notice('syncing steam games (owned)', 0);
       let progress = new ProgressBarComponent(loadingNotice.noticeEl);
-      await this.syncOwnedSteamGames(percent => progress.setValue((percent * 100) / 2));
+      await syncOwnedSteamGames(
+        this.app.vault,
+        this.settings,
+        this.app.fileManager,
+        this.rawgApi,
+        this.steamApi,
+        async (params, openAfterCreate, extraData) => await this.createNewGameNote(params, openAfterCreate, extraData),
+        (percent: number) => progress.setValue((percent * 100) / 2),
+      );
+
       loadingNotice.setMessage('syncing steam games (wishlist)');
       progress = new ProgressBarComponent(loadingNotice.noticeEl);
-      await this.syncSteamWishlist(percent => progress.setValue(50 + (percent * 100) / 2));
+      await syncSteamWishlist(
+        this.app.vault,
+        this.settings,
+        this.app.fileManager,
+        this.rawgApi,
+        this.steamApi,
+        async (params, openAfterCreate, extraData) => await this.createNewGameNote(params, openAfterCreate, extraData),
+        (percent: number) => progress.setValue(50 + (percent * 100) / 2),
+      );
       loadingNotice.setMessage('steam sync complete');
     } else if (alertUninitializedApi) {
       console.warn('[Game Search][SteamSync]: steam api not initialized');
@@ -216,90 +256,13 @@ export default class GameSearchPlugin extends Plugin {
     }
   }
 
-  async findAndSyncSteamGame(name: string, steamId: number, logDescription: string): Promise<void> {
-    let rawgGame: Nullable<RAWGGameFromSearch>;
-    try {
-      rawgGame = (await this.rawgApi.getByQuery(name))[0];
-    } catch (rawgApiError) {
-      console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for ' + logDescription + ' game ' + name);
-      console.warn(rawgApiError);
-    }
-
-    if (!rawgGame) {
-      this.showNotice('Unable to sync ' + logDescription + ' game ' + name);
-      console.warn('[Game Search][Steam Sync] wishlist SKIPPING! ' + name);
-      return;
-    }
-
-    const possibleExistingFilePath = makeFileName(rawgGame, this.settings.fileNameFormat);
-    const existingGameFile = this.app.vault.getAbstractFileByPath(
-      normalizePath(this.settings.folder + '/' + possibleExistingFilePath),
-    ) as TFile;
-
-    if (existingGameFile) {
-      console.info(
-        '[Game Search][Steam Sync]: found match for vault file: ' +
-          existingGameFile.name +
-          ' and ' +
-          logDescription +
-          ' game: ' +
-          name,
-      );
-
-      this.app.fileManager.processFrontMatter(existingGameFile, data => {
-        data.steamId = steamId;
-        if (
-          this.settings.metaDataForWishlistedSteamGames &&
-          this.settings.metaDataForWishlistedSteamGames instanceof Map
-        ) {
-          for (const [key, value] of this.settings.metaDataForWishlistedSteamGames) {
-            data[key.trim()] = value.trim();
-          }
-        }
-        return data;
+  async parseFileMetadata(file: TFile): Promise<any> {
+    const fileManager = this.app.fileManager;
+    return new Promise<any>(accept => {
+      fileManager.processFrontMatter(file, (data: any) => {
+        accept(data);
       });
-    } else {
-      console.info('[Game Search][Steam Sync] creating note for ' + name);
-      try {
-        const rawgGameDetails = await this.rawgApi.getBySlugOrId(rawgGame.slug);
-        await this.createNewGameNote(
-          { game: rawgGameDetails, steamId: steamId, overwriteFile: false },
-          false,
-          this.settings.metaDataForWishlistedSteamGames,
-        );
-      } catch (rawgOrWriteError) {
-        console.warn('[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + name);
-        console.warn(rawgOrWriteError);
-      }
-    }
-  }
-
-  async syncSteamWishlist(processedPercent: (percent: number) => void): Promise<void> {
-    if (!this.steamApi) return;
-    console.info('[Game Search][Steam Sync]: fetching wishlist from steam api');
-    const wishlistGames = await this.steamApi.getWishlist();
-    let index = 0;
-    const amount = wishlistGames.size;
-
-    for (const [key, value] of wishlistGames) {
-      await this.findAndSyncSteamGame(value.name, key, 'wishlisted steam');
-      processedPercent(++index / amount);
-    }
-  }
-
-  async syncOwnedSteamGames(processedPercent: (percent: number) => void): Promise<void> {
-    if (!this.steamApi) return;
-    console.info('[Game Search][Steam Sync]: fetching owned games from steam api');
-    const ownedSteamGames = await this.steamApi.getOwnedGames();
-
-    console.info('[Game Search][Steam Sync]: begin steam game directory iteration');
-    let index = 0;
-    const amount = ownedSteamGames.length;
-
-    for (let i = 0; i < ownedSteamGames.length; i++) {
-      await this.findAndSyncSteamGame(ownedSteamGames[i].name, ownedSteamGames[i].appid, 'owned steam');
-      processedPercent(++index / amount);
-    }
+    });
   }
 
   async createNewGameNote(

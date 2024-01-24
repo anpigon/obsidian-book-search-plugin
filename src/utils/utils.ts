@@ -129,3 +129,34 @@ function replacer(str: string, reg: RegExp, replaceValue) {
     return replaceValue;
   });
 }
+
+export function mapToString(m: Map<string, string>): string {
+  if (!m || m.size <= 0 || !(m instanceof Map)) return '';
+  let s = '';
+  for (const [key, value] of m) {
+    s += key + ' : ' + value + '\n';
+  }
+  return s.trim();
+}
+
+export function stringToMap(s: string): Map<string, string> {
+  const m = new Map<string, string>();
+  if (!s) return m;
+  const lines = s.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].contains(':')) {
+      const components = lines[i].split(':');
+      if (components[0] && components[1] && components[0].trim() && components[1].trim()) {
+        let value = '';
+        // values in the metadata can have colons in them, so there may be more than 2 elements in this array.
+        // make sure we put the string back together
+        // (without this, for example, a URL value for metadata would essentially get nuked on regen)
+        for (let i = 1; i < components.length; i++) {
+          value += components[i].trim();
+        }
+        m.set(components[0].trim(), value.trim());
+      }
+    }
+  }
+  return m;
+}
