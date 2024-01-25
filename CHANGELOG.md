@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+Adds Steam sync!
+Changes how note regeneration works -- instead of completely regenerating the note
+only regen and replace the metadata. Carries over steam related metadata if applicable
+
+this is a rather large set of changes..
+probably best to look at the README changes at commit `5222179a5758922c3e60060d0dc1d6646b724199`
+
 ## 0.1.8
 
 Fixes issue with game titles that include
