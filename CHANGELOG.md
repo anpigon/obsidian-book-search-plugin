@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+Fixes bugs adding game note when passing undefined params in `createNote`
+
 ## 0.2.0
 
 Adds Steam sync!
