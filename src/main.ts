@@ -275,7 +275,6 @@ export default class GameSearchPlugin extends Plugin {
     params: Nullable<{
       game: Nullable<RAWGGame>;
       steamId: Nullable<number>;
-      overwriteFile: boolean;
     }>,
     openAfterCreate = true,
     extraData?: Map<string, string>, // key/values for metadata to add to file
@@ -292,14 +291,9 @@ export default class GameSearchPlugin extends Plugin {
 
       const renderedContents = await this.getRenderedContents(game);
 
-      // If the same file exists, it asks if you want to overwrite it.
       // create new File
       const fileName = makeFileName(game, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder}/${fileName}`;
-      const existing = this.app.vault.getAbstractFileByPath(normalizePath(filePath));
-      if (existing && params && params.overwriteFile) {
-        await this.app.vault.delete(existing, true);
-      }
       const targetFile = await this.app.vault.create(filePath, renderedContents);
 
       // if use Templater plugin
