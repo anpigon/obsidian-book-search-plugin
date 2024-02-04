@@ -297,7 +297,7 @@ export default class GameSearchPlugin extends Plugin {
       const fileName = makeFileName(game, this.settings.fileNameFormat);
       const filePath = `${this.settings.folder}/${fileName}`;
       const existing = this.app.vault.getAbstractFileByPath(normalizePath(filePath));
-      if (existing && params.overwriteFile) {
+      if (existing && params && params.overwriteFile) {
         await this.app.vault.delete(existing, true);
       }
       const targetFile = await this.app.vault.create(filePath, renderedContents);
@@ -305,7 +305,7 @@ export default class GameSearchPlugin extends Plugin {
       // if use Templater plugin
       await useTemplaterPluginInFile(this.app, targetFile);
 
-      if (params.steamId) {
+      if (params && params.steamId) {
         this.app.fileManager.processFrontMatter(targetFile, (data: any) => {
           data.steamId = params.steamId;
           if (extraData && extraData instanceof Map) {
