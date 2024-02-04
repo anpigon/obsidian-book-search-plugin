@@ -3,6 +3,7 @@
 ## 0.2.1
 
 Fixes bugs adding game note when passing undefined params in `createNote`
+(addresses bug [20](https://github.com/CMorooney/obsidian-game-search-plugin/issues/20))
 
 ## 0.2.0
 
