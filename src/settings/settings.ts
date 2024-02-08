@@ -10,6 +10,7 @@ import { SettingServiceProviderModal } from '@views/setting_service_provider_mod
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const safeStorage = (window as any).electron?.remote.safeStorage;
 
 export enum DefaultFrontmatterKeyType {
@@ -50,7 +51,10 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
-  constructor(app: App, private plugin: BookSearchPlugin) {
+  constructor(
+    app: App,
+    private plugin: BookSearchPlugin,
+  ) {
     super(app, plugin);
   }
 

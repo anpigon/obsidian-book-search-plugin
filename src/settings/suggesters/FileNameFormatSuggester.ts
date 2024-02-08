@@ -16,14 +16,17 @@ export const TITLE_SYNTAX_SUGGEST_REGEX = /{{t?i?t?l?e?}?}?$/i;
 export class FileNameFormatSuggest extends TextInputSuggest<string> {
   private lastInput = '';
 
-  constructor(public app: App, public inputEl: HTMLInputElement | HTMLTextAreaElement) {
+  constructor(
+    public app: App,
+    public inputEl: HTMLInputElement | HTMLTextAreaElement,
+  ) {
     super(app, inputEl);
   }
 
   getSuggestions(inputStr: string): string[] {
-    const cursorPosition: number = this.inputEl.selectionStart;
+    const cursorPosition: number = this.inputEl.selectionStart ?? 0;
     const lookbehind = 15;
-    const inputBeforeCursor = inputStr.substr(cursorPosition - lookbehind, lookbehind);
+    const inputBeforeCursor = inputStr.substring(cursorPosition - lookbehind, cursorPosition);
     const suggestions: string[] = [];
 
     this.processToken(inputBeforeCursor, (match: RegExpMatchArray, suggestion: string) => {
@@ -35,16 +38,16 @@ export class FileNameFormatSuggest extends TextInputSuggest<string> {
   }
 
   selectSuggestion(item: string): void {
-    const cursorPosition: number = this.inputEl.selectionStart;
+    const cursorPosition: number = this.inputEl.selectionStart ?? 0;
     const lastInputLength: number = this.lastInput.length;
     const currentInputValue: string = this.inputEl.value;
     let insertedEndPosition = 0;
 
     const insert = (text: string, offset = 0) => {
-      return `${currentInputValue.substr(
+      return `${currentInputValue.substring(
         0,
         cursorPosition - lastInputLength + offset,
-      )}${text}${currentInputValue.substr(cursorPosition)}`;
+      )}${text}${currentInputValue.substring(cursorPosition)}`;
     };
 
     this.processToken(item, (_match, suggestion) => {

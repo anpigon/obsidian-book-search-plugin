@@ -3,10 +3,10 @@ export interface FrontMatter {
 }
 
 export interface Book {
-  title: string; // 책 제목
+  title?: string; // 책 제목
   subtitle?: string;
-  author: string; // 저자
-  authors: string[];
+  author?: string; // 저자
+  authors?: string[];
   category?: string; // 카테고리
   publisher?: string; // 출판사
   publishDate?: string; // 출판일

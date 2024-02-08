@@ -1,11 +1,16 @@
+import { moment } from 'obsidian';
 import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const safeStorage = (window as any).electron?.remote.safeStorage;
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
-  constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
+  constructor(
+    private readonly localePreference: string,
+    private readonly apiKey?: string,
+  ) {}
 
   async getByQuery(query: string) {
     try {
@@ -13,21 +18,22 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         q: query,
         maxResults: 40,
         printType: 'books',
+        langRestrict: '',
+        key: '',
       };
       const langRestrict = this.localePreference;
       if (langRestrict === 'default') {
-        params['langRestrict'] = window.moment.locale();
+        params['langRestrict'] = moment.locale();
       } else {
         params['langRestrict'] = langRestrict;
       }
       // is mobile
 
-      if (this.apiKey !== '') {
-        if (safeStorage && safeStorage.isEncryptionAvailable()) {
-          params['key'] = safeStorage.decryptString(Buffer.from(this.apiKey, 'hex'));
-        }
+      if (this.apiKey && safeStorage?.isEncryptionAvailable()) {
+        params['key'] = safeStorage.decryptString(Buffer.from(this.apiKey, 'hex'));
         // TODO: What about on mobile app?
       }
+
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {
         return [];
@@ -48,7 +54,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
         result['isbn13'] = item.identifier.trim();
       }
       return result;
-    }, {});
+    }, {} as Book);
   }
 
   createBookItem(item: VolumeInfo): Book {
@@ -76,7 +82,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   }
 
   formatList(list?: string[]) {
-    if (list?.length > 1) {
+    if (list && list?.length > 1) {
       return list.map(item => `${item.trim()}`).join(', ');
     }
     return list?.[0]?.replace('N/A', '') ?? '';

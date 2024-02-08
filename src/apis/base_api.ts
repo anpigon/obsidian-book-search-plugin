@@ -20,6 +20,7 @@ export function factoryServiceProvider(settings: BookSearchPluginSettings): Base
     }
     return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
   }
+  throw new Error('No service provider selected.');
 }
 
 export async function apiGet<T>(

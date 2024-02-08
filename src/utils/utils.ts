@@ -15,20 +15,28 @@ export function isISBN(str: string) {
 }
 
 export function makeFileName(book: Book, fileNameFormat?: string) {
-  let result;
+  if (!book.title) {
+    throw new Error('Book title is required');
+  }
+  let result: string;
   if (fileNameFormat) {
     result = replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
+  } else if (!book.author) {
+    result = `${book.title} - ${book.author}`;
   } else {
-    result = !book.author ? book.title : `${book.title} - ${book.author}`;
+    result = book.title;
   }
   return replaceIllegalFileNameCharactersInString(result) + '.md';
 }
 
 export function changeSnakeCase(book: Book) {
-  return Object.entries(book).reduce((acc, [key, value]) => {
-    acc[camelToSnakeCase(key)] = value;
-    return acc;
-  }, {});
+  return Object.entries(book).reduce(
+    (acc, [key, value]) => {
+      acc[camelToSnakeCase(key)] = value;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 }
 
 export function applyDefaultFrontMatter(
@@ -36,7 +44,10 @@ export function applyDefaultFrontMatter(
   frontmatter: FrontMatter | string,
   keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
 ) {
-  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? book : changeSnakeCase(book);
+  const frontMater = (keyType === DefaultFrontmatterKeyType.camelCase ? book : changeSnakeCase(book)) as Record<
+    string,
+    string
+  >;
 
   const extraFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
   for (const key in extraFrontMatter) {
@@ -66,7 +77,7 @@ export function replaceVariableSyntax(book: Book, text: string): string {
     .trim();
 }
 
-export function camelToSnakeCase(str) {
+export function camelToSnakeCase(str: string) {
   return str.replace(/[A-Z]/g, letter => `_${letter?.toLowerCase()}`);
 }
 
@@ -87,7 +98,7 @@ export function parseFrontMatter(frontMatterString: string) {
         acc[key] = value?.trim() ?? '';
       }
       return acc;
-    }, {});
+    }, {} as FrontMatter);
 }
 
 export function toStringFrontMatter(frontMatter: object): string {
@@ -150,7 +161,7 @@ export function replaceDateInString(input: string) {
   return output;
 }
 
-function replacer(str: string, reg: RegExp, replaceValue) {
+function replacer(str: string, reg: RegExp, replaceValue: string) {
   return str.replace(reg, function () {
     return replaceValue;
   });

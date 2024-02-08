@@ -43,16 +43,16 @@ export default class BookSearchPlugin extends Plugin {
     console.log(`Book Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`);
   }
 
-  showNotice(message: unknown) {
+  showNotice(message: string | Error | undefined) {
     try {
-      new Notice(message?.toString());
+      new Notice(message?.toString() ?? 'Error occurred. Please check the console.');
     } catch {
       // eslint-disable
     }
   }
 
   // open modal for book search
-  async searchBookMetadata(query?: string): Promise<Book> {
+  async searchBookMetadata(query?: string): Promise<Book | undefined> {
     const searchedBooks = await this.openBookSearchModal(query);
     return await this.openBookSuggestModal(searchedBooks);
   }
@@ -90,6 +90,13 @@ export default class BookSearchPlugin extends Plugin {
       const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!markdownView) {
         console.warn('Can not find an active markdown view');
+        this.showNotice('Can not find an active markdown view');
+        return;
+      }
+
+      if (!markdownView.file) {
+        console.warn('Can not find file from the active markdown view');
+        this.showNotice('Can not find file from the active markdown view');
         return;
       }
 
@@ -98,6 +105,12 @@ export default class BookSearchPlugin extends Plugin {
 
       if (!markdownView.editor) {
         console.warn('Can not find editor from the active markdown view');
+        return;
+      }
+
+      if (!book) {
+        console.warn('Book not found');
+        this.showNotice('Book not found');
         return;
       }
 
@@ -112,6 +125,11 @@ export default class BookSearchPlugin extends Plugin {
   async createNewBookNote(): Promise<void> {
     try {
       const book = await this.searchBookMetadata();
+      if (!book) {
+        console.warn('Book not found');
+        this.showNotice('Book not found');
+        return;
+      }
       const renderedContents = await this.getRenderedContents(book);
 
       // TODO: If the same file exists, it asks if you want to overwrite it.
@@ -148,12 +166,12 @@ export default class BookSearchPlugin extends Plugin {
   async openBookSearchModal(query = ''): Promise<Book[]> {
     return new Promise((resolve, reject) => {
       return new BookSearchModal(this, query, (error, results) => {
-        return error ? reject(error) : resolve(results);
+        return error ? reject(error) : resolve(results ?? []);
       }).open();
     });
   }
 
-  async openBookSuggestModal(books: Book[]): Promise<Book> {
+  async openBookSuggestModal(books: Book[]): Promise<Book | undefined> {
     return new Promise((resolve, reject) => {
       return new BookSuggestModal(this.app, books, (error, selectedBook) => {
         return error ? reject(error) : resolve(selectedBook);
