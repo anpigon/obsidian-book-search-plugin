@@ -6,11 +6,17 @@
     "module": "ESNext",
     "target": "ES6",
     "allowJs": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["DOM", "ES5", "ES6", "ES7"],
+	  "strictNullChecks": true,
+    "lib": [
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7"
+    ],
     "paths": {
       "@settings/*": ["src/settings/*"],
       "@models/*": ["src/models/*"],
@@ -20,5 +26,7 @@
       "@src/*": ["src/*"]
     }
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.ts"
+  ]
 }
