@@ -44,33 +44,50 @@ Or, Search in the Obsidian Community plugin. And install it.
 
 <img width="700" src="https://user-images.githubusercontent.com/3969643/184918934-585375a9-7b25-4905-81c8-5f092ed74991.png">
 
-<br>
+### Enhancements: Cover Image Display in Search Results
 
-### Styling Updates for Book Suggestions
+We've introduced a new setting in our plugin that allows users to display cover images alongside book suggestions in the search results. This feature aims to enrich the search experience by providing visual cues, making it easier for users to identify books at a glance. The cover images are designed to complement the textual information, offering a more engaging and intuitive search interface.
 
-To enhance the visual presentation of the book suggestions, we've added a small CSS snippet that ensures book cover images are displayed alongside the book's details. This update improves the user's ability to quickly scan and identify books based on their covers.
+By default, this feature is **disabled** to maintain a clean, text-focused search experience. Users who prefer to keep their search results streamlined without images will find the default setting optimized for their preference.
 
-Here is the CSS snippet that has been added:
+#### Enabling Cover Images
+
+To activate cover images in your search results:
+
+1. Go to the plugin settings.
+2. Find the **"Show Cover Images in Search"** option.
+3. Switch the toggle to **on** to enable cover images.
+
+#### CSS Styling for Cover Images
+
+For those who enable this feature, we've added CSS styling to ensure that cover images are displayed effectively without disrupting the flow of information. To add this CSS snippet in Obsidian, you can either include it directly in your plugin's CSS file or insert it into Obsidian's custom CSS section for your vault. Here's how to add the CSS snippet for styling the book suggestions with cover images:
+1. Open Obsidian.
+2. Navigate to Settings > Appearance.
+3. Under the CSS Snippets section, click on Open snippets folder.
+4. Create a new .css file in this folder and paste the following CSS snippet into the file.
+5. Go back to Obsidian, and under CSS Snippets, turn on the snippet you just added.
 
 ```css
 .book-suggestion-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px; /* Adjust spacing between items */
+  margin-bottom: 10px;
 }
 
 .book-cover-image {
   max-width: 100px;
   max-height: 100px;
-  margin-right: 10px; /* Spacing between image and text */
-  object-fit: cover; /* Ensures the image covers the area, might clip the image */
-  border-radius: 3px; /* Optional: rounds the corners of the image */
+  margin-right: 10px;
+  object-fit: cover;
+  border-radius: 3px;
 }
 
 .book-text-info {
   flex-grow: 1;
 }
 ```
+
+<br>
 
 ## How to use
 
