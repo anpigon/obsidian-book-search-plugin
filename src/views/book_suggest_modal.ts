@@ -2,12 +2,16 @@ import { App, SuggestModal } from 'obsidian';
 import { Book } from '@models/book.model';
 
 export class BookSuggestModal extends SuggestModal<Book> {
+  showCoverImageInSearch: boolean;
+
   constructor(
     app: App,
+    showCoverImageInSearch: boolean,
     private readonly suggestion: Book[],
     private onChoose: (error: Error | null, result?: Book) => void,
   ) {
     super(app);
+    this.showCoverImageInSearch = showCoverImageInSearch;
   }
 
   // Returns all available suggestions.
@@ -28,7 +32,7 @@ export class BookSuggestModal extends SuggestModal<Book> {
 
     const coverImageUrl = book.coverLargeUrl || book.coverMediumUrl || book.coverSmallUrl || book.coverUrl;
 
-    if (coverImageUrl) {
+    if (this.showCoverImageInSearch && coverImageUrl) {
       const imgEl = el.createEl('img', {
         cls: 'book-cover-image',
         attr: {

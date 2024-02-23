@@ -31,6 +31,7 @@ export interface BookSearchPluginSettings {
   localePreference: string;
   apiKey: string;
   openPageOnCompletion: boolean;
+  showCoverImageInSearch: boolean;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -47,6 +48,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   localePreference: 'default',
   apiKey: '',
   openPageOnCompletion: true,
+  showCoverImageInSearch: false,
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -218,6 +220,16 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addToggle(toggle =>
         toggle.setValue(this.plugin.settings.openPageOnCompletion).onChange(async value => {
           this.plugin.settings.openPageOnCompletion = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Show Cover Images in Search')
+      .setDesc('Toggle to show or hide cover images in the search results.')
+      .addToggle(toggle =>
+        toggle.setValue(this.plugin.settings.showCoverImageInSearch).onChange(async value => {
+          this.plugin.settings.showCoverImageInSearch = value;
           await this.plugin.saveSettings();
         }),
       );

@@ -155,7 +155,7 @@ export default class BookSearchPlugin extends Plugin {
 
   async openBookSuggestModal(books: Book[]): Promise<Book> {
     return new Promise((resolve, reject) => {
-      return new BookSuggestModal(this.app, books, (error, selectedBook) => {
+      return new BookSuggestModal(this.app, this.settings.showCoverImageInSearch, books, (error, selectedBook) => {
         return error ? reject(error) : resolve(selectedBook);
       }).open();
     });

@@ -46,6 +46,32 @@ Or, Search in the Obsidian Community plugin. And install it.
 
 <br>
 
+### Styling Updates for Book Suggestions
+
+To enhance the visual presentation of the book suggestions, we've added a small CSS snippet that ensures book cover images are displayed alongside the book's details. This update improves the user's ability to quickly scan and identify books based on their covers.
+
+Here is the CSS snippet that has been added:
+
+```css
+.book-suggestion-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Adjust spacing between items */
+}
+
+.book-cover-image {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 10px; /* Spacing between image and text */
+  object-fit: cover; /* Ensures the image covers the area, might clip the image */
+  border-radius: 3px; /* Optional: rounds the corners of the image */
+}
+
+.book-text-info {
+  flex-grow: 1;
+}
+```
+
 ## How to use
 
 ### 1. Click the ribbon icon, or excute the command "Create new book note".
