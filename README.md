@@ -88,6 +88,13 @@ You can set the template file location. There is an example template at the bott
 You can set up the services that you use to search for books. Only Google and Naver(네이버) are available now.
 To use Naver Book Search, clientId and clientSecret are required. I will explain how to get clientId and clientSecret from Naver on my blog.
 
+### Cover Image Saving
+
+This feature allows for the automatic downloading and saving of book cover images directly into your Obsidian vault.
+By default, this option is turned off and can be activated in the plugin settings.
+Upon enabling, you can designate a specific folder within your vault for storing these images.
+
+
 ### <strike>(Deprecated) Text to insert into front matter</strike>
 
 <strike>You can add the following to the default Front Matter, or create a new Front Matter with the structure you want.</strike> Please use the template file described below.
