@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin, TFile } from 'obsidian';
+import { MarkdownView, Notice, Plugin, TFile, requestUrl } from 'obsidian';
 
 import { BookSearchModal } from '@views/book_search_modal';
 import { BookSuggestModal } from '@views/book_suggest_modal';
@@ -62,27 +62,71 @@ export default class BookSearchPlugin extends Plugin {
       templateFile,
       useDefaultFrontmatter,
       defaultFrontmatterKeyType,
+      enableCoverImageSave,
+      coverImagePath,
       frontmatter, // @deprecated
       content, // @deprecated
     } = this.settings;
 
+    let contentBody = '';
+
+    if (enableCoverImageSave) {
+      const coverImageUrl = book.coverLargeUrl || book.coverMediumUrl || book.coverSmallUrl || book.coverUrl;
+      if (coverImageUrl) {
+        const imageName = `${book.title}_${book.author}`.replace(/[^a-z0-9]+/gi, '_').toLowerCase() + '.jpg';
+        book.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
+      }
+    }
+
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
       const replacedVariable = replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
-      return executeInlineScriptsTemplates(book, replacedVariable);
+      contentBody += executeInlineScriptsTemplates(book, replacedVariable);
+    } else {
+      let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
+      if (useDefaultFrontmatter) {
+        replacedVariableFrontmatter = toStringFrontMatter(
+          applyDefaultFrontMatter(book, replacedVariableFrontmatter, defaultFrontmatterKeyType),
+        );
+      }
+      const replacedVariableContent = replaceVariableSyntax(book, content);
+      contentBody += replacedVariableFrontmatter
+        ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
+        : replacedVariableContent;
     }
 
-    let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
-    if (useDefaultFrontmatter) {
-      replacedVariableFrontmatter = toStringFrontMatter(
-        applyDefaultFrontMatter(book, replacedVariableFrontmatter, defaultFrontmatterKeyType),
-      );
-    }
-    const replacedVariableContent = replaceVariableSyntax(book, content);
+    return contentBody;
+  }
 
-    return replacedVariableFrontmatter
-      ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
-      : replacedVariableContent;
+  async downloadAndSaveImage(imageName: string, directory: string, imageUrl: string): Promise<string> {
+    const { enableCoverImageSave } = this.settings;
+    if (!enableCoverImageSave) {
+      console.warn('Cover image saving is not enabled.');
+      return '';
+    }
+
+    try {
+      // Use Obsidian's requestUrl method to fetch the image data:
+      const response = await requestUrl({
+        url: imageUrl,
+        method: 'GET',
+        headers: {
+          Accept: 'image/*',
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to download image: ${response.status}`);
+      }
+
+      const imageData = response.arrayBuffer;
+      const filePath = `${directory}/${imageName}`;
+      await this.app.vault.adapter.writeBinary(filePath, imageData);
+      return filePath;
+    } catch (error) {
+      console.error('Error downloading or saving image:', error);
+      return '';
+    }
   }
 
   async insertMetadata(): Promise<void> {
