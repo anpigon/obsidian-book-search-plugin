@@ -133,8 +133,6 @@ To use Naver Book Search, clientId and clientSecret are required. I will explain
 
 ### Cover Image Saving
 
-### Cover Image Saving
-
 This feature allows for the automatic downloading and saving of book cover images directly into your Obsidian vault.
 By default, this option is turned off and can be activated in the plugin settings.
 Upon enabling, you can designate a specific folder within your vault for storing these images, streamlining the management of book cover resources within your notes.
