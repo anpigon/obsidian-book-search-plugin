@@ -90,10 +90,12 @@ To use Naver Book Search, clientId and clientSecret are required. I will explain
 
 ### Cover Image Saving
 
+### Cover Image Saving
+
 This feature allows for the automatic downloading and saving of book cover images directly into your Obsidian vault.
 By default, this option is turned off and can be activated in the plugin settings.
-Upon enabling, you can designate a specific folder within your vault for storing these images.
-
+Upon enabling, you can designate a specific folder within your vault for storing these images, streamlining the management of book cover resources within your notes.
+To include these images in your notes, use the `{{localCoverImage}}` Templater variable.
 
 ### <strike>(Deprecated) Text to insert into front matter</strike>
 
@@ -186,6 +188,7 @@ Please find here a definition of the possible variables to be used in your templ
 | publishDate | The year the book was published.                        |
 | isbn10      | ISBN10                                                  |
 | isbn13      | ISBN13                                                  |
+| localCoverImage| Local path of the downloaded cover image.                |
 
 <br>
 
