@@ -32,6 +32,8 @@ export interface BookSearchPluginSettings {
   apiKey: string;
   openPageOnCompletion: boolean;
   showCoverImageInSearch: boolean;
+  enableCoverImageSave: boolean;
+  coverImagePath: string;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -49,6 +51,8 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   apiKey: '',
   openPageOnCompletion: true,
   showCoverImageInSearch: false,
+  enableCoverImageSave: false,
+  coverImagePath: '',
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -233,6 +237,33 @@ export class BookSearchSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }),
       );
+
+    new Setting(containerEl)
+      .setName('Enable Cover Image Save')
+      .setDesc('Toggle to enable or disable saving cover images in notes.')
+      .addToggle(toggle =>
+        toggle.setValue(this.plugin.settings.enableCoverImageSave).onChange(async value => {
+          this.plugin.settings.enableCoverImageSave = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Cover Image Path')
+      .setDesc('Specify the path where cover images should be saved.')
+      .addSearch(cb => {
+        try {
+          new FolderSuggest(this.app, cb.inputEl);
+        } catch {
+          // eslint-disable
+        }
+        cb.setPlaceholder('Enter the path (e.g., Images/Covers)')
+          .setValue(this.plugin.settings.coverImagePath)
+          .onChange(async value => {
+            this.plugin.settings.coverImagePath = value.trim();
+            await this.plugin.saveSettings();
+          });
+      });
 
     // Frontmatter Settings
     const formatterSettingsChildren: Setting[] = [];

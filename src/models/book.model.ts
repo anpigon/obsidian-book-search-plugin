@@ -15,6 +15,7 @@ export interface Book {
   coverSmallUrl?: string; // 커버 URL
   coverMediumUrl?: string; // 커버 URL
   coverLargeUrl?: string; // 커버 URL
+  localCoverImage?: string;
   status?: string; // 읽기 상태(읽기전, 읽는중, 읽기완료)
   startReadDate?: string; // 읽기 시작한 일시
   finishReadDate?: string; // 읽기 완료한 일시
