@@ -2,6 +2,7 @@
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/anpigon/obsidian-book-search-plugin/release.yml?logo=github)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/anpigon/obsidian-book-search-plugin?sort=semver)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/anpigon/obsidian-book-search-plugin/total)
 [![Korean](https://img.shields.io/badge/Language-한국어-blueviolet)](README.ko.md)
 
 Easily create book notes.
@@ -139,16 +140,6 @@ By default, this option is turned off and can be activated in the plugin setting
 Upon enabling, you can designate a specific folder within your vault for storing these images, streamlining the management of book cover resources within your notes.
 To include these images in your notes, use the `{{localCoverImage}}` Templater variable.
 
-### <strike>(Deprecated) Text to insert into front matter</strike>
-
-<strike>You can add the following to the default Front Matter, or create a new Front Matter with the structure you want.</strike> Please use the template file described below.
-
-### <strike>(Deprecated) Text to insert into content</strike>
-
-<strike>You can add text to the content for [Dataview inline metadata](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/#pages).</strike> Please use the template file described below.
-
-<br>
-
 ## Example template
 
 Please also find a definition of the variables used in this template below (see: [Template variables definitions](#template-variables-definitions)).
@@ -157,6 +148,7 @@ Please also find a definition of the variables used in this template below (see:
 ---
 tag: 📚Book
 title: "{{title}}"
+subtitle: "{{subtitle}}"
 author: [{{author}}]
 publisher: {{publisher}}
 publish: {{publishDate}}
@@ -168,7 +160,11 @@ created: {{DATE:YYYY-MM-DD HH:mm:ss}}
 updated: {{DATE:YYYY-MM-DD HH:mm:ss}}
 ---
 
+%% To use an image URL from the server, use the following syntax: %%
 ![cover|150]({{coverUrl}})
+
+%% To save images locally, enable the 'Enable Cover Image Save' option in the settings and enter as follows: %%
+![[{{localCoverImage}}|150]]
 
 # {{title}}
 
@@ -218,19 +214,20 @@ The banner at the top of the document is rendered using [Obsidian-banners](https
 
 Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
 
-| name            | description                                             |
-| --------------- | ------------------------------------------------------- |
-| title           | The title of the book.                                  |
-| author          | The name of the book author. It can be multiple people. |
-| category        | Book category.                                          |
-| description     | Book description.                                       |
-| publisher       | The publisher of the book.                              |
-| totalPage       | The total number of pages in the book.                  |
-| coverUrl        | Book cover image URL.                                   |
-| publishDate     | The year the book was published.                        |
-| isbn10          | ISBN10                                                  |
-| isbn13          | ISBN13                                                  |
-| localCoverImage | Local path of the downloaded cover image.               |
+| name            | description                                                      |
+| --------------- | ---------------------------------------------------------------- |
+| title           | The title of the book.                                           |
+| subtitle        | The subtitle of the book may not be present in the API response. |
+| author          | The name of the book author. It can be multiple people.          |
+| category        | Book category.                                                   |
+| description     | Book description.                                                |
+| publisher       | The publisher of the book.                                       |
+| totalPage       | The total number of pages in the book.                           |
+| coverUrl        | Book cover image URL.                                            |
+| publishDate     | The year the book was published.                                 |
+| isbn10          | ISBN10                                                           |
+| isbn13          | ISBN13                                                           |
+| localCoverImage | Local path of the downloaded cover image.                        |
 
 <br>
 
