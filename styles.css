@@ -27,3 +27,7 @@
 .book-search-plugin__search-modal--input input {
   width: 100%;
 }
+
+.suggestion-item.book-suggestion-item {
+  display: flex;
+}
