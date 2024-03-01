@@ -28,14 +28,20 @@
   width: 100%;
 }
 
-.suggestion-item.book-suggestion-item {
+.book-suggestion-item {
   display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.suggestion-item.book-suggestion-item .book-cover-image {
-  width: 70px;
-  height: 100px;
+.book-cover-image {
+  max-width: 100px;
+  max-height: 100px;
   margin-right: 10px;
-  float: left;
   object-fit: cover;
+  border-radius: 3px;
+}
+
+.book-text-info {
+  flex-grow: 1;
 }
