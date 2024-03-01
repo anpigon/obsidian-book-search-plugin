@@ -263,48 +263,6 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
-    // Frontmatter Settings
-    const formatterSettingsChildren: Setting[] = [];
-    createFoldingHeader(containerEl, 'Frontmatter Settings', formatterSettingsChildren);
-    formatterSettingsChildren.push(
-      new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
-        .setName('Use the default frontmatter')
-        .setDesc("If you don't want the default frontmatter to be inserted, disable it.")
-        .addToggle(toggle => {
-          toggle.setValue(this.plugin.settings.useDefaultFrontmatter).onChange(async value => {
-            const newValue = value;
-            this.plugin.settings.useDefaultFrontmatter = newValue;
-            await this.plugin.saveSettings();
-          });
-        }),
-      new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
-        .setName('Default frontmatter key type')
-        .setDesc(createKeyTypeDesc())
-        .addDropdown(dropDown => {
-          dropDown.addOption(DefaultFrontmatterKeyType.snakeCase, DefaultFrontmatterKeyType.snakeCase.toString());
-          dropDown.addOption(DefaultFrontmatterKeyType.camelCase, DefaultFrontmatterKeyType.camelCase.toString());
-          dropDown.setValue(this.plugin.settings.defaultFrontmatterKeyType);
-          dropDown.onChange(async value => {
-            this.plugin.settings.defaultFrontmatterKeyType = value as DefaultFrontmatterKeyType;
-            await this.plugin.saveSettings();
-          });
-        }),
-      new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
-        .setName('(Deprecated) Text to insert into frontmatter')
-        .setDesc(createSyntaxesDescription('#text-to-insert-into-frontmatter'))
-        .addTextArea(textArea => {
-          const prevValue = this.plugin.settings.frontmatter;
-          textArea.setValue(prevValue).onChange(async value => {
-            const newValue = value;
-            this.plugin.settings.frontmatter = newValue;
-            await this.plugin.saveSettings();
-          });
-        }),
-    );
-
     // API Settings
     const APISettingsChildren: Setting[] = [];
     createFoldingHeader(containerEl, 'Google API Settings', APISettingsChildren);
@@ -333,18 +291,6 @@ export class BookSearchSettingTab extends PluginSettingTab {
   }
 }
 
-function createKeyTypeDesc() {
-  const doc = document.createDocumentFragment();
-  doc.append(
-    '- Snake Case: ',
-    doc.createEl('code', { text: 'total_page' }),
-    doc.createEl('br'),
-    '- Camel Case: ',
-    doc.createEl('code', { text: 'totalPage' }),
-  );
-  return doc;
-}
-
 function createHeader(containerEl: HTMLElement, title: string) {
   const titleEl = document.createDocumentFragment();
   titleEl.createEl('h2', { text: title });
@@ -359,39 +305,4 @@ function createFoldingHeader(containerEl: HTMLElement, title: string, formatterS
       });
     });
   });
-}
-
-function createSyntaxesDescription(anchorLink: string) {
-  const desc = document.createDocumentFragment();
-  desc.append(
-    'Please use the template file.',
-    desc.createEl('br'),
-    'The following syntaxes are available: ',
-    desc.createEl('br'),
-    desc.createEl('code', { text: '{{title}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{author}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{category}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{publisher}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{publishDate}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{totalPage}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{coverUrl}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{isbn10}}' }),
-    ', ',
-    desc.createEl('code', { text: '{{isbn13}}' }),
-    desc.createEl('br'),
-    'Check the ',
-    desc.createEl('a', {
-      href: `${docUrl}${anchorLink}`,
-      text: 'documentation',
-    }),
-    ' for more information.',
-  );
-  return desc;
 }
