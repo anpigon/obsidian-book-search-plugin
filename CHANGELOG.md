@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.12-beta-3...0.6.0) (2024-03-01)
+
 ### [0.5.11](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.10...0.5.11) (2023-07-15)
 
 ### [0.5.10](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.9...0.5.10) (2023-04-26)
