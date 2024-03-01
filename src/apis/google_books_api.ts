@@ -2,8 +2,6 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
-const safeStorage = (window as any).electron?.remote.safeStorage;
-
 export class GoogleBooksApi implements BaseBooksApiImpl {
   constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
 
@@ -20,13 +18,8 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       } else {
         params['langRestrict'] = langRestrict;
       }
-      // is mobile
-
       if (this.apiKey !== '') {
-        if (safeStorage && safeStorage.isEncryptionAvailable()) {
-          params['key'] = safeStorage.decryptString(Buffer.from(this.apiKey, 'hex'));
-        }
-        // TODO: What about on mobile app?
+        params['key'] = this.apiKey;
       }
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {

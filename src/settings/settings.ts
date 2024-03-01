@@ -10,8 +10,6 @@ import { SettingServiceProviderModal } from '@views/setting_service_provider_mod
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
-const safeStorage = (window as any).electron?.remote.safeStorage;
-
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',
   camelCase = 'Camel Case',
@@ -339,12 +337,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
         .addText(text => {
           text.inputEl.type = 'password';
           text.setValue(this.plugin.settings.apiKey).onChange(async value => {
-            // TODO: Find methods available on desktop and mobile
-            if (safeStorage && safeStorage.isEncryptionAvailable()) {
-              tempKeyValue = safeStorage.encryptString(value).toString('hex');
-            } else {
-              tempKeyValue = value;
-            }
+            tempKeyValue = value;
           });
         })
         .addButton(button => {
