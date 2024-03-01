@@ -11,13 +11,7 @@ Easily create book notes.
 
 ## Changelog
 
-### [0.5.8](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.5.8-beta.2...0.5.8) (2022-09-13)
-
-### Features
-
-- Add locale selection for Google searches.
-- Can use the [Templater plugin](https://github.com/SilentVoid13/Templater) with.
-- Enables [Inline scripts](https://github.com/anpigon/obsidian-book-search-plugin#inline-script) for templates.
+To view the changelog for the latest and previous versions, please click [here](https://github.com/anpigon/obsidian-book-search-plugin/releases) to visit the GitHub releases page for the Obsidian Book Search Plugin.
 
 <br>
 
@@ -224,10 +218,10 @@ Please find here a definition of the possible variables to be used in your templ
 | publisher       | The publisher of the book.                                       |
 | totalPage       | The total number of pages in the book.                           |
 | coverUrl        | Book cover image URL.                                            |
+| localCoverImage | Local path of the downloaded cover image.                        |
 | publishDate     | The year the book was published.                                 |
 | isbn10          | ISBN10                                                           |
 | isbn13          | ISBN13                                                           |
-| localCoverImage | Local path of the downloaded cover image.                        |
 
 <br>
 
