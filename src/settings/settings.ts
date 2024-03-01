@@ -305,24 +305,6 @@ export class BookSearchSettingTab extends PluginSettingTab {
         }),
     );
 
-    // Content Settings
-    const contentSettingsChildren: Setting[] = [];
-    createFoldingHeader(containerEl, 'Content Settings', contentSettingsChildren);
-    contentSettingsChildren.push(
-      new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
-        .setName('(Deprecated) Text to insert into content')
-        .setDesc(createSyntaxesDescription('#text-to-insert-into-content'))
-        .addTextArea(textArea => {
-          const prevValue = this.plugin.settings.content;
-          textArea.setValue(prevValue).onChange(async value => {
-            const newValue = value;
-            this.plugin.settings.content = newValue;
-            await this.plugin.saveSettings();
-          });
-        }),
-    );
-
     // API Settings
     const APISettingsChildren: Setting[] = [];
     createFoldingHeader(containerEl, 'Google API Settings', APISettingsChildren);
