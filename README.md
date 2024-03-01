@@ -1,6 +1,6 @@
 # Obsidian Book Search Plugin
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/anpigon/obsidian-book-search-plugin/Release%20Obsidian%20plugin?logo=github)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/anpigon/obsidian-book-search-plugin/release.yml?logo=github)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/anpigon/obsidian-book-search-plugin?sort=semver)
 [![Korean](https://img.shields.io/badge/Language-한국어-blueviolet)](README.ko.md)
 
@@ -61,6 +61,7 @@ To activate cover images in your search results:
 #### CSS Styling for Cover Images
 
 For those who enable this feature, we've added CSS styling to ensure that cover images are displayed effectively without disrupting the flow of information. To add this CSS snippet in Obsidian, you can either include it directly in your plugin's CSS file or insert it into Obsidian's custom CSS section for your vault. Here's how to add the CSS snippet for styling the book suggestions with cover images:
+
 1. Open Obsidian.
 2. Navigate to Settings > Appearance.
 3. Under the CSS Snippets section, click on Open snippets folder.
@@ -217,19 +218,19 @@ The banner at the top of the document is rendered using [Obsidian-banners](https
 
 Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
 
-| name        | description                                             |
-| ----------- | ------------------------------------------------------- |
-| title       | The title of the book.                                  |
-| author      | The name of the book author. It can be multiple people. |
-| category    | Book category.                                          |
-| description | Book description.                                       |
-| publisher   | The publisher of the book.                              |
-| totalPage   | The total number of pages in the book.                  |
-| coverUrl    | Book cover image URL.                                   |
-| publishDate | The year the book was published.                        |
-| isbn10      | ISBN10                                                  |
-| isbn13      | ISBN13                                                  |
-| localCoverImage| Local path of the downloaded cover image.                |
+| name            | description                                             |
+| --------------- | ------------------------------------------------------- |
+| title           | The title of the book.                                  |
+| author          | The name of the book author. It can be multiple people. |
+| category        | Book category.                                          |
+| description     | Book description.                                       |
+| publisher       | The publisher of the book.                              |
+| totalPage       | The total number of pages in the book.                  |
+| coverUrl        | Book cover image URL.                                   |
+| publishDate     | The year the book was published.                        |
+| isbn10          | ISBN10                                                  |
+| isbn13          | ISBN13                                                  |
+| localCoverImage | Local path of the downloaded cover image.               |
 
 <br>
 
