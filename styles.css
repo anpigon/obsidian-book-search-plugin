@@ -31,3 +31,11 @@
 .suggestion-item.book-suggestion-item {
   display: flex;
 }
+
+.suggestion-item.book-suggestion-item .book-cover-image {
+  width: 70px;
+  height: 100px;
+  margin-right: 10px;
+  float: left;
+  object-fit: cover;
+}
