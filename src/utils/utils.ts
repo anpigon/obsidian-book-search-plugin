@@ -14,14 +14,14 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
-export function makeFileName(book: Book, fileNameFormat?: string) {
+export function makeFileName(book: Book, fileNameFormat?: string, extension = 'md') {
   let result;
   if (fileNameFormat) {
     result = replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
   } else {
     result = !book.author ? book.title : `${book.title} - ${book.author}`;
   }
-  return replaceIllegalFileNameCharactersInString(result) + '.md';
+  return replaceIllegalFileNameCharactersInString(result) + `.${extension}`;
 }
 
 export function changeSnakeCase(book: Book) {

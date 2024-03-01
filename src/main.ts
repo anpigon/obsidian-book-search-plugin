@@ -73,7 +73,7 @@ export default class BookSearchPlugin extends Plugin {
     if (enableCoverImageSave) {
       const coverImageUrl = book.coverLargeUrl || book.coverMediumUrl || book.coverSmallUrl || book.coverUrl;
       if (coverImageUrl) {
-        const imageName = `${book.title}_${book.author}`.replace(/[^a-z0-9]+/gi, '_').toLowerCase() + '.jpg';
+        const imageName = makeFileName(book, this.settings.fileNameFormat, 'jpg');
         book.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
       }
     }
@@ -114,6 +114,7 @@ export default class BookSearchPlugin extends Plugin {
           Accept: 'image/*',
         },
       });
+      console.log(response.headers);
 
       if (response.status !== 200) {
         throw new Error(`Failed to download image: ${response.status}`);
