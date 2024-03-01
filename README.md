@@ -44,6 +44,49 @@ Or, Search in the Obsidian Community plugin. And install it.
 
 <img width="700" src="https://user-images.githubusercontent.com/3969643/184918934-585375a9-7b25-4905-81c8-5f092ed74991.png">
 
+### Enhancements: Cover Image Display in Search Results
+
+We've introduced a new setting in our plugin that allows users to display cover images alongside book suggestions in the search results. This feature aims to enrich the search experience by providing visual cues, making it easier for users to identify books at a glance. The cover images are designed to complement the textual information, offering a more engaging and intuitive search interface.
+
+By default, this feature is **disabled** to maintain a clean, text-focused search experience. Users who prefer to keep their search results streamlined without images will find the default setting optimized for their preference.
+
+#### Enabling Cover Images
+
+To activate cover images in your search results:
+
+1. Go to the plugin settings.
+2. Find the **"Show Cover Images in Search"** option.
+3. Switch the toggle to **on** to enable cover images.
+
+#### CSS Styling for Cover Images
+
+For those who enable this feature, we've added CSS styling to ensure that cover images are displayed effectively without disrupting the flow of information. To add this CSS snippet in Obsidian, you can either include it directly in your plugin's CSS file or insert it into Obsidian's custom CSS section for your vault. Here's how to add the CSS snippet for styling the book suggestions with cover images:
+1. Open Obsidian.
+2. Navigate to Settings > Appearance.
+3. Under the CSS Snippets section, click on Open snippets folder.
+4. Create a new .css file in this folder and paste the following CSS snippet into the file.
+5. Go back to Obsidian, and under CSS Snippets, turn on the snippet you just added.
+
+```css
+.book-suggestion-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.book-cover-image {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 10px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.book-text-info {
+  flex-grow: 1;
+}
+```
+
 <br>
 
 ## How to use
@@ -87,6 +130,13 @@ You can set the template file location. There is an example template at the bott
 
 You can set up the services that you use to search for books. Only Google and Naver(네이버) are available now.
 To use Naver Book Search, clientId and clientSecret are required. I will explain how to get clientId and clientSecret from Naver on my blog.
+
+### Cover Image Saving
+
+This feature allows for the automatic downloading and saving of book cover images directly into your Obsidian vault.
+By default, this option is turned off and can be activated in the plugin settings.
+Upon enabling, you can designate a specific folder within your vault for storing these images, streamlining the management of book cover resources within your notes.
+To include these images in your notes, use the `{{localCoverImage}}` Templater variable.
 
 ### <strike>(Deprecated) Text to insert into front matter</strike>
 
@@ -179,6 +229,7 @@ Please find here a definition of the possible variables to be used in your templ
 | publishDate | The year the book was published.                        |
 | isbn10      | ISBN10                                                  |
 | isbn13      | ISBN13                                                  |
+| localCoverImage| Local path of the downloaded cover image.                |
 
 <br>
 

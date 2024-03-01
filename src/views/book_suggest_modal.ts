@@ -2,12 +2,16 @@ import { App, SuggestModal } from 'obsidian';
 import { Book } from '@models/book.model';
 
 export class BookSuggestModal extends SuggestModal<Book> {
+  showCoverImageInSearch: boolean;
+
   constructor(
     app: App,
+    showCoverImageInSearch: boolean,
     private readonly suggestion: Book[],
     private onChoose: (error: Error | null, result?: Book) => void,
   ) {
     super(app);
+    this.showCoverImageInSearch = showCoverImageInSearch;
   }
 
   // Returns all available suggestions.
@@ -24,13 +28,32 @@ export class BookSuggestModal extends SuggestModal<Book> {
 
   // Renders each suggestion item.
   renderSuggestion(book: Book, el: HTMLElement) {
-    const title = book.title;
+    el.addClass('book-suggestion-item');
+
+    const coverImageUrl = book.coverLargeUrl || book.coverMediumUrl || book.coverSmallUrl || book.coverUrl;
+
+    if (this.showCoverImageInSearch && coverImageUrl) {
+      const imgEl = el.createEl('img', {
+        cls: 'book-cover-image',
+        attr: {
+          src: coverImageUrl,
+          alt: `Cover Image for ${book.title}`,
+        },
+      });
+      imgEl.style.maxWidth = '100px';
+      imgEl.style.maxHeight = '100px';
+      imgEl.style.marginRight = '10px';
+      imgEl.style.float = 'left';
+    }
+
+    const textContainer = el.createEl('div', { cls: 'book-text-info' });
+    textContainer.createEl('div', { text: book.title });
+
     const publisher = book.publisher ? `, ${book.publisher}` : '';
     const publishDate = book.publishDate ? `(${book.publishDate})` : '';
     const totalPage = book.totalPage ? `, p${book.totalPage}` : '';
     const subtitle = `${book.author}${publisher}${publishDate}${totalPage}`;
-    el.createEl('div', { text: title });
-    el.createEl('small', { text: subtitle });
+    textContainer.createEl('small', { text: subtitle });
   }
 
   // Perform action on the selected suggestion.
