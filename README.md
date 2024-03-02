@@ -144,6 +144,7 @@ tag: 📚Book
 title: "{{title}}"
 subtitle: "{{subtitle}}"
 author: [{{author}}]
+category: [{{category}}]
 publisher: {{publisher}}
 publish: {{publishDate}}
 total: {{totalPage}}
@@ -208,20 +209,23 @@ The banner at the top of the document is rendered using [Obsidian-banners](https
 
 Please find here a definition of the possible variables to be used in your template. Simply write `{{name}}` in your template, and replace name by the desired book data, including:
 
-| name            | description                                                      |
-| --------------- | ---------------------------------------------------------------- |
-| title           | The title of the book.                                           |
-| subtitle        | The subtitle of the book may not be present in the API response. |
-| author          | The name of the book author. It can be multiple people.          |
-| category        | Book category.                                                   |
-| description     | Book description.                                                |
-| publisher       | The publisher of the book.                                       |
-| totalPage       | The total number of pages in the book.                           |
-| coverUrl        | Book cover image URL.                                            |
-| localCoverImage | Local path of the downloaded cover image.                        |
-| publishDate     | The year the book was published.                                 |
-| isbn10          | ISBN10                                                           |
-| isbn13          | ISBN13                                                           |
+| Field           | Description                                                                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| title           | The title of the book.                                                                                                                             |
+| subtitle        | The subtitle of the book; may be absent.                                                                                                           |
+| author          | A comma-separated string containing the names of the book's authors, indicating that multiple authors can be represented within a single string.   |
+| authors         | An array of strings, each element representing the name of one of the book's authors, indicating that multiple authors can be listed individually. |
+| category        | A comma-separated string indicating the book's category or categories, allowing representation of multiple categories within a single string.      |
+| categories      | An array of strings, each representing a different category that the book belongs to, indicating that a book can fall into multiple categories.    |
+| description     | Book description.                                                                                                                                  |
+| publisher       | The publisher of the book.                                                                                                                         |
+| totalPage       | The total number of pages in the book.                                                                                                             |
+| coverUrl        | Book cover image URL.                                                                                                                              |
+| coverSmallUrl   | A smaller book cover image URL.                                                                                                                    |
+| localCoverImage | Local path for the downloaded cover image. Requires activation of "Enabling Cover Images."                                                         |
+| publishDate     | The year the book was published.                                                                                                                   |
+| isbn10          | ISBN10                                                                                                                                             |
+| isbn13          | ISBN13                                                                                                                                             |
 
 <br>
 
@@ -253,6 +257,16 @@ authors: <%=book.authors.map(author=>`\n  - ${author}`).join('')%>
 ---
 
 authors: <%=book.authors.map(author => `[[${author}]]`).join(', ')%>
+```
+
+#### When you want to list or link categories:
+
+```
+---
+categories: <%=book.categories.map(category=>`\n  - ${category}`).join('')%>
+---
+
+categories: <%=book.categories.map(category => `[[${category}]]`).join(', ')%>
 ```
 
 <br>
