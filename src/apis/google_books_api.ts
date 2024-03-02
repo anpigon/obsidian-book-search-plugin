@@ -51,6 +51,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       author: this.formatList(item.authors),
       authors: item.authors,
       category: this.formatList(item.categories),
+      categories: item.categories,
       publisher: item.publisher,
       totalPage: item.pageCount,
       coverUrl: item.imageLinks?.thumbnail ?? '',

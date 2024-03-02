@@ -8,6 +8,7 @@ export interface Book {
   author: string; // 저자
   authors: string[];
   category?: string; // 카테고리
+  categories?: string[];
   publisher?: string; // 출판사
   publishDate?: string; // 출판일
   totalPage?: number | string; // 전체 페이지
