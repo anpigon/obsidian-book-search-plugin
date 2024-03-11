@@ -2,13 +2,17 @@ import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian
 import { Book } from '@models/book.model';
 import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
+import { BookSearchPluginSettings } from '@settings/settings';
+import { ServiceProvider } from '@src/constants';
 
 export class BookSearchModal extends Modal {
+  private settings: BookSearchPluginSettings;
   private isBusy = false;
   private okBtnRef?: ButtonComponent;
   private serviceProvider: BaseBooksApiImpl;
   private readonly SEARCH_BUTTON_TEXT = 'Search';
   private readonly REQUESTING_BUTTON_TEXT = 'Requesting...';
+  private options: { locale: string };
 
   constructor(
     plugin: BookSearchPlugin,
@@ -16,6 +20,10 @@ export class BookSearchModal extends Modal {
     private callback: (error: Error | null, result?: Book[]) => void,
   ) {
     super(plugin.app);
+    this.settings = plugin.settings;
+    this.options = {
+      locale: this.settings.localePreference || 'default',
+    };
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
@@ -31,7 +39,7 @@ export class BookSearchModal extends Modal {
 
     try {
       this.setBusy(true);
-      const searchResults = await this.serviceProvider.getByQuery(this.query);
+      const searchResults = await this.serviceProvider.getByQuery(this.query, this.options);
       this.processSearchResults(searchResults);
     } catch (err) {
       this.callback(err as Error);
@@ -58,8 +66,27 @@ export class BookSearchModal extends Modal {
 
   onOpen(): void {
     this.renderHeader();
+    if (this.settings.serviceProvider === ServiceProvider.google) {
+      this.renderSelectLocale();
+    }
     this.renderSearchInput();
     this.renderSearchButton();
+  }
+
+  renderSelectLocale() {
+    const locales = window.moment.locales();
+    const defaultLocale = window.moment.locale();
+    const localeValue = this.settings.localePreference || 'default';
+    new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
+      locales.forEach(locale => dropdown.addOption(locale, locale));
+      dropdown.setValue(localeValue === 'default' ? defaultLocale : localeValue);
+      dropdown.setValue(this.settings.localePreference);
+      dropdown.onChange(async locale => {
+        this.options = {
+          locale,
+        };
+      });
+    });
   }
 
   private renderHeader(): void {
