@@ -23,7 +23,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     if (this.apiKey) {
       params['key'] = this.apiKey;
     }
-
+    console.log(params);
     return params;
   }
 
