@@ -2,7 +2,7 @@ import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian
 import { Book } from '@models/book.model';
 import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
-import { BookSearchPluginSettings } from '@settings/settings';
+import { BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { ServiceProvider } from '@src/constants';
 
 export class BookSearchModal extends Modal {
@@ -34,7 +34,10 @@ export class BookSearchModal extends Modal {
   }
 
   async searchBook(): Promise<void> {
-    if (!this.query) throw new Error('No query entered.');
+    if (!this.query) {
+      new Notice('No query entered.');
+      return;
+    }
     if (this.isBusy) return;
 
     try {
@@ -66,26 +69,22 @@ export class BookSearchModal extends Modal {
 
   onOpen(): void {
     this.renderHeader();
-    if (this.settings.serviceProvider === ServiceProvider.google) {
-      this.renderSelectLocale();
-    }
+    this.renderSelectLocale();
     this.renderSearchInput();
     this.renderSearchButton();
   }
 
   renderSelectLocale() {
-    const locales = window.moment.locales();
+    if (this.settings.serviceProvider !== ServiceProvider.google) return;
+
     const defaultLocale = window.moment.locale();
-    const localeValue = this.settings.localePreference || 'default';
+    const locales = window.moment.locales().filter(locale => locale !== defaultLocale);
     new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
+      dropdown.addOption(defaultLocale, defaultLocale);
       locales.forEach(locale => dropdown.addOption(locale, locale));
-      dropdown.setValue(localeValue === 'default' ? defaultLocale : localeValue);
-      dropdown.setValue(this.settings.localePreference);
-      dropdown.onChange(async locale => {
-        this.options = {
-          locale,
-        };
-      });
+      const localeValue = this.settings.localePreference || DEFAULT_SETTINGS.localePreference;
+      dropdown.setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue);
+      dropdown.onChange(locale => (this.options.locale = locale));
     });
   }
 
