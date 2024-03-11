@@ -3,24 +3,33 @@ import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
 export class GoogleBooksApi implements BaseBooksApiImpl {
+  private static readonly MAX_RESULTS = 40;
+  private static readonly PRINT_TYPE = 'books';
+
   constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
 
-  async getByQuery(query: string) {
+  private getLanguageRestriction(): string {
+    return this.localePreference === 'default' ? window.moment.locale() : this.localePreference;
+  }
+
+  private buildSearchParams(query: string, options?: Record<string, string>): Record<string, string | number> {
+    const params: Record<string, string | number> = {
+      q: query,
+      maxResults: GoogleBooksApi.MAX_RESULTS,
+      printType: GoogleBooksApi.PRINT_TYPE,
+      langRestrict: options?.locale || this.getLanguageRestriction(),
+    };
+
+    if (this.apiKey) {
+      params['key'] = this.apiKey;
+    }
+    console.log(params);
+    return params;
+  }
+
+  async getByQuery(query: string, options?: Record<string, string>): Promise<Book[]> {
     try {
-      const params = {
-        q: query,
-        maxResults: 40,
-        printType: 'books',
-      };
-      const langRestrict = this.localePreference;
-      if (langRestrict === 'default') {
-        params['langRestrict'] = window.moment.locale();
-      } else {
-        params['langRestrict'] = langRestrict;
-      }
-      if (this.apiKey !== '') {
-        params['key'] = this.apiKey;
-      }
+      const params = this.buildSearchParams(query, options);
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
       if (!searchResults?.totalItems) {
         return [];
@@ -32,20 +41,16 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     }
   }
 
-  getISBN(industryIdentifiers: VolumeInfo['industryIdentifiers']) {
+  private getISBN(industryIdentifiers: VolumeInfo['industryIdentifiers']) {
     return industryIdentifiers?.reduce((result, item) => {
-      if (item.type == 'ISBN_10') {
-        result['isbn10'] = item.identifier.trim();
-      }
-      if (item.type == 'ISBN_13') {
-        result['isbn13'] = item.identifier.trim();
-      }
+      const isbnType = item.type === 'ISBN_10' ? 'isbn10' : 'isbn13';
+      result[isbnType] = item.identifier.trim();
       return result;
-    }, {});
+    }, {} as Record<string, string>);
   }
 
-  createBookItem(item: VolumeInfo): Book {
-    const book: Book = {
+  private extractBasicBookInfo(item: VolumeInfo): Partial<Book> {
+    return {
       title: item.title,
       subtitle: item.subtitle,
       author: this.formatList(item.authors),
@@ -60,19 +65,36 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       description: item.description,
       link: item.canonicalVolumeLink || item.infoLink,
       previewLink: item.previewLink,
+    };
+  }
+
+  public createBookItem(item: VolumeInfo): Book {
+    const book: Book = {
+      title: '',
+      subtitle: '',
+      author: '',
+      authors: [],
+      category: '',
+      categories: [],
+      publisher: '',
+      publishDate: '',
+      totalPage: '',
+      coverUrl: '',
+      coverSmallUrl: '',
+      description: '',
+      link: '',
+      previewLink: '',
+      ...this.extractBasicBookInfo(item),
       ...this.getISBN(item.industryIdentifiers),
     };
     return book;
   }
 
-  convertGoogleBookImageURLSize(url: string, zoom: number) {
-    return url.replace(/(&zoom)=\d/, `$1=${zoom}`);
+  public formatList(list?: string[]): string {
+    return list && list.length > 1 ? list.map(item => item.trim()).join(', ') : list?.[0] ?? '';
   }
 
-  formatList(list?: string[]) {
-    if (list?.length > 1) {
-      return list.map(item => `${item.trim()}`).join(', ');
-    }
-    return list?.[0]?.replace('N/A', '') ?? '';
+  static convertGoogleBookImageURLSize(url: string, zoom: number) {
+    return url.replace(/(&zoom)=\d/, `$1=${zoom}`);
   }
 }

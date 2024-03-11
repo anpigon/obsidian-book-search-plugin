@@ -2,11 +2,17 @@ import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian
 import { Book } from '@models/book.model';
 import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
+import { BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
+import { ServiceProvider } from '@src/constants';
 
 export class BookSearchModal extends Modal {
+  private settings: BookSearchPluginSettings;
   private isBusy = false;
   private okBtnRef?: ButtonComponent;
   private serviceProvider: BaseBooksApiImpl;
+  private readonly SEARCH_BUTTON_TEXT = 'Search';
+  private readonly REQUESTING_BUTTON_TEXT = 'Requesting...';
+  private options: { locale: string };
 
   constructor(
     plugin: BookSearchPlugin,
@@ -14,69 +20,98 @@ export class BookSearchModal extends Modal {
     private callback: (error: Error | null, result?: Book[]) => void,
   ) {
     super(plugin.app);
+    this.settings = plugin.settings;
+    this.options = {
+      locale: this.settings.localePreference || 'default',
+    };
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
-  setBusy(busy: boolean) {
+  setBusy(busy: boolean): void {
     this.isBusy = busy;
     this.okBtnRef?.setDisabled(busy);
-    this.okBtnRef?.setButtonText(busy ? 'Requesting...' : 'Search');
+    this.okBtnRef?.setButtonText(busy ? this.REQUESTING_BUTTON_TEXT : this.SEARCH_BUTTON_TEXT);
   }
 
-  async searchBook() {
+  async searchBook(): Promise<void> {
     if (!this.query) {
-      throw new Error('No query entered.');
+      new Notice('No query entered.');
+      return;
     }
+    if (this.isBusy) return;
 
-    if (!this.isBusy) {
-      try {
-        this.setBusy(true);
-        const searchResults = await this.serviceProvider.getByQuery(this.query);
-        this.setBusy(false);
-
-        if (!searchResults?.length) {
-          new Notice(`No results found for "${this.query}"`); // Couldn't find the book.
-          return;
-        }
-
-        this.callback(null, searchResults);
-      } catch (err) {
-        this.callback(err as Error);
-      }
+    try {
+      this.setBusy(true);
+      const searchResults = await this.serviceProvider.getByQuery(this.query, this.options);
+      this.processSearchResults(searchResults);
+    } catch (err) {
+      this.callback(err as Error);
+    } finally {
+      this.setBusy(false);
       this.close();
     }
   }
 
-  submitEnterCallback(event: KeyboardEvent) {
+  private processSearchResults(searchResults?: Book[]): void {
+    if (!searchResults?.length) {
+      new Notice(`No results found for "${this.query}"`);
+      return;
+    }
+
+    this.callback(null, searchResults);
+  }
+
+  submitEnterCallback(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.isComposing) {
       this.searchBook();
     }
   }
 
-  onOpen() {
-    const { contentEl } = this;
+  onOpen(): void {
+    this.renderHeader();
+    this.renderSelectLocale();
+    this.renderSearchInput();
+    this.renderSearchButton();
+  }
 
-    contentEl.createEl('h2', { text: 'Search Book' });
+  renderSelectLocale() {
+    if (this.settings.serviceProvider !== ServiceProvider.google) return;
 
-    contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
+    const defaultLocale = window.moment.locale();
+    const locales = window.moment.locales().filter(locale => locale !== defaultLocale);
+    new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
+      dropdown.addOption(defaultLocale, defaultLocale);
+      locales.forEach(locale => dropdown.addOption(locale, locale));
+      const localeValue = this.settings.localePreference || DEFAULT_SETTINGS.localePreference;
+      dropdown.setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue);
+      dropdown.onChange(locale => (this.options.locale = locale));
+    });
+  }
+
+  private renderHeader(): void {
+    this.contentEl.createEl('h2', { text: 'Search Book' });
+  }
+
+  private renderSearchInput(): void {
+    this.contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
       new TextComponent(settingItem)
         .setValue(this.query)
         .setPlaceholder('Search by keyword or ISBN')
         .onChange(value => (this.query = value))
         .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
     });
+  }
 
-    new Setting(contentEl).addButton(btn => {
-      return (this.okBtnRef = btn
-        .setButtonText('Search')
+  private renderSearchButton(): void {
+    new Setting(this.contentEl).addButton(btn => {
+      this.okBtnRef = btn
+        .setButtonText(this.SEARCH_BUTTON_TEXT)
         .setCta()
-        .onClick(() => {
-          this.searchBook();
-        }));
+        .onClick(() => this.searchBook());
     });
   }
 
-  onClose() {
+  onClose(): void {
     this.contentEl.empty();
   }
 }
