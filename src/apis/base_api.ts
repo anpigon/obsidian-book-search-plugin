@@ -6,7 +6,7 @@ import { GoogleBooksApi } from './google_books_api';
 import { NaverBooksApi } from './naver_books_api';
 
 export interface BaseBooksApiImpl {
-  getByQuery(query: string, options?: any): Promise<Book[]>;
+  getByQuery(query: string, options?: Record<string, string>): Promise<Book[]>;
 }
 
 class ConfigurationError extends Error {

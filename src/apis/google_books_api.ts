@@ -12,7 +12,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     return this.localePreference === 'default' ? window.moment.locale() : this.localePreference;
   }
 
-  private buildSearchParams(query: string, options?: any): Record<string, string | number> {
+  private buildSearchParams(query: string, options?: Record<string, string>): Record<string, string | number> {
     const params: Record<string, string | number> = {
       q: query,
       maxResults: GoogleBooksApi.MAX_RESULTS,
@@ -27,7 +27,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     return params;
   }
 
-  async getByQuery(query: string, options?: any): Promise<Book[]> {
+  async getByQuery(query: string, options?: Record<string, string>): Promise<Book[]> {
     try {
       const params = this.buildSearchParams(query, options);
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
