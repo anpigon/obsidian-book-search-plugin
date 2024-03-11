@@ -7,6 +7,8 @@ export class BookSearchModal extends Modal {
   private isBusy = false;
   private okBtnRef?: ButtonComponent;
   private serviceProvider: BaseBooksApiImpl;
+  private readonly SEARCH_BUTTON_TEXT = 'Search';
+  private readonly REQUESTING_BUTTON_TEXT = 'Requesting...';
 
   constructor(
     plugin: BookSearchPlugin,
@@ -17,66 +19,73 @@ export class BookSearchModal extends Modal {
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
-  setBusy(busy: boolean) {
+  setBusy(busy: boolean): void {
     this.isBusy = busy;
     this.okBtnRef?.setDisabled(busy);
-    this.okBtnRef?.setButtonText(busy ? 'Requesting...' : 'Search');
+    this.okBtnRef?.setButtonText(busy ? this.REQUESTING_BUTTON_TEXT : this.SEARCH_BUTTON_TEXT);
   }
 
-  async searchBook() {
-    if (!this.query) {
-      throw new Error('No query entered.');
-    }
+  async searchBook(): Promise<void> {
+    if (!this.query) throw new Error('No query entered.');
+    if (this.isBusy) return;
 
-    if (!this.isBusy) {
-      try {
-        this.setBusy(true);
-        const searchResults = await this.serviceProvider.getByQuery(this.query);
-        this.setBusy(false);
-
-        if (!searchResults?.length) {
-          new Notice(`No results found for "${this.query}"`); // Couldn't find the book.
-          return;
-        }
-
-        this.callback(null, searchResults);
-      } catch (err) {
-        this.callback(err as Error);
-      }
+    try {
+      this.setBusy(true);
+      const searchResults = await this.serviceProvider.getByQuery(this.query);
+      this.processSearchResults(searchResults);
+    } catch (err) {
+      this.callback(err as Error);
+    } finally {
+      this.setBusy(false);
       this.close();
     }
   }
 
-  submitEnterCallback(event: KeyboardEvent) {
+  private processSearchResults(searchResults?: Book[]): void {
+    if (!searchResults?.length) {
+      new Notice(`No results found for "${this.query}"`);
+      return;
+    }
+
+    this.callback(null, searchResults);
+  }
+
+  submitEnterCallback(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.isComposing) {
       this.searchBook();
     }
   }
 
-  onOpen() {
-    const { contentEl } = this;
+  onOpen(): void {
+    this.renderHeader();
+    this.renderSearchInput();
+    this.renderSearchButton();
+  }
 
-    contentEl.createEl('h2', { text: 'Search Book' });
+  private renderHeader(): void {
+    this.contentEl.createEl('h2', { text: 'Search Book' });
+  }
 
-    contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
+  private renderSearchInput(): void {
+    this.contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
       new TextComponent(settingItem)
         .setValue(this.query)
         .setPlaceholder('Search by keyword or ISBN')
         .onChange(value => (this.query = value))
         .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
     });
+  }
 
-    new Setting(contentEl).addButton(btn => {
-      return (this.okBtnRef = btn
-        .setButtonText('Search')
+  private renderSearchButton(): void {
+    new Setting(this.contentEl).addButton(btn => {
+      this.okBtnRef = btn
+        .setButtonText(this.SEARCH_BUTTON_TEXT)
         .setCta()
-        .onClick(() => {
-          this.searchBook();
-        }));
+        .onClick(() => this.searchBook());
     });
   }
 
-  onClose() {
+  onClose(): void {
     this.contentEl.empty();
   }
 }
