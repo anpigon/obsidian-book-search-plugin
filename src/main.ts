@@ -114,7 +114,6 @@ export default class BookSearchPlugin extends Plugin {
           Accept: 'image/*',
         },
       });
-      console.log(response.headers);
 
       if (response.status !== 200) {
         throw new Error(`Failed to download image: ${response.status}`);
