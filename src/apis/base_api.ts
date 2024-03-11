@@ -9,16 +9,28 @@ export interface BaseBooksApiImpl {
   getByQuery(query: string): Promise<Book[]>;
 }
 
-export function factoryServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
-  if (settings.serviceProvider === ServiceProvider.google) {
-    return new GoogleBooksApi(settings.localePreference, settings.apiKey);
+class ConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConfigurationError';
   }
-  if (settings.serviceProvider === ServiceProvider.naver) {
-    if (!settings.naverClientId || !settings.naverClientSecret) {
-      // TODO: Let's create a custom error class
-      throw new Error('네이버 개발자센터에서 "Client ID"와 "Client Secret"를 발급받아 설정해주세요.');
-    }
-    return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
+}
+
+export function factoryServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
+  switch (settings.serviceProvider) {
+    case ServiceProvider.google:
+      return new GoogleBooksApi(settings.localePreference, settings.apiKey);
+    case ServiceProvider.naver:
+      validateNaverSettings(settings);
+      return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
+    default:
+      throw new Error('Unsupported service provider.');
+  }
+}
+
+function validateNaverSettings(settings: BookSearchPluginSettings): void {
+  if (!settings.naverClientId || !settings.naverClientSecret) {
+    throw new ConfigurationError('네이버 개발자센터에서 "Client ID"와 "Client Secret"를 발급받아 설정해주세요.');
   }
 }
 
@@ -28,9 +40,8 @@ export async function apiGet<T>(
   headers?: Record<string, string>,
 ): Promise<T> {
   const apiURL = new URL(url);
-  Object.entries(params).forEach(([key, value]) => {
-    apiURL.searchParams.append(key, value?.toString());
-  });
+  appendQueryParams(apiURL, params);
+
   const res = await requestUrl({
     url: apiURL.href,
     method: 'GET',
@@ -40,5 +51,12 @@ export async function apiGet<T>(
       ...headers,
     },
   });
+
   return res.json as T;
+}
+
+function appendQueryParams(url: URL, params: Record<string, string | number>): void {
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.append(key, value.toString());
+  });
 }
