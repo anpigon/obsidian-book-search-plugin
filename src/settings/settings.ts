@@ -7,6 +7,7 @@ import { FolderSuggest } from './suggesters/FolderSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
 import { ServiceProvider } from '@src/constants';
 import { SettingServiceProviderModal } from '@views/setting_service_provider_modal';
+import languages from '@utils/languages';
 
 const docUrl = 'https://github.com/anpigon/obsidian-book-search-plugin';
 
@@ -199,10 +200,14 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .setDesc('Sets the preferred locale to use when searching for books.')
       .addDropdown(dropDown => {
         const defaultLocale = window.moment.locale();
-        dropDown.addOption(defaultLocale, `${defaultLocale} (Default Locale)`);
-        window.moment.locales().forEach(locale => {
-          dropDown.addOption(locale, locale);
-        });
+        dropDown.addOption(defaultLocale, `${languages[defaultLocale] || defaultLocale} (Default Locale)`);
+        window.moment
+          .locales()
+          .filter(locale => locale !== defaultLocale)
+          .forEach(locale => {
+            const localeName = languages[locale];
+            if (localeName) dropDown.addOption(locale, localeName);
+          });
         const setValue = this.settings.localePreference;
         if (setValue === 'default') {
           dropDown.setValue(defaultLocale);
