@@ -22,8 +22,10 @@ export class BookSearchModal extends Modal {
   ) {
     super(plugin.app);
     this.settings = plugin.settings;
+    const defaultLocale = window.moment.locale();
+    const localeValue = this.settings.localePreference;
     this.options = {
-      locale: this.settings.localePreference || 'default',
+      locale: localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue,
     };
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
@@ -86,7 +88,7 @@ export class BookSearchModal extends Modal {
         const localeName = languages[locale];
         if (localeName) dropdown.addOption(locale, localeName);
       });
-      const localeValue = this.settings.localePreference || DEFAULT_SETTINGS.localePreference;
+      const localeValue = this.settings.localePreference;
       dropdown.setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue);
       dropdown.onChange(locale => (this.options.locale = locale));
     });
