@@ -4,6 +4,7 @@ import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
 import BookSearchPlugin from '@src/main';
 import { BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
 import { ServiceProvider } from '@src/constants';
+import languages from '@utils/languages';
 
 export class BookSearchModal extends Modal {
   private settings: BookSearchPluginSettings;
@@ -80,8 +81,11 @@ export class BookSearchModal extends Modal {
     const defaultLocale = window.moment.locale();
     const locales = window.moment.locales().filter(locale => locale !== defaultLocale);
     new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
-      dropdown.addOption(defaultLocale, defaultLocale);
-      locales.forEach(locale => dropdown.addOption(locale, locale));
+      dropdown.addOption(defaultLocale, `${languages[defaultLocale] || defaultLocale}`);
+      locales.forEach(locale => {
+        const localeName = languages[locale];
+        if (localeName) dropdown.addOption(locale, localeName);
+      });
       const localeValue = this.settings.localePreference || DEFAULT_SETTINGS.localePreference;
       dropdown.setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue);
       dropdown.onChange(locale => (this.options.locale = locale));
