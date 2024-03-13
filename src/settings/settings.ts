@@ -250,24 +250,18 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addDropdown(dropDown => {
         const defaultLocale = window.moment.locale();
         dropDown.addOption(defaultLocale, `${languages[defaultLocale] || defaultLocale} (Default Locale)`);
-        window.moment
-          .locales()
-          .filter(locale => locale !== defaultLocale)
-          .forEach(locale => {
-            const localeName = languages[locale];
-            if (localeName) dropDown.addOption(locale, localeName);
-          });
-        const setValue = this.plugin.settings.localePreference;
-        if (setValue === 'default') {
-          dropDown.setValue(defaultLocale);
-        } else {
-          dropDown.setValue(setValue);
-        }
-        dropDown.onChange(async value => {
-          const newValue = value;
-          this.plugin.settings.localePreference = newValue;
-          await this.plugin.saveSettings();
+        window.moment.locales().forEach(locale => {
+          const localeName = languages[locale];
+          if (localeName && locale !== defaultLocale) dropDown.addOption(locale, localeName);
         });
+        const localeValue = this.plugin.settings.localePreference;
+        dropDown
+          .setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue)
+          .onChange(async value => {
+            const newValue = value;
+            this.plugin.settings.localePreference = newValue;
+            await this.plugin.saveSettings();
+          });
       });
 
     new Setting(containerEl)
