@@ -8,8 +8,8 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
 
   constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
 
-  private getLanguageRestriction(): string {
-    return this.localePreference === 'default' ? window.moment.locale() : this.localePreference;
+  private getLanguageRestriction(local: string): string {
+    return local === 'default' ? window.moment.locale() : local;
   }
 
   private buildSearchParams(query: string, options?: Record<string, string>): Record<string, string | number> {
@@ -17,7 +17,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       q: query,
       maxResults: GoogleBooksApi.MAX_RESULTS,
       printType: GoogleBooksApi.PRINT_TYPE,
-      langRestrict: options?.locale || this.getLanguageRestriction(),
+      langRestrict: this.getLanguageRestriction(options?.locale || this.localePreference),
     };
 
     if (this.apiKey) {
@@ -30,9 +30,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     try {
       const params = this.buildSearchParams(query, options);
       const searchResults = await apiGet<GoogleBooksResponse>('https://www.googleapis.com/books/v1/volumes', params);
-      if (!searchResults?.totalItems) {
-        return [];
-      }
+      if (!searchResults?.totalItems) return [];
       return searchResults.items.map(({ volumeInfo }) => this.createBookItem(volumeInfo));
     } catch (error) {
       console.warn(error);
@@ -40,12 +38,14 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     }
   }
 
-  private getISBN(industryIdentifiers: VolumeInfo['industryIdentifiers']) {
-    return industryIdentifiers?.reduce((result, item) => {
-      const isbnType = item.type === 'ISBN_10' ? 'isbn10' : 'isbn13';
-      result[isbnType] = item.identifier.trim();
-      return result;
-    }, {} as Record<string, string>);
+  private extractISBNs(industryIdentifiers: VolumeInfo['industryIdentifiers']): Record<string, string> {
+    return (
+      industryIdentifiers?.reduce((result, item) => {
+        const isbnType = item.type === 'ISBN_10' ? 'isbn10' : 'isbn13';
+        result[isbnType] = item.identifier.trim();
+        return result;
+      }, {} as Record<string, string>) ?? {}
+    );
   }
 
   private extractBasicBookInfo(item: VolumeInfo): Partial<Book> {
@@ -84,7 +84,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       link: '',
       previewLink: '',
       ...this.extractBasicBookInfo(item),
-      ...this.getISBN(item.industryIdentifiers),
+      ...this.extractISBNs(item.industryIdentifiers),
     };
     return book;
   }
