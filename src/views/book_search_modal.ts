@@ -1,52 +1,43 @@
-import { ButtonComponent, Modal, Setting, TextComponent, Notice } from 'obsidian';
-import { Book } from '@models/book.model';
 import { BaseBooksApiImpl, factoryServiceProvider } from '@apis/base_api';
-import BookSearchPlugin from '@src/main';
-import { BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
+import { Book } from '@models/book.model';
+import { DEFAULT_SETTINGS } from '@settings/settings';
 import { ServiceProvider } from '@src/constants';
+import BookSearchPlugin from '@src/main';
 import languages from '@utils/languages';
+import { ButtonComponent, Modal, Notice, Setting, TextComponent } from 'obsidian';
 
 export class BookSearchModal extends Modal {
-  private settings: BookSearchPluginSettings;
+  private readonly SEARCH_BUTTON_TEXT = 'Search';
+  private readonly REQUESTING_BUTTON_TEXT = 'Requesting...';
   private isBusy = false;
   private okBtnRef?: ButtonComponent;
   private serviceProvider: BaseBooksApiImpl;
-  private readonly SEARCH_BUTTON_TEXT = 'Search';
-  private readonly REQUESTING_BUTTON_TEXT = 'Requesting...';
   private options: { locale: string };
 
   constructor(
-    plugin: BookSearchPlugin,
+    private plugin: BookSearchPlugin,
     private query: string,
     private callback: (error: Error | null, result?: Book[]) => void,
   ) {
     super(plugin.app);
-    this.settings = plugin.settings;
-    const defaultLocale = window.moment.locale();
-    const localeValue = this.settings.localePreference;
-    this.options = {
-      locale: localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue,
-    };
+    this.options = { locale: plugin.settings.localePreference };
     this.serviceProvider = factoryServiceProvider(plugin.settings);
   }
 
   setBusy(busy: boolean): void {
     this.isBusy = busy;
-    this.okBtnRef?.setDisabled(busy);
-    this.okBtnRef?.setButtonText(busy ? this.REQUESTING_BUTTON_TEXT : this.SEARCH_BUTTON_TEXT);
+    this.okBtnRef?.setDisabled(busy).setButtonText(busy ? this.REQUESTING_BUTTON_TEXT : this.SEARCH_BUTTON_TEXT);
   }
 
   async searchBook(): Promise<void> {
-    if (!this.query) {
-      new Notice('No query entered.');
-      return;
-    }
+    if (!this.query) return void new Notice('No query entered.');
     if (this.isBusy) return;
 
+    this.setBusy(true);
     try {
-      this.setBusy(true);
       const searchResults = await this.serviceProvider.getByQuery(this.query, this.options);
-      this.processSearchResults(searchResults);
+      if (!searchResults?.length) return void new Notice(`No results found for "${this.query}"`);
+      this.callback(null, searchResults);
     } catch (err) {
       this.callback(err as Error);
     } finally {
@@ -55,60 +46,17 @@ export class BookSearchModal extends Modal {
     }
   }
 
-  private processSearchResults(searchResults?: Book[]): void {
-    if (!searchResults?.length) {
-      new Notice(`No results found for "${this.query}"`);
-      return;
-    }
-
-    this.callback(null, searchResults);
-  }
-
-  submitEnterCallback(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && !event.isComposing) {
-      this.searchBook();
-    }
-  }
-
   onOpen(): void {
-    this.renderHeader();
-    this.renderSelectLocale();
-    this.renderSearchInput();
-    this.renderSearchButton();
-  }
-
-  renderSelectLocale() {
-    if (this.settings.serviceProvider !== ServiceProvider.google) return;
-
-    const defaultLocale = window.moment.locale();
-    const locales = window.moment.locales().filter(locale => locale !== defaultLocale);
-    new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
-      dropdown.addOption(defaultLocale, `${languages[defaultLocale] || defaultLocale}`);
-      locales.forEach(locale => {
-        const localeName = languages[locale];
-        if (localeName) dropdown.addOption(locale, localeName);
-      });
-      const localeValue = this.settings.localePreference;
-      dropdown.setValue(localeValue === DEFAULT_SETTINGS.localePreference ? defaultLocale : localeValue);
-      dropdown.onChange(locale => (this.options.locale = locale));
-    });
-  }
-
-  private renderHeader(): void {
-    this.contentEl.createEl('h2', { text: 'Search Book' });
-  }
-
-  private renderSearchInput(): void {
-    this.contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, settingItem => {
-      new TextComponent(settingItem)
+    const { contentEl } = this;
+    contentEl.createEl('h2', { text: 'Search Book' });
+    if (this.plugin.settings.serviceProvider === ServiceProvider.google) this.renderSelectLocale();
+    contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, el => {
+      new TextComponent(el)
         .setValue(this.query)
         .setPlaceholder('Search by keyword or ISBN')
         .onChange(value => (this.query = value))
-        .inputEl.addEventListener('keydown', this.submitEnterCallback.bind(this));
+        .inputEl.addEventListener('keydown', event => event.key === 'Enter' && !event.isComposing && this.searchBook());
     });
-  }
-
-  private renderSearchButton(): void {
     new Setting(this.contentEl).addButton(btn => {
       this.okBtnRef = btn
         .setButtonText(this.SEARCH_BUTTON_TEXT)
@@ -117,7 +65,22 @@ export class BookSearchModal extends Modal {
     });
   }
 
+  renderSelectLocale() {
+    const defaultLocale = window.moment.locale();
+    new Setting(this.contentEl).setName('Locale').addDropdown(dropdown => {
+      dropdown.addOption(defaultLocale, `${languages[defaultLocale] || defaultLocale}`);
+      window.moment.locales().forEach(locale => {
+        const localeName = languages[locale];
+        if (localeName && locale !== defaultLocale) dropdown.addOption(locale, localeName);
+      });
+      dropdown
+        .setValue(this.options.locale === DEFAULT_SETTINGS.localePreference ? defaultLocale : this.options.locale)
+        .onChange(locale => (this.options.locale = locale));
+    });
+  }
+
   onClose(): void {
-    this.contentEl.empty();
+    const { contentEl } = this;
+    contentEl.empty();
   }
 }
