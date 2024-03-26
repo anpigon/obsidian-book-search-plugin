@@ -49,7 +49,8 @@ export class BookSearchModal extends Modal {
   onOpen(): void {
     const { contentEl } = this;
     contentEl.createEl('h2', { text: 'Search Book' });
-    if (this.plugin.settings.serviceProvider === ServiceProvider.google) this.renderSelectLocale();
+    if (this.plugin.settings.serviceProvider === ServiceProvider.google && this.plugin.settings.askForLocale)
+      this.renderSelectLocale();
     contentEl.createDiv({ cls: 'book-search-plugin__search-modal--input' }, el => {
       new TextComponent(el)
         .setValue(this.query)
