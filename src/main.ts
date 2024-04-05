@@ -349,5 +349,8 @@ export default class GameSearchPlugin extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+    
+    // Re-initialize the API, in case the API key was changed
+    this.rawgApi = new RAWGAPI(this.settings.rawgApiKey);
   }
 }
