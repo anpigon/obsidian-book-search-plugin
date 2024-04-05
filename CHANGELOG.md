@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 0.2.2
+
+Re-initializes settings on API key entry to fix 401 bugs
+
 ## 0.2.1
 
 Fixes bugs adding game note when passing undefined params in `createNote`
