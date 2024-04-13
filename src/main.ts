@@ -207,7 +207,7 @@ export default class GameSearchPlugin extends Plugin {
                 existingContent = '---\n' + mapToString(regeneratedMetadata) + '\n---\n' + existingContent;
               }
 
-              await this.app.vault.modify(file, existingContent);
+              await this.app.vault.modify(file, executeInlineScriptsTemplates(game, existingContent));
 
               const p = ++index / fileCount;
               progress.setValue(p * 100);
