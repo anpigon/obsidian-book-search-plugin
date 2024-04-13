@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+Fixes bug where re-generating metadata for game files would
+skip executing any inline templater scripts.
+[discussion](https://github.com/CMorooney/obsidian-game-search-plugin/discussions/24)
 
 ## 0.2.2
 
