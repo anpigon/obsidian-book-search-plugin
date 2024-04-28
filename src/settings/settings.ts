@@ -33,6 +33,7 @@ export interface BookSearchPluginSettings {
   showCoverImageInSearch: boolean;
   enableCoverImageSave: boolean;
   coverImagePath: string;
+  askForLocale: boolean;
 }
 
 export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
@@ -52,6 +53,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   showCoverImageInSearch: false,
   enableCoverImageSave: false,
   coverImagePath: '',
+  askForLocale: true,
 };
 
 export class BookSearchSettingTab extends PluginSettingTab {
@@ -280,6 +282,17 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addToggle(toggle =>
         toggle.setValue(this.plugin.settings.showCoverImageInSearch).onChange(async value => {
           this.plugin.settings.showCoverImageInSearch = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    // A toggle whether or not to ask for the locale every time a search is made
+    new Setting(containerEl)
+      .setName('Ask for Locale')
+      .setDesc('Toggle to enable or disable asking for the locale every time a search is made.')
+      .addToggle(toggle =>
+        toggle.setValue(this.plugin.settings.askForLocale).onChange(async value => {
+          this.plugin.settings.askForLocale = value;
           await this.plugin.saveSettings();
         }),
       );
