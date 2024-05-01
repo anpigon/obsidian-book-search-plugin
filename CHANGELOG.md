@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.7.1...0.7.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* Update pnpm version to 9 ([db79d0b](https://github.com/anpigon/obsidian-book-search-plugin/commit/db79d0b1bf47dc924891c5df5a36c9c904c4246e))
+
 ### [0.7.1](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.6.3...0.7.1) (2024-05-01)
 
 ## [0.7.0](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.6.3...0.7.0) (2024-05-01)
