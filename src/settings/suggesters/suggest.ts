@@ -100,7 +100,10 @@ export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
   private suggestEl: HTMLElement;
   private suggest: Suggest<T>;
 
-  constructor(protected app: App, protected inputEl: HTMLInputElement | HTMLTextAreaElement) {
+  constructor(
+    protected app: App,
+    protected inputEl: HTMLInputElement | HTMLTextAreaElement,
+  ) {
     this.scope = new Scope();
 
     this.suggestEl = createDiv('suggestion-container');

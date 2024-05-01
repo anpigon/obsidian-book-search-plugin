@@ -3,7 +3,10 @@ import { apiGet, BaseBooksApiImpl } from './base_api';
 import { NaverBookItem, NaverBooksResponse } from './models/naver_books_response';
 
 export class NaverBooksApi implements BaseBooksApiImpl {
-  constructor(private readonly clientId, private readonly clientSecret: string) {}
+  constructor(
+    private readonly clientId,
+    private readonly clientSecret: string,
+  ) {}
 
   async getByQuery(query: string) {
     try {
