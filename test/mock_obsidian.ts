@@ -1,5 +1,5 @@
 import * as obsidian from 'obsidian';
 
-export const requestUrl: typeof obsidian.requestUrl = req => {
-  return fetch(req as never).then(res => res.json());
+export const requestUrl: typeof obsidian.requestUrl = (request: string | obsidian.RequestUrlParam) => {
+  return fetch(request as string).then(res => res.json()) as obsidian.RequestUrlResponsePromise;
 };
