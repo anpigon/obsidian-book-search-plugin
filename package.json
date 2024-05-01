@@ -17,24 +17,25 @@
   "license": "MIT",
   "engines": {
     "node": ">= 20",
-    "yarn": ">= 1.22",
-    "npm": "please use yarn"
+    "yarn": "please use pnpm",
+    "npm": "please use pnpm",
+    "pnpm": ">= 9.0.0"
   },
   "scripts": {
     "dev": "node --experimental-json-modules esbuild.config.mjs",
     "test": "jest",
     "format": "prettier --write \"**/*.ts\"",
     "format:check": "prettier --check \"**/*.ts\"",
-    "lint": "yarn format:check && eslint . --ext .ts && tsc --noEmit -skipLibCheck",
-    "lint:fix": "yarn format && eslint . --ext .ts --fix",
-    "build": "yarn run lint && node esbuild.config.mjs production",
+    "lint": "pnpm format:check && eslint . --ext .ts && tsc --noEmit -skipLibCheck",
+    "lint:fix": "pnpm format && eslint . --ext .ts --fix",
+    "build": "pnpm run lint && node esbuild.config.mjs production",
     "release": "standard-version",
     "release-test": "standard-version --dry-run",
     "release-major": "standard-version --release-as major",
     "release-major-test": "standard-version --dry-run --release-as major",
     "release-minor": "standard-version --release-as minor",
     "release-minor-test": "standard-version --dry-run --release-as minor",
-    "prepare": "husky install",
+    "prepare": "husky",
     "deploy:pages": "gh-pages -d pages"
   },
   "devDependencies": {
@@ -57,6 +58,5 @@
     "ts-node": "^10.9.2",
     "tslib": "2.6.2",
     "typescript": "5.1.6"
-  },
-  "packageManager": "yarn@1.22.19"
+  }
 }
