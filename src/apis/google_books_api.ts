@@ -6,7 +6,10 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   private static readonly MAX_RESULTS = 40;
   private static readonly PRINT_TYPE = 'books';
 
-  constructor(private readonly localePreference: string, private readonly apiKey?: string) {}
+  constructor(
+    private readonly localePreference: string,
+    private readonly apiKey?: string,
+  ) {}
 
   private getLanguageRestriction(local: string): string {
     return local === 'default' ? window.moment.locale() : local;
@@ -40,11 +43,14 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
 
   private extractISBNs(industryIdentifiers: VolumeInfo['industryIdentifiers']): Record<string, string> {
     return (
-      industryIdentifiers?.reduce((result, item) => {
-        const isbnType = item.type === 'ISBN_10' ? 'isbn10' : 'isbn13';
-        result[isbnType] = item.identifier.trim();
-        return result;
-      }, {} as Record<string, string>) ?? {}
+      industryIdentifiers?.reduce(
+        (result, item) => {
+          const isbnType = item.type === 'ISBN_10' ? 'isbn10' : 'isbn13';
+          result[isbnType] = item.identifier.trim();
+          return result;
+        },
+        {} as Record<string, string>,
+      ) ?? {}
     );
   }
 

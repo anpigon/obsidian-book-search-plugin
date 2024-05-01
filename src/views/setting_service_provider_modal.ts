@@ -6,7 +6,10 @@ export class SettingServiceProviderModal extends Modal {
   private readonly plugin: BookSearchPlugin;
   private readonly currentServiceProvider: ServiceProvider;
 
-  constructor(plugin: BookSearchPlugin, private callback?: () => void) {
+  constructor(
+    plugin: BookSearchPlugin,
+    private callback?: () => void,
+  ) {
     super(plugin.app);
     this.plugin = plugin;
     this.currentServiceProvider = plugin.settings?.serviceProvider ?? ServiceProvider.google;

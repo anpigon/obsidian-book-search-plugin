@@ -16,7 +16,10 @@ export const TITLE_SYNTAX_SUGGEST_REGEX = /{{t?i?t?l?e?}?}?$/i;
 export class FileNameFormatSuggest extends TextInputSuggest<string> {
   private lastInput = '';
 
-  constructor(public app: App, public inputEl: HTMLInputElement | HTMLTextAreaElement) {
+  constructor(
+    public app: App,
+    public inputEl: HTMLInputElement | HTMLTextAreaElement,
+  ) {
     super(app, inputEl);
   }
 
