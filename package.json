@@ -52,7 +52,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "obsidian": "latest",
     "prettier": "^3.2.5",
-    "standard-version": "^9.3.2",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tslib": "2.6.2",
