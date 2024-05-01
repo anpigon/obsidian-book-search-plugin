@@ -16,7 +16,7 @@
   "author": "anpigon",
   "license": "MIT",
   "engines": {
-    "node": ">= 16",
+    "node": ">= 20",
     "yarn": ">= 1.22",
     "npm": "please use yarn"
   },
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@popperjs/core": "^2.11.5",
     "@types/jest": "^28.1.6",
-    "@types/node": "^16.11.6",
+    "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
     "builtin-modules": "^3.2.0",
