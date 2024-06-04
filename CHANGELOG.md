@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+
+Fixes bug where regenerating metadata for game files would incorrectly format a string
+that included a colon.
+
 ## 0.2.3
 
 Fixes bug where re-generating metadata for game files would
