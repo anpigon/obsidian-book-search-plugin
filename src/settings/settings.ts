@@ -76,16 +76,6 @@ export class BookSearchSettingTab extends PluginSettingTab {
     return new Setting(containerEl).setHeading().setName(header);
   }
 
-  private createFoldingHeader(containerEl: HTMLElement, title: string, formatterSettingsChildren: Setting[]) {
-    return this.createHeader(title, containerEl).addToggle(toggle => {
-      toggle.onChange(checked => {
-        formatterSettingsChildren.forEach(({ settingEl }) => {
-          settingEl.toggleClass('book-search-plugin__show', checked);
-        });
-      });
-    });
-  }
-
   private createFileLocationSetting(containerEl) {
     new Setting(containerEl)
       .setName('New file location')
@@ -133,33 +123,6 @@ export class BookSearchSettingTab extends PluginSettingTab {
         cls: ['setting-item-description', 'book-search-plugin__settings--new_file_name_hint'],
       })
       .append(newFileNameHint);
-  }
-
-  private createAPIKeySettings(containerEl: HTMLElement) {
-    const APISettingsChildren: Setting[] = [];
-    this.createFoldingHeader(containerEl, 'Google API Settings', APISettingsChildren);
-    let tempKeyValue = '';
-    APISettingsChildren.push(
-      new Setting(containerEl)
-        .setClass('book-search-plugin__hide')
-        .setName('Google Book API Key')
-        .setDesc(
-          'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
-        )
-        .addText(text => {
-          text.inputEl.type = 'password';
-          text.setValue(this.plugin.settings.apiKey).onChange(async value => {
-            tempKeyValue = value;
-          });
-        })
-        .addButton(button => {
-          button.setButtonText('Save Key').onClick(async () => {
-            this.plugin.settings.apiKey = tempKeyValue;
-            await this.plugin.saveSettings();
-            new Notice('Apikey Saved');
-          });
-        }),
-    );
   }
 
   private createTemplateFileSetting(containerEl: HTMLElement) {
@@ -328,6 +291,25 @@ export class BookSearchSettingTab extends PluginSettingTab {
       });
 
     // API Settings
-    this.createAPIKeySettings(containerEl);
+    this.createHeader('Google API Settings', containerEl);
+    let tempKeyValue = '';
+    new Setting(containerEl)
+      .setName('Set API Key')
+      .setDesc(
+        'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
+      )
+      .addText(text => {
+        text.inputEl.type = 'password';
+        text.setValue('').onChange(async value => {
+          tempKeyValue = value;
+        });
+      })
+      .addButton(button => {
+        button.setButtonText('Save Key').onClick(async () => {
+          this.plugin.settings.apiKey = tempKeyValue;
+          await this.plugin.saveSettings();
+          new Notice('API key Saved');
+        });
+      });
   }
 }
