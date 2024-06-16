@@ -290,8 +290,14 @@ export class BookSearchSettingTab extends PluginSettingTab {
           });
       });
 
-    // API Settings
+    // Google API Settings
     this.createHeader('Google API Settings', containerEl);
+    new Setting(containerEl)
+      .setName('Description About Google API Settings')
+      .setDesc(
+        '**WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
+      );
+
     new Setting(containerEl)
       .setName('Status Check')
       .setDesc('check whether API key is saved. It does not guarantee that the API key is valid or invalid.')
@@ -305,12 +311,15 @@ export class BookSearchSettingTab extends PluginSettingTab {
         });
       });
 
+    const googleAPISetDesc = document.createDocumentFragment();
+    googleAPISetDesc.createDiv({ text: 'Set your Books API key.' });
+    googleAPISetDesc.createDiv({
+      text: 'For security reason, saved API key is not shown in this textarea after saved.',
+    });
     let tempKeyValue = '';
     new Setting(containerEl)
       .setName('Set API Key')
-      .setDesc(
-        'Add your Books API key. **WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
-      )
+      .setDesc(googleAPISetDesc)
       .addText(text => {
         text.inputEl.type = 'password';
         text.setValue('').onChange(async value => {
