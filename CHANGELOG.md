@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.7.3...0.7.4) (2024-06-19)
+
+
+### Features
+
+* **BookSearchAPI:** add status check button ([fae92af](https://github.com/anpigon/obsidian-book-search-plugin/commit/fae92af3168897e6a2c3ea9ab8698a1db8946ffb))
+
+
+### Code Refactoring
+
+* **BookSearchAPI:** no-use createFoldingHeader ([f105054](https://github.com/anpigon/obsidian-book-search-plugin/commit/f1050548c94690b387e0cc561eaf253194a4dbb4))
+* change some sentence ([e7d5cd2](https://github.com/anpigon/obsidian-book-search-plugin/commit/e7d5cd2e8f8d28ae1393b1554152271ffae2d0d0))
+
 ### [0.7.3](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.7.2...0.7.3) (2024-05-01)
 
 
