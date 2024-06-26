@@ -234,6 +234,9 @@ Please find here a definition of the possible variables to be used in your templ
 
 ### Inline Script
 
+- The object "book" gives access to all attributes managed by the plugin.
+- Using `<%= book %>` one can manipulate the different attributes, or use all attributes together.
+
 #### To print out a book object:
 
 ````
@@ -269,6 +272,19 @@ categories: <%=book.categories.map(category=>`\n  - ${category}`).join('')%>
 
 categories: <%=book.categories.map(category => `[[${category}]]`).join(', ')%>
 ```
+
+#### When you want to isolate publication year
+
+```
+published_at: <%= book.publishDate.substring(0, 4) %>
+```
+
+#### When you want to have the publucation date under the format YYYYMMDD and not YYYY-MM-DD
+
+```
+published_at: <%= book.publishDate.replace(/-/g,'') %>
+```
+
 
 <br>
 
