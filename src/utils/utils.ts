@@ -41,29 +41,41 @@ export function replaceVariableSyntax(game: RAWGGame | RAWGGameFromSearch, text:
     return '';
   }
 
-  game.genres.toString = function (this: RAWGGenre[]) {
-    return this.map(g => g.name).join(', ');
-  };
+  if (game.genres) {
+    game.genres.toString = function (this: RAWGGenre[]) {
+      return this.map(g => g.name).join(', ');
+    };
+  }
 
-  game.platforms.toString = function (this: RAWGPlatformDetailed[]) {
-    return this.map(p => p.platform.name).join(', ');
-  };
+  if (game.platforms) {
+    game.platforms.toString = function (this: RAWGPlatformDetailed[]) {
+      return this.map(p => p.platform.name).join(', ');
+    };
+  }
 
-  game.tags.toString = function (this: RAWGTag[]) {
-    return this.map(p => p.name).join(', ');
-  };
+  if (game.tags) {
+    game.tags.toString = function (this: RAWGTag[]) {
+      return this.map(p => p.name).join(', ');
+    };
+  }
 
   const detailedGame = game as RAWGGame;
   if (detailedGame) {
-    detailedGame.developers.toString = function (this: RAWGDeveloper[]) {
-      return this.map(p => p.name).join(', ');
-    };
-    detailedGame.publishers.toString = function (this: RAWGPublisher[]) {
-      return this.map(p => p.name).join(', ');
-    };
-    detailedGame.metacritic_platforms.toString = function (this: RAWGMetacriticPlatform[]) {
-      return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
-    };
+    if (detailedGame.developers) {
+      detailedGame.developers.toString = function (this: RAWGDeveloper[]) {
+        return this.map(p => p.name).join(', ');
+      };
+    }
+    if (detailedGame.publishers) {
+      detailedGame.publishers.toString = function (this: RAWGPublisher[]) {
+        return this.map(p => p.name).join(', ');
+      };
+    }
+    if (detailedGame.metacritic_platforms) {
+      detailedGame.metacritic_platforms.toString = function (this: RAWGMetacriticPlatform[]) {
+        return this.map(p => p.platform.platform.name + ': ' + p.metascore).join(', ');
+      };
+    }
   }
 
   const entries = Object.entries(game);
