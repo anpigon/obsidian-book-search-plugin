@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 0.2.5
+
+Attempt to fix bug [29](https://github.com/CMorooney/obsidian-game-search-plugin/issues/29)
+
 ## 0.2.4
 
 Fixes bug where regenerating metadata for game files would incorrectly format a string
