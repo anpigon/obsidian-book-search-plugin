@@ -9,6 +9,8 @@ export class RAWGAPI {
       const apiURL = new URL('https://api.rawg.io/api/games');
       apiURL.searchParams.append('key', this.key);
       apiURL.searchParams.append('search', query);
+
+      // in RAWG API, Steam store id is 1
       if (steam) {
         apiURL.searchParams.append('store', '1');
       }
