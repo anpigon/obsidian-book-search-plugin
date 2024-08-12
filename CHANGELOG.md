@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6
+
+Attempt to fix bug [32](https://github.com/CMorooney/obsidian-game-search-plugin/issues/32)
+when trying to match steam games with RAWG API, flag the query as `search_exact`
+to try and increase chances of the correct match.
 
 ## 0.2.5
 
