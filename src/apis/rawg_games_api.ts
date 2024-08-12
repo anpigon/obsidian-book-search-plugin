@@ -5,7 +5,6 @@ export class RAWGAPI {
   constructor(private readonly key: string) {}
 
   async getByQuery(query: string, steam = false): Promise<RAWGGameFromSearch[]> {
-    
     try {
       const apiURL = new URL('https://api.rawg.io/api/games');
       apiURL.searchParams.append('key', this.key);
