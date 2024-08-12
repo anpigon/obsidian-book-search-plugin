@@ -4,12 +4,14 @@ import { requestUrl } from 'obsidian';
 export class RAWGAPI {
   constructor(private readonly key: string) {}
 
-  async getByQuery(query: string, exact = false): Promise<RAWGGameFromSearch[]> {
+  async getByQuery(query: string, steam = false): Promise<RAWGGameFromSearch[]> {
     try {
       const apiURL = new URL('https://api.rawg.io/api/games');
       apiURL.searchParams.append('key', this.key);
       apiURL.searchParams.append('search', query);
-      apiURL.searchParams.append('search_exact', exact.toString());
+      if (steam) {
+        apiURL.searchParams.append('store', '1');
+      }
 
       const res = await requestUrl({
         url: apiURL.href,
