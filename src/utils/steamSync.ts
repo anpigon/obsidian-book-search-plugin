@@ -23,7 +23,7 @@ export async function findAndSyncSteamGame(
 ): Promise<void> {
   let rawgGame: Nullable<RAWGGameFromSearch>;
   try {
-    rawgGame = (await rawgApi.getByQuery(name))[0];
+    rawgGame = (await rawgApi.getByQuery(name, true))[0];
   } catch (rawgApiError) {
     console.warn('[Game Search][Steam Sync][ERROR] getting RAWG game for ' + logDescription + ' game ' + name);
     console.warn(rawgApiError);
