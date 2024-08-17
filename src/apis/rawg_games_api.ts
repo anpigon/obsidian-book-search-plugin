@@ -13,6 +13,8 @@ export class RAWGAPI {
       // in RAWG API, Steam store id is 1
       if (steam) {
         apiURL.searchParams.append('store', '1');
+        apiURL.searchParams.append('exclude_stores', '9');
+        apiURL.searchParams.append('search_precise', 'true');
       }
 
       const res = await requestUrl({
@@ -33,10 +35,17 @@ export class RAWGAPI {
     }
   }
 
-  async getBySlugOrId(slugOrId: string | number): Promise<RAWGGame> {
+  async getBySlugOrId(slugOrId: string | number, steam = false): Promise<RAWGGame> {
     try {
       const apiURL = new URL('https://api.rawg.io/api/games/' + slugOrId);
       apiURL.searchParams.append('key', this.key);
+
+      // in RAWG API, Steam store id is 1
+      if (steam) {
+        apiURL.searchParams.append('store', '1');
+        apiURL.searchParams.append('exclude_stores', '9');
+        apiURL.searchParams.append('search_precise', 'true');
+      }
 
       const res = await requestUrl({
         url: apiURL.href,
