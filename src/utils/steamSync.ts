@@ -62,7 +62,7 @@ export async function findAndSyncSteamGame(
   } else {
     console.info('[Game Search][Steam Sync] creating note for ' + name);
     try {
-      const rawgGameDetails = await rawgApi.getBySlugOrId(rawgGame.slug);
+      const rawgGameDetails = await rawgApi.getBySlugOrId(rawgGame.slug, true);
       await createNewGameNote({ game: rawgGameDetails, steamId: steamId, overwriteFile: false }, false, metadata);
     } catch (rawgOrWriteError) {
       console.warn('[Game Search][Steam Sync][ERROR] getting details and writing file for steam game ' + name);
