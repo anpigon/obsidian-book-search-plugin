@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.8
+
+Better attempt to fix bug [32](https://github.com/CMorooney/obsidian-game-search-plugin/issues/32)
+when trying to match steam games with RAWG API,
+mark query as precise and exclude itch.io specifically
+
 ## 0.2.7
 
 Better attempt to fix bug [32](https://github.com/CMorooney/obsidian-game-search-plugin/issues/32)
