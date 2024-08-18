@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
+import type { Nullable } from '../main';
 import { requestUrl } from 'obsidian';
 import { SteamResponse, OwnedSteamGames, SteamGame, SteamWishlistedGame } from '@models/steam_game.model';
 
@@ -8,7 +9,6 @@ export class SteamAPI {
 
   async getOwnedGames(): Promise<SteamGame[]> {
     try {
-      // todo: steam api
       const apiURL = new URL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/');
       apiURL.searchParams.append('key', this.key);
       apiURL.searchParams.append('steamid', this.steamId);
@@ -45,6 +45,50 @@ export class SteamAPI {
         m.set(parseInt(k), v as SteamWishlistedGame);
       }
       return m;
+    } catch (error) {
+      console.warn('[Game Search][Steam API][getWishlist]' + error);
+      throw error;
+    }
+  }
+
+  async getPlayerStatsForGames(
+    gameIds: string[],
+  ): Promise<{ [key: string]: { playtime_forever: Nullable<number>; playtime_2weeks: Nullable<number> } } | undefined> {
+    try {
+      const apiURL = new URL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/');
+      apiURL.searchParams.append('key', this.key);
+      apiURL.searchParams.append('format', 'json');
+
+      let htmlJsonArrayContent = '';
+      const htmlCommaAndSpace = '%2C%20';
+
+      for (const id of gameIds) {
+        htmlJsonArrayContent += `${id}${htmlCommaAndSpace}`;
+      }
+
+      const query = `%22appids_filter%22%3A%20%5B${htmlJsonArrayContent.substring(
+        0,
+        htmlJsonArrayContent.length - htmlCommaAndSpace.length,
+      )}%5D%2C%20%22steamid%22%3A%20${this.steamId}%2C%20%22include_appinfo%22%3A%20true`;
+
+      const res = await requestUrl({
+        url: `${apiURL.href}&input_json={${query}}`,
+        method: 'GET',
+      });
+
+      const games = res?.json?.response?.games;
+      if (games) {
+        const ret: { [key: string]: { playtime_forever: Nullable<number>; playtime_2weeks: Nullable<number> } } = {};
+        for (const game of games) {
+          ret[game.appid] = {
+            playtime_forever: game.playtime_forever,
+            playtime_2weeks: game.playtime_2weeks,
+          };
+        }
+        return ret;
+      }
+
+      return undefined;
     } catch (error) {
       console.warn('[Game Search][Steam API][getWishlist]' + error);
       throw error;

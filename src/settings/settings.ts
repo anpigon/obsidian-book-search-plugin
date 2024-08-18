@@ -15,6 +15,7 @@ export interface GameSearchPluginSettings {
   steamApiKey: Nullable<string>;
   steamUserId: Nullable<string>;
   syncSteamOnStart: boolean;
+  syncSteamPlaytimeOnStart: boolean;
   metaDataForOwnedSteamGames: Nullable<string>;
   metaDataForWishlistedSteamGames: Nullable<string>;
 }
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   steamApiKey: null,
   steamUserId: null,
   syncSteamOnStart: false,
+  syncSteamPlaytimeOnStart: false,
   metaDataForOwnedSteamGames: null,
   metaDataForWishlistedSteamGames: null,
 };
@@ -145,6 +147,23 @@ export class GameSearchSettingTab extends PluginSettingTab {
         toggle.setValue(prevValue).onChange(async value => {
           const newValue = value;
           this.plugin.settings.syncSteamOnStart = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    // Steam playtime sync on start
+    const syncPlaytimeOnStartDescription = document.createDocumentFragment();
+    syncPlaytimeOnStartDescription.createDiv({
+      text: 'update steam_playtime_forever and steam_playtime_2weeks for any notes with steam_id on plugin load',
+    });
+    new Setting(containerEl)
+      .setName('Sync playtime on start')
+      .setDesc(syncOnStartDescription)
+      .addToggle(toggle => {
+        const prevValue = this.plugin.settings.syncSteamPlaytimeOnStart;
+        toggle.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.syncSteamPlaytimeOnStart = newValue;
           await this.plugin.saveSettings();
         });
       });

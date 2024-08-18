@@ -62,7 +62,7 @@ export async function findAndSyncSteamGame(
 
     fileManager.processFrontMatter(existingGameFile, data => {
       data.steamId = steamId;
-      data.steamPlaytimeForerver = steamPlaytimeForever;
+      data.steamPlaytimeForever = steamPlaytimeForever;
       data.steamPlaytime2Weeks = steamPlaytime2Weeks;
       if (metadata && metadata instanceof Map) {
         for (const [key, value] of metadata) {
@@ -159,5 +159,54 @@ export async function syncOwnedSteamGames(
       'owned steam',
     );
     processedPercent(++index / amount);
+  }
+}
+
+async function parseFileMetadata(fileManager: FileManager, file: TFile): Promise<any> {
+  return new Promise<any>(accept => {
+    fileManager.processFrontMatter(file, (data: any) => {
+      accept(data);
+    });
+  });
+}
+
+export async function syncPlaytimes(
+  vault: Vault,
+  fileManager: FileManager,
+  steamApi: SteamAPI,
+  settings: any,
+): Promise<void> {
+  const folderPath = normalizePath(settings.folder);
+  const folder = vault.getFolderByPath(folderPath);
+  const ids: string[] = [];
+
+  const doForChild = async (func: (file: TFile) => Promise<void>) => {
+    for (const f of folder.children) {
+      const file = f as TFile;
+      if (!!file && file.name.includes('.md')) {
+        await func(file);
+      }
+    }
+  };
+
+  doForChild(async file => {
+    const noteMetadata = await parseFileMetadata(fileManager, file);
+    const steamId: Nullable<string> = noteMetadata.steamId;
+    if (steamId) {
+      ids.push(steamId);
+    }
+  });
+
+  const playerStats = await steamApi.getPlayerStatsForGames(ids);
+  if (playerStats) {
+    doForChild(async file => {
+      fileManager.processFrontMatter(file, data => {
+        if (data.steamId && playerStats[data.steamId]) {
+          data.steamPlaytimeForever = playerStats[data.steamId].playtime_forever;
+          data.steamPlaytime2Weeks = playerStats[data.steamId].playtime_2weeks;
+        }
+        return data;
+      });
+    });
   }
 }
