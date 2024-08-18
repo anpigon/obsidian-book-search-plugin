@@ -69,7 +69,7 @@ export class SteamAPI {
       const query = `%22appids_filter%22%3A%20%5B${htmlJsonArrayContent.substring(
         0,
         htmlJsonArrayContent.length - htmlCommaAndSpace.length,
-      )}%5D%2C%20%22steamid%22%3A%20${this.steamId}%2C%20%22include_appinfo%22%3A%20true`;
+      )}%5D%2C%20%22steamid%22%3A%20${this.steamId}`;
 
       const res = await requestUrl({
         url: `${apiURL.href}&input_json={${query}}`,
