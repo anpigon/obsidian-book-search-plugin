@@ -168,9 +168,15 @@ export default class GameSearchPlugin extends Plugin {
               // as a part of the users steam sync settings we do want to
               // preserve those
               if (regeneratedMetadata instanceof Map && existingMetadata instanceof Map) {
-                if (existingMetadata.has('steamId')) {
-                  regeneratedMetadata.set('steamId', existingMetadata.get('steamId'));
-                }
+                const preservePrevious = (key: string) => {
+                  if (existingMetadata.has(key)) {
+                    regeneratedMetadata.set(key, existingMetadata.get(key));
+                  }
+                };
+                preservePrevious('steamId');
+                preservePrevious('steamPlaytimeForever');
+                preservePrevious('steamPlaytime2Weeks');
+
                 if (this.settings.metaDataForWishlistedSteamGames) {
                   const wishlistMap = stringToMap(this.settings.metaDataForWishlistedSteamGames);
                   if (wishlistMap instanceof Map) {
@@ -275,6 +281,8 @@ export default class GameSearchPlugin extends Plugin {
     params: Nullable<{
       game: Nullable<RAWGGame>;
       steamId: Nullable<number>;
+      steamPlaytimeForever: number;
+      steamPlaytime2Weeks: number;
     }>,
     openAfterCreate = true,
     extraData?: Map<string, string>, // key/values for metadata to add to file
@@ -302,6 +310,8 @@ export default class GameSearchPlugin extends Plugin {
       if (params && params.steamId) {
         this.app.fileManager.processFrontMatter(targetFile, (data: any) => {
           data.steamId = params.steamId;
+          data.steamPlaytimeForever = params.steamPlaytimeForever;
+          data.steamPlaytime2Weeks = params.steamPlaytime2Weeks;
           if (extraData && extraData instanceof Map) {
             for (const [key, value] of extraData) {
               data[key] = value;
