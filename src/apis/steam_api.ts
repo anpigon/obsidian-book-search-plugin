@@ -7,6 +7,22 @@ import { SteamResponse, OwnedSteamGames, SteamGame, SteamWishlistedGame } from '
 export class SteamAPI {
   constructor(private readonly key: string, private readonly steamId: string) {}
 
+  async tryGetGame(nameQuery: string): Promise<Nullable<SteamGame>> {
+    try {
+      const games = await this.getOwnedGames();
+      for (const game of games) {
+        if (game.name.contains(nameQuery) || nameQuery.contains(game.name)) {
+          return game;
+        }
+      }
+    } catch (error) {
+      console.warn('[Game Search][Steam API][tryGetGame]' + error);
+      throw error;
+    }
+
+    return null;
+  }
+
   async getOwnedGames(): Promise<SteamGame[]> {
     try {
       const apiURL = new URL('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/');

@@ -318,6 +318,27 @@ export default class GameSearchPlugin extends Plugin {
     try {
       const game = params?.game ?? (await this.searchGameMetadata());
 
+      // if no steam params passed,
+      // and settings set to try and match new game notes to steam,
+      // try and match new game to steam
+      if (
+        !params?.steamId &&
+        this.settings.tryFindSteamGameOnCreate &&
+        this.steamApi &&
+        this.settings.steamApiKey &&
+        this.settings.steamUserId
+      ) {
+        const maybeMatchedSteamGame = await this.steamApi.tryGetGame(game.name);
+        if (maybeMatchedSteamGame) {
+          params = {
+            game: null,
+            steamId: maybeMatchedSteamGame.appid,
+            steamPlaytimeForever: maybeMatchedSteamGame.playtime_forever,
+            steamPlaytime2Weeks: maybeMatchedSteamGame.playtime_2weeks,
+          };
+        }
+      }
+
       // open file
       const activeLeaf = this.app.workspace.getLeaf();
       if (!activeLeaf) {
