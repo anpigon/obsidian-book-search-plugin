@@ -248,9 +248,9 @@ export default class GameSearchPlugin extends Plugin {
     }
 
     if (this.steamApi !== undefined) {
-      const notice = new Notice('syncing steam playtime', 0);
+      new Notice('syncing steam playtime');
       await syncPlaytimes(this.app.vault, this.app.fileManager, this.steamApi, this.settings);
-      notice.setMessage('steam playtime sync complete');
+      new Notice('steam playtime sync complete');
     } else if (alertUninitializedApi) {
       console.warn('[Game Search][SteamSync]: steam api not initialized');
       this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
