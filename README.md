@@ -144,7 +144,7 @@ variable in your template, simply write the variable name surrounded by curly br
 | genres               | (array) of [Genres](#genre-object)                            |
 | short_screenshots    | (array) of [ScreenShots](#screenshot-object)                  |
 | website              | (string) URL of game website, if one exists                   |
-| publihers            | (array) of [Publishers](#publisher-object)                    |
+| publishers           | (array) of [Publishers](#publisher-object)                    |
 | developers           | (array) of [Developers](#developer-object)                    |
 
 ### Developer Object
