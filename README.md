@@ -89,7 +89,7 @@ is likely that the body of a game note is used for keepsake/TODO lists/personal 
 while the main portion of the templating will happen in the metadata. I'm open to
 revisiting this if it proves to be a bad idea.
 
-**Note**: `steamId` and any user-provided metadata to be injected into
+**Note**: `steamId`, `steamPlaytimeForever`, `steamPlaytime2Weeks`, and any user-provided metadata to be injected into
 Steam games (added via settings) will be preserved.
 
 ## Other Settings
@@ -102,6 +102,11 @@ Set the folder location where the new file is created. Otherwise, a new file is 
 
 You can set the file name format. The default format is `{{name}} - {{published}}`.
 You can use `{{DATE}}` or `{{DATE:YYYYMMDD}}` to set a unique file name.
+
+If you are using the Steam integration portion of the plugin you can also
+flip a toggle in settings to try and immediately match any created game notes
+with a game in your Steam library to so that steam metadata gets immediately injected.
+*THIS WILL ONLY MATCH GAMES IN YOUR LIBRARY ALREADY*
 
 ### Template variables definitions
 
@@ -139,7 +144,7 @@ variable in your template, simply write the variable name surrounded by curly br
 | genres               | (array) of [Genres](#genre-object)                            |
 | short_screenshots    | (array) of [ScreenShots](#screenshot-object)                  |
 | website              | (string) URL of game website, if one exists                   |
-| publihers            | (array) of [Publishers](#publisher-object)                    |
+| publishers           | (array) of [Publishers](#publisher-object)                    |
 | developers           | (array) of [Developers](#developer-object)                    |
 
 ### Developer Object

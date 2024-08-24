@@ -248,9 +248,9 @@ export default class GameSearchPlugin extends Plugin {
     }
 
     if (this.steamApi !== undefined) {
-      const notice = new Notice('syncing steam playtime', 0);
+      new Notice('syncing steam playtime');
       await syncPlaytimes(this.app.vault, this.app.fileManager, this.steamApi, this.settings);
-      notice.setMessage('steam playtime sync complete');
+      new Notice('steam playtime sync complete');
     } else if (alertUninitializedApi) {
       console.warn('[Game Search][SteamSync]: steam api not initialized');
       this.showNotice('Steam Api not initialized. Did you enter your steam API key and user Id in plugin settings?');
@@ -317,6 +317,27 @@ export default class GameSearchPlugin extends Plugin {
   ): Promise<void> {
     try {
       const game = params?.game ?? (await this.searchGameMetadata());
+
+      // if no steam params passed,
+      // and settings set to try and match new game notes to steam,
+      // try and match new game to steam
+      if (
+        !params?.steamId &&
+        this.settings.tryFindSteamGameOnCreate &&
+        this.steamApi &&
+        this.settings.steamApiKey &&
+        this.settings.steamUserId
+      ) {
+        const maybeMatchedSteamGame = await this.steamApi.tryGetGame(game.name);
+        if (maybeMatchedSteamGame) {
+          params = {
+            game: null,
+            steamId: maybeMatchedSteamGame.appid,
+            steamPlaytimeForever: maybeMatchedSteamGame.playtime_forever,
+            steamPlaytime2Weeks: maybeMatchedSteamGame.playtime_2weeks,
+          };
+        }
+      }
 
       // open file
       const activeLeaf = this.app.workspace.getLeaf();

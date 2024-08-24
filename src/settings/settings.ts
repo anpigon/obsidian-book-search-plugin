@@ -16,6 +16,7 @@ export interface GameSearchPluginSettings {
   steamUserId: Nullable<string>;
   syncSteamOnStart: boolean;
   syncSteamPlaytimeOnStart: boolean;
+  tryFindSteamGameOnCreate: boolean;
   metaDataForOwnedSteamGames: Nullable<string>;
   metaDataForWishlistedSteamGames: Nullable<string>;
 }
@@ -29,6 +30,7 @@ export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   steamUserId: null,
   syncSteamOnStart: false,
   syncSteamPlaytimeOnStart: false,
+  tryFindSteamGameOnCreate: false,
   metaDataForOwnedSteamGames: null,
   metaDataForWishlistedSteamGames: null,
 };
@@ -136,38 +138,6 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     createHeader(containerEl, 'Steam Settings');
 
-    // Steam sync on start
-    const syncOnStartDescription = document.createDocumentFragment();
-    syncOnStartDescription.createDiv({ text: 'performs steam sync when the plugin loads' });
-    new Setting(containerEl)
-      .setName('Sync on start')
-      .setDesc(syncOnStartDescription)
-      .addToggle(toggle => {
-        const prevValue = this.plugin.settings.syncSteamOnStart;
-        toggle.setValue(prevValue).onChange(async value => {
-          const newValue = value;
-          this.plugin.settings.syncSteamOnStart = newValue;
-          await this.plugin.saveSettings();
-        });
-      });
-
-    // Steam playtime sync on start
-    const syncPlaytimeOnStartDescription = document.createDocumentFragment();
-    syncPlaytimeOnStartDescription.createDiv({
-      text: 'update steam_playtime_forever and steam_playtime_2weeks for any notes with steam_id on plugin load',
-    });
-    new Setting(containerEl)
-      .setName('Sync playtime on start')
-      .setDesc(syncOnStartDescription)
-      .addToggle(toggle => {
-        const prevValue = this.plugin.settings.syncSteamPlaytimeOnStart;
-        toggle.setValue(prevValue).onChange(async value => {
-          const newValue = value;
-          this.plugin.settings.syncSteamPlaytimeOnStart = newValue;
-          await this.plugin.saveSettings();
-        });
-      });
-
     // Steam Api Key
     new Setting(containerEl).setName('Steam Api Key').addTextArea(textArea => {
       const prevValue = this.plugin.settings.steamApiKey;
@@ -243,6 +213,54 @@ export class GameSearchSettingTab extends PluginSettingTab {
         });
       });
 
+    // Steam sync on start
+    const syncOnStartDescription = document.createDocumentFragment();
+    syncOnStartDescription.createDiv({ text: 'performs steam sync when the plugin loads' });
+    new Setting(containerEl)
+      .setName('Sync on start')
+      .setDesc(syncOnStartDescription)
+      .addToggle(toggle => {
+        const prevValue = this.plugin.settings.syncSteamOnStart;
+        toggle.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.syncSteamOnStart = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    // Steam playtime sync on start
+    const syncPlaytimeOnStartDescription = document.createDocumentFragment();
+    syncPlaytimeOnStartDescription.createDiv({
+      text: 'update steam_playtime_forever and steam_playtime_2weeks for any notes with steam_id on plugin load',
+    });
+    new Setting(containerEl)
+      .setName('Sync playtime on start')
+      .setDesc(syncPlaytimeOnStartDescription)
+      .addToggle(toggle => {
+        const prevValue = this.plugin.settings.syncSteamPlaytimeOnStart;
+        toggle.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.syncSteamPlaytimeOnStart = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
+
+    // Steam playtime sync on start
+    const findSteamGameOnCreateDescription = document.createDocumentFragment();
+    findSteamGameOnCreateDescription.createDiv({
+      text: 'when creating a game note, attempt to match with a game in your steam library (only works for owned games)',
+    });
+    new Setting(containerEl)
+      .setName('Try match Steam game on game note creation')
+      .setDesc(findSteamGameOnCreateDescription)
+      .addToggle(toggle => {
+        const prevValue = this.plugin.settings.tryFindSteamGameOnCreate;
+        toggle.setValue(prevValue).onChange(async value => {
+          const newValue = value;
+          this.plugin.settings.tryFindSteamGameOnCreate = newValue;
+          await this.plugin.saveSettings();
+        });
+      });
     createHeader(containerEl, 'Advanced/Dangerous');
 
     // Regenerate files
