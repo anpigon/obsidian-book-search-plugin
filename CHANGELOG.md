@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.10
+
+Attempt to implement [38](https://github.com/CMorooney/obsidian-game-search-plugin/issues/38)
+Match steam game in user's library when creating game note (if setting on)
+and inject metadata right then
+
+adjusts placement of toggles in the settings pane to be a little more sensible
+
+fixes typo in readme, adds content that should have been added with `0.2.9`
+
 ## 0.2.9
 
 Attempt to implement [34](https://github.com/CMorooney/obsidian-game-search-plugin/issues/34)
