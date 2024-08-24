@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.9
+
+Attempt to implement [34](https://github.com/CMorooney/obsidian-game-search-plugin/issues/34)
+inject steam playtime_forever and playtime_2weeks into metadata
+
 ## 0.2.8
 
 Better attempt to fix bug [32](https://github.com/CMorooney/obsidian-game-search-plugin/issues/32)
