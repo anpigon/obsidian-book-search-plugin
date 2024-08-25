@@ -11,7 +11,10 @@ export class SteamAPI {
     try {
       const games = await this.getOwnedGames();
       for (const game of games) {
-        if (game.name.contains(nameQuery) || nameQuery.contains(game.name)) {
+        if (
+          game.name.toLowerCase().contains(nameQuery.toLowerCase()) ||
+          nameQuery.toLowerCase().contains(game.name.toLowerCase())
+        ) {
           return game;
         }
       }
