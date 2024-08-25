@@ -1,6 +1,6 @@
 {
   "name": "game-search",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "This is a plugin to help you create game notes. Optional Steam Library Sync",
   "homepage": "https://github.com/CMorooney/obsidian-game-search-plugin",
   "main": "main.js",

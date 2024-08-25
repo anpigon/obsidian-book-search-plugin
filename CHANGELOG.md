@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.11
+
+Attempt to implement [38](https://github.com/CMorooney/obsidian-game-search-plugin/issues/38)
+fixes casing mis-match for some games when trying to match
+Steam game on note creation
+
 ## 0.2.10
 
 Attempt to implement [38](https://github.com/CMorooney/obsidian-game-search-plugin/issues/38)
