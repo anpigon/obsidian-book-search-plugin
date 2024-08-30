@@ -49,7 +49,7 @@ describe('Book creation', () => {
     canonicalVolumeLink: 'https://play.google.com/store/books/details?id=QVjPsd1UukEC',
   };
 
-  const api: GoogleBooksApi = new GoogleBooksApi('default');
+  const api: GoogleBooksApi = new GoogleBooksApi('default', true);
   const book: Book = api.createBookItem(volumeInfo);
 
   it('Title', () => {
@@ -106,5 +106,18 @@ describe('Book creation', () => {
 
   it('ISBN 13', () => {
     expect(book.isbn13).toEqual(volumeInfo.industryIdentifiers[1].identifier);
+  });
+
+  it('Enables Edge curl', () => {
+    expect(book.coverUrl).toContain('&edge=curl');
+    expect(book.coverSmallUrl).toContain('&edge=curl');
+  });
+
+  it('Disables Edge curl', () => {
+    const api: GoogleBooksApi = new GoogleBooksApi('default', false);
+    const book: Book = api.createBookItem(volumeInfo);
+
+    expect(book.coverUrl).not.toContain('&edge=curl');
+    expect(book.coverSmallUrl).not.toContain('&edge=curl');
   });
 });

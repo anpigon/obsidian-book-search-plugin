@@ -32,6 +32,7 @@ export interface BookSearchPluginSettings {
   openPageOnCompletion: boolean;
   showCoverImageInSearch: boolean;
   enableCoverImageSave: boolean;
+  enableCoverImageEdgeCurl: boolean;
   coverImagePath: string;
   askForLocale: boolean;
 }
@@ -52,6 +53,7 @@ export const DEFAULT_SETTINGS: BookSearchPluginSettings = {
   openPageOnCompletion: true,
   showCoverImageInSearch: false,
   enableCoverImageSave: false,
+  enableCoverImageEdgeCurl: true,
   coverImagePath: '',
   askForLocale: true,
 };
@@ -162,6 +164,8 @@ export class BookSearchSettingTab extends PluginSettingTab {
     let serviceProviderExtraSettingButton: HTMLElement;
     // eslint-disable-next-line prefer-const
     let preferredLocaleDropdownSetting: Setting;
+    // eslint-disable-next-line prefer-const
+    let coverImageEdgeCurlToggleSetting: Setting;
     const hideServiceProviderExtraSettingButton = () => {
       serviceProviderExtraSettingButton.addClass('book-search-plugin__hide');
     };
@@ -178,15 +182,28 @@ export class BookSearchSettingTab extends PluginSettingTab {
         preferredLocaleDropdownSetting.settingEl.removeClass('book-search-plugin__hide');
       }
     };
+    const hideCoverImageEdgeCurlToggle = () => {
+      if (coverImageEdgeCurlToggleSetting !== undefined) {
+        coverImageEdgeCurlToggleSetting.settingEl.addClass('book-search-plugin__hide');
+      }
+    };
+    const showCoverImageEdgeCurlToggle = () => {
+      if (coverImageEdgeCurlToggleSetting !== undefined) {
+        coverImageEdgeCurlToggleSetting.settingEl.removeClass('book-search-plugin__hide');
+      }
+    };
+
     const toggleServiceProviderExtraSettings = (
       serviceProvider: ServiceProvider = this.plugin.settings?.serviceProvider,
     ) => {
       if (serviceProvider === ServiceProvider.naver) {
         showServiceProviderExtraSettingButton();
         hideServiceProviderExtraSettingDropdown();
+        hideCoverImageEdgeCurlToggle();
       } else {
         hideServiceProviderExtraSettingButton();
         showServiceProviderExtraSettingDropdown();
+        showCoverImageEdgeCurlToggle();
       }
     };
     new Setting(containerEl)
@@ -259,6 +276,16 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addToggle(toggle =>
         toggle.setValue(this.plugin.settings.askForLocale).onChange(async value => {
           this.plugin.settings.askForLocale = value;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    coverImageEdgeCurlToggleSetting = new Setting(containerEl)
+      .setName('Enable Cover Image Edge Curl Effect')
+      .setDesc('Toggle to show or hide page curl effect in cover images.')
+      .addToggle(toggle =>
+        toggle.setValue(this.plugin.settings.enableCoverImageEdgeCurl).onChange(async value => {
+          this.plugin.settings.enableCoverImageEdgeCurl = value;
           await this.plugin.saveSettings();
         }),
       );
