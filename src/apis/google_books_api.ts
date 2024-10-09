@@ -8,6 +8,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
 
   constructor(
     private readonly localePreference: string,
+    private readonly enableCoverImageEdgeCurl: boolean,
     private readonly apiKey?: string,
   ) {}
 
@@ -64,8 +65,8 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       categories: item.categories,
       publisher: item.publisher,
       totalPage: item.pageCount,
-      coverUrl: item.imageLinks?.thumbnail ?? '',
-      coverSmallUrl: item.imageLinks?.smallThumbnail ?? '',
+      coverUrl: this.setCoverImageEdgeCurl(item.imageLinks?.thumbnail ?? '', this.enableCoverImageEdgeCurl),
+      coverSmallUrl: this.setCoverImageEdgeCurl(item.imageLinks?.smallThumbnail ?? '', this.enableCoverImageEdgeCurl),
       publishDate: item.publishedDate || '',
       description: item.description,
       link: item.canonicalVolumeLink || item.infoLink,
@@ -97,6 +98,12 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
 
   public formatList(list?: string[]): string {
     return list && list.length > 1 ? list.map(item => item.trim()).join(', ') : list?.[0] ?? '';
+  }
+
+  private setCoverImageEdgeCurl(url: string, enabled: boolean): string {
+    // Edge curl is included in the cover image URL parameters by default,
+    // so we need to remove it if it's disabled
+    return enabled ? url : url.replace('&edge=curl', '');
   }
 
   static convertGoogleBookImageURLSize(url: string, zoom: number) {

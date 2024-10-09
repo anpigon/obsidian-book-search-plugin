@@ -127,6 +127,10 @@ You can set the template file location. There is an example template at the bott
 You can set up the services that you use to search for books. Only Google and Naver(네이버) are available now.
 To use Naver Book Search, clientId and clientSecret are required. I will explain how to get clientId and clientSecret from Naver on my blog.
 
+### Cover Image Edge Curl
+
+By default, the Google Books API adds a "page curl" effect to image thumbnails. Disabling this toggle will remove this effect from the cover images.
+
 ### Cover Image Saving
 
 This feature allows for the automatic downloading and saving of book cover images directly into your Obsidian vault.

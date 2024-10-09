@@ -19,7 +19,7 @@ class ConfigurationError extends Error {
 export function factoryServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
   switch (settings.serviceProvider) {
     case ServiceProvider.google:
-      return new GoogleBooksApi(settings.localePreference, settings.apiKey);
+      return new GoogleBooksApi(settings.localePreference, settings.enableCoverImageEdgeCurl, settings.apiKey);
     case ServiceProvider.naver:
       validateNaverSettings(settings);
       return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
