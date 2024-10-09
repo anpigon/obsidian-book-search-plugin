@@ -285,6 +285,17 @@ published_at: <%= book.publishDate.substring(0, 4) %>
 published_at: <%= book.publishDate.replace(/-/g,'') %>
 ```
 
+### How to add an API Key to bypass rate limits
+If the plugin fails to fetch book metadata, it might be that you have hit the free API rate limits, and need to add an API key.
+
+Here's how to create and use one:
+- Create a project on [Google Cloud](https://console.cloud.google.com/projectcreate)
+- Enable the Books API for your project using the [Books API page](https://console.cloud.google.com/apis/library/books.googleapis.com)
+- Create an API key for your Google Cloud project using the [Google Cloud Credentials](https://console.cloud.google.com/apis/credentials) page
+- To limit the security risks of losing that key, you can edit it, and click on "Restrict key" under "API restrictions", then select only the "Books API" API
+- Add the API key to the settings of the Book Search plugin, under "Set API Key"
+- Once added, click on "Save", then "API Check"
+
 
 <br>
 
