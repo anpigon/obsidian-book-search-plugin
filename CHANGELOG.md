@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.5](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.7.4...0.7.5) (2024-10-16)
+
+
+### Features
+
+* add cover image edge curl option ([a6446bc](https://github.com/anpigon/obsidian-book-search-plugin/commit/a6446bc76914007c59114a222b939b8a3c37d012))
+
 ### [0.7.4](https://github.com/anpigon/obsidian-book-search-plugin/compare/0.7.3...0.7.4) (2024-06-19)
 
 
