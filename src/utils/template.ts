@@ -44,7 +44,7 @@ export function applyTemplateTransformations(rawTemplateContents: string): strin
 }
 
 export function executeInlineScriptsTemplates(book: Book, text: string) {
-  const commandRegex = /<%(?:=)(.+)%>/g;
+  const commandRegex = /<%(?:=)(.+?)%>/g;
   const ctor = getFunctionConstructor();
   const matchedList = [...text.matchAll(commandRegex)];
   return matchedList.reduce((result, [matched, script]) => {
@@ -57,7 +57,7 @@ export function executeInlineScriptsTemplates(book: Book, text: string) {
           'return JSON.stringify(output)',
         ].join(';'),
       )(book);
-      return result.replace(matched, outputs);
+      return result.replaceAll(matched, outputs);
     } catch (err) {
       console.warn(err);
     }
