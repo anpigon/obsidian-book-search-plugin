@@ -261,20 +261,20 @@ or
 
 ```
 ---
-authors: <%=book.authors.map(author=>`\n  - ${author}`).join('')%>
+authors: <%=(book.authors || []).map(author=>`\n  - ${author}`).join('')%>
 ---
 
-authors: <%=book.authors.map(author => `[[${author}]]`).join(', ')%>
+authors: <%=(book.authors || []).map(author => `[[${author}]]`).join(', ')%>
 ```
 
 #### When you want to list or link categories:
 
 ```
 ---
-categories: <%=book.categories.map(category=>`\n  - ${category}`).join('')%>
+categories: <%=(book.categories || []).map(category=>`\n  - ${category}`).join('')%>
 ---
 
-categories: <%=book.categories.map(category => `[[${category}]]`).join(', ')%>
+categories: <%=(book.categories || []).map(category => `[[${category}]]`).join(', ')%>
 ```
 
 #### When you want to isolate publication year
@@ -327,3 +327,4 @@ Buy me coffee on [buymeacoffee.com/anpigon](https://www.buymeacoffee.com/anpigon
 
 <a href="https://www.buymeacoffee.com/anpigon" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60"></a>&nbsp;
 <a href="https://anpigon.github.io/buymeacoffee/"><img src="https://user-images.githubusercontent.com/3969643/184924261-f0224843-08fa-4bce-af70-dc5db589979f.png" height="60"></a>
+
