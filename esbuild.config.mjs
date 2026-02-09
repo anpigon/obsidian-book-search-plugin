@@ -1,4 +1,5 @@
 import esbuild from 'esbuild';
+import { cpSync, mkdirSync } from 'fs';
 import process from 'process';
 import builtins from 'builtin-modules';
 
@@ -38,12 +39,17 @@ const context = await esbuild.context({
   logLevel: 'info',
   sourcemap: prod ? false : 'inline',
   treeShaking: true,
-  outfile: 'main.js',
+  outfile: 'dist/main.js',
 });
 
 if (prod) {
   await context.rebuild();
+  cpSync('manifest.json', 'dist/manifest.json');
+  cpSync('styles.css', 'dist/styles.css');
   process.exit(0);
 } else {
+  mkdirSync('dist', { recursive: true });
+  cpSync('manifest.json', 'dist/manifest.json');
+  cpSync('styles.css', 'dist/styles.css');
   await context.watch();
 }

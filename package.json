@@ -3,7 +3,7 @@
   "version": "0.7.5",
   "description": "This is a plugin to help you create book notes.",
   "homepage": "https://anpigon.github.io/obsidian-book-search-plugin/",
-  "main": "main.js",
+  "main": "dist/main.js",
   "standard-version": {
     "t": ""
   },
@@ -13,22 +13,22 @@
     "obsidian",
     "plugin"
   ],
-  "author": "anpigon",
+  "author": "fmartingr",
   "license": "MIT",
   "engines": {
     "node": ">= 20",
-    "yarn": "please use pnpm",
-    "npm": "please use pnpm",
-    "pnpm": ">= 9.0.0"
+    "yarn": "please use bun",
+    "npm": "please use bun",
+    "pnpm": "please use bun"
   },
   "scripts": {
-    "dev": "node --experimental-json-modules esbuild.config.mjs",
+    "dev": "bun run esbuild.config.mjs",
     "test": "jest",
     "format": "prettier --write \"**/*.ts\"",
     "format:check": "prettier --check \"**/*.ts\"",
-    "lint": "pnpm format:check && eslint . --ext .ts && tsc --noEmit -skipLibCheck",
-    "lint:fix": "pnpm format && eslint . --ext .ts --fix",
-    "build": "pnpm run lint && node esbuild.config.mjs production",
+    "lint": "bun run format:check && eslint . --ext .ts && tsc --noEmit -skipLibCheck",
+    "lint:fix": "bun run format && eslint . --ext .ts --fix",
+    "build": "bun run lint && bun run esbuild.config.mjs production",
     "release": "standard-version",
     "release-test": "standard-version --dry-run",
     "release-major": "standard-version --release-as major",
@@ -55,7 +55,6 @@
     "prettier": "^3.2.5",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.1.2",
-    "ts-node": "^10.9.2",
     "tslib": "2.6.2",
     "typescript": "5.1.6"
   }

@@ -97,7 +97,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   }
 
   public formatList(list?: string[]): string {
-    return list && list.length > 1 ? list.map(item => item.trim()).join(', ') : list?.[0] ?? '';
+    return list && list.length > 1 ? list.map(item => item.trim()).join(', ') : (list?.[0] ?? '');
   }
 
   private setCoverImageEdgeCurl(url: string, enabled: boolean): string {

@@ -317,6 +317,29 @@ You can create an [issue](https://github.com/anpigon/obsidian-book-search-plugin
 
 You can make a [pull request](https://github.com/anpigon/obsidian-book-search-plugin/pulls) to contribute to this plugin development.
 
+### Development
+
+This project uses [bun](https://bun.sh/) as its package manager and build tool.
+
+```bash
+# Install dependencies
+bun install
+
+# Start development build (watch mode)
+bun run dev
+
+# Run linting (format check + eslint + tsc)
+bun run lint
+
+# Run tests
+bun run test
+
+# Production build (outputs to dist/)
+bun run build
+```
+
+The `dist/` folder contains the built plugin files (`main.js`, `manifest.json`, `styles.css`). You can symlink it into your vault's `.obsidian/plugins/obsidian-book-search-plugin/` for local testing.
+
 <br>
 
 ## Support
