@@ -4,6 +4,7 @@ import { ServiceProvider } from '@src/constants';
 import { requestUrl } from 'obsidian';
 import { GoogleBooksApi } from './google_books_api';
 import { NaverBooksApi } from './naver_books_api';
+import { OpenLibraryApi } from './open_library_api';
 
 export interface BaseBooksApiImpl {
   getByQuery(query: string, options?: Record<string, string>): Promise<Book[]>;
@@ -23,6 +24,8 @@ export function factoryServiceProvider(settings: BookSearchPluginSettings): Base
     case ServiceProvider.naver:
       validateNaverSettings(settings);
       return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
+    case ServiceProvider.openLibrary:
+      return new OpenLibraryApi();
     default:
       throw new Error('Unsupported service provider.');
   }
@@ -45,12 +48,25 @@ export async function apiGet<T>(
   const res = await requestUrl({
     url: apiURL.href,
     method: 'GET',
+    throw: false,
     headers: {
-      Accept: '*/*',
+      Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
     },
   });
+
+  if (res.status === 429) {
+    throw new Error(
+      'Rate limit reached. Add a Google Books API key in Settings → Google API Settings, or switch to Open Library (no key needed).',
+    );
+  }
+  if (res.status === 403) {
+    throw new Error('Access denied (403). Check your Google Books API key in Settings → Google API Settings.');
+  }
+  if (res.status >= 400) {
+    throw new Error(`Request failed, status ${res.status}`);
+  }
 
   return res.json as T;
 }

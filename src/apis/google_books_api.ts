@@ -2,6 +2,8 @@ import { apiGet, BaseBooksApiImpl } from '@apis/base_api';
 import { Book } from '@models/book.model';
 import { GoogleBooksResponse, VolumeInfo } from './models/google_books_response';
 
+const ISBN_RE = /^(97[89])?\d{9}[\dX]$/i;
+
 export class GoogleBooksApi implements BaseBooksApiImpl {
   private static readonly MAX_RESULTS = 40;
   private static readonly PRINT_TYPE = 'books';
@@ -12,17 +14,30 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     private readonly apiKey?: string,
   ) {}
 
-  private getLanguageRestriction(local: string): string {
-    return local === 'default' ? window.moment.locale() : local;
+  private getLanguageRestriction(locale: string): string | null {
+    if (locale === 'default') return null;
+    // Normalize 'en-US' → 'en', 'zh_CN' → 'zh' — Google Books only accepts ISO 639-1
+    return locale.split('-')[0].split('_')[0];
   }
 
   private buildSearchParams(query: string, options?: Record<string, string>): Record<string, string | number> {
+    const locale = options?.locale || this.localePreference;
+    const langRestrict = this.getLanguageRestriction(locale);
+    const cleanQuery = query.replace(/-/g, '');
+    const isIsbn = ISBN_RE.test(cleanQuery);
+
     const params: Record<string, string | number> = {
-      q: query,
       maxResults: GoogleBooksApi.MAX_RESULTS,
       printType: GoogleBooksApi.PRINT_TYPE,
-      langRestrict: this.getLanguageRestriction(options?.locale || this.localePreference),
     };
+
+    if (isIsbn) {
+      // ISBN queries must not have langRestrict — it filters out most results
+      params['q'] = `isbn:${cleanQuery}`;
+    } else {
+      params['q'] = query;
+      if (langRestrict) params['langRestrict'] = langRestrict;
+    }
 
     if (this.apiKey) {
       params['key'] = this.apiKey;
@@ -55,6 +70,18 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
     );
   }
 
+  private extractCoverUrls(imageLinks: VolumeInfo['imageLinks']): Partial<Book> {
+    if (!imageLinks) return {};
+    const thumb = this.setCoverImageEdgeCurl(imageLinks.thumbnail ?? '', this.enableCoverImageEdgeCurl);
+    const small = this.setCoverImageEdgeCurl(imageLinks.smallThumbnail ?? '', this.enableCoverImageEdgeCurl);
+    return {
+      coverUrl: thumb,
+      coverSmallUrl: small,
+      coverMediumUrl: thumb ? GoogleBooksApi.convertGoogleBookImageURLSize(thumb, 2) : '',
+      coverLargeUrl: thumb ? GoogleBooksApi.convertGoogleBookImageURLSize(thumb, 0) : '',
+    };
+  }
+
   private extractBasicBookInfo(item: VolumeInfo): Partial<Book> {
     return {
       title: item.title,
@@ -65,8 +92,7 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
       categories: item.categories,
       publisher: item.publisher,
       totalPage: item.pageCount,
-      coverUrl: this.setCoverImageEdgeCurl(item.imageLinks?.thumbnail ?? '', this.enableCoverImageEdgeCurl),
-      coverSmallUrl: this.setCoverImageEdgeCurl(item.imageLinks?.smallThumbnail ?? '', this.enableCoverImageEdgeCurl),
+      ...this.extractCoverUrls(item.imageLinks),
       publishDate: item.publishedDate || '',
       description: item.description,
       link: item.canonicalVolumeLink || item.infoLink,
@@ -101,12 +127,13 @@ export class GoogleBooksApi implements BaseBooksApiImpl {
   }
 
   private setCoverImageEdgeCurl(url: string, enabled: boolean): string {
-    // Edge curl is included in the cover image URL parameters by default,
-    // so we need to remove it if it's disabled
+    // Edge curl is in the URL by default; strip it when disabled
     return enabled ? url : url.replace('&edge=curl', '');
   }
 
-  static convertGoogleBookImageURLSize(url: string, zoom: number) {
-    return url.replace(/(&zoom)=\d/, `$1=${zoom}`);
+  static convertGoogleBookImageURLSize(url: string, zoom: number): string {
+    if (!url) return url;
+    if (url.includes('zoom=')) return url.replace(/(&zoom)=\d/, `$1=${zoom}`);
+    return `${url}&zoom=${zoom}`;
   }
 }

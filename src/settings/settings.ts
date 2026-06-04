@@ -1,6 +1,7 @@
 import { replaceDateInString } from '@utils/utils';
 import { App, Notice, PluginSettingTab, Setting } from 'obsidian';
 
+import { GoogleBooksApi } from '@apis/google_books_api';
 import { ServiceProvider } from '@src/constants';
 import languages from '@utils/languages';
 import { SettingServiceProviderModal } from '@views/setting_service_provider_modal';
@@ -200,7 +201,12 @@ export class BookSearchSettingTab extends PluginSettingTab {
         showServiceProviderExtraSettingButton();
         hideServiceProviderExtraSettingDropdown();
         hideCoverImageEdgeCurlToggle();
+      } else if (serviceProvider === ServiceProvider.openLibrary) {
+        hideServiceProviderExtraSettingButton();
+        showServiceProviderExtraSettingDropdown();
+        hideCoverImageEdgeCurlToggle();
       } else {
+        // Google
         hideServiceProviderExtraSettingButton();
         showServiceProviderExtraSettingDropdown();
         showCoverImageEdgeCurlToggle();
@@ -213,6 +219,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addDropdown(dropDown => {
         dropDown.addOption(ServiceProvider.google, `${ServiceProvider.google} (Global)`);
         dropDown.addOption(ServiceProvider.naver, `${ServiceProvider.naver} (Korean)`);
+        dropDown.addOption(ServiceProvider.openLibrary, 'Open Library (Global, no API key)');
         dropDown.setValue(this.plugin.settings?.serviceProvider ?? ServiceProvider.google);
         dropDown.onChange(async value => {
           const newValue = value as ServiceProvider;
@@ -320,20 +327,30 @@ export class BookSearchSettingTab extends PluginSettingTab {
     // Google API Settings
     this.createHeader('Google API Settings', containerEl);
     new Setting(containerEl)
-      .setName('Description About Google API Settings')
+      .setName('About Google Books API')
       .setDesc(
-        '**WARNING** please use this field after you must understand Google Cloud API, such as API key security.',
+        'Without an API key, Google Books rate-limits requests aggressively (shared quota). ' +
+          'Add your own key for reliable access. Alternatively, switch to Open Library (no key required).',
       );
 
     new Setting(containerEl)
-      .setName('Status Check')
-      .setDesc('check whether API key is saved. It does not guarantee that the API key is valid or invalid.')
+      .setName('Test API Key')
+      .setDesc('Runs a real test search to confirm the key works.')
       .addButton(button => {
-        button.setButtonText('API Check').onClick(async () => {
-          if (this.plugin.settings.apiKey.length) {
-            new Notice('API key exist.');
-          } else {
-            new Notice('API key does not exist.');
+        button.setButtonText('Test Key').onClick(async () => {
+          if (!this.plugin.settings.apiKey) {
+            new Notice('No API key set. Enter a key below and save it first.');
+            return;
+          }
+          button.setDisabled(true).setButtonText('Testing…');
+          try {
+            const testApi = new GoogleBooksApi('default', false, this.plugin.settings.apiKey);
+            const results = await testApi.getByQuery('test');
+            new Notice(results.length > 0 ? '✓ API key is working.' : '⚠ Key accepted but returned 0 results.');
+          } catch (e) {
+            new Notice(`✗ API key test failed: ${(e as Error).message}`);
+          } finally {
+            button.setDisabled(false).setButtonText('Test Key');
           }
         });
       });
