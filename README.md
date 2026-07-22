@@ -300,6 +300,12 @@ Here's how to create and use one:
 - Add the API key to the settings of the Book Search plugin, under "Set API Key"
 - Once added, click on "Save", then "API Check"
 
+### About "Request failed, status 503" errors
+
+The Google Books API intermittently responds with `503 Service temporarily unavailable` (`backendFailed`), even for valid requests with a valid API key. This is a server-side issue at Google and can affect a large share of requests during degraded periods.
+
+The plugin automatically retries such transient errors (HTTP 503 and 429) a few times before giving up, so most searches succeed after a short delay. If a search still fails with a 503 error, wait a moment and try again.
+
 
 <br>
 

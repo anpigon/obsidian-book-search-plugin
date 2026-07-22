@@ -34,6 +34,13 @@ function validateNaverSettings(settings: BookSearchPluginSettings): void {
   }
 }
 
+const MAX_API_ATTEMPTS = 8;
+const API_RETRY_DELAY_MS = 500;
+// The Google Books API intermittently fails with 503 (backendFailed) even for
+// valid requests, and anonymous requests share a per-IP quota that yields 429.
+// Both are transient and usually succeed when retried.
+const RETRYABLE_STATUS_CODES = [429, 503];
+
 export async function apiGet<T>(
   url: string,
   params: Record<string, string | number> = {},
@@ -42,17 +49,32 @@ export async function apiGet<T>(
   const apiURL = new URL(url);
   appendQueryParams(apiURL, params);
 
-  const res = await requestUrl({
-    url: apiURL.href,
-    method: 'GET',
-    headers: {
-      Accept: '*/*',
-      'Content-Type': 'application/json; charset=utf-8',
-      ...headers,
-    },
-  });
+  for (let attempt = 1; ; attempt++) {
+    const res = await requestUrl({
+      url: apiURL.href,
+      method: 'GET',
+      headers: {
+        Accept: '*/*',
+        'Content-Type': 'application/json; charset=utf-8',
+        ...headers,
+      },
+      throw: false,
+    });
 
-  return res.json as T;
+    if (res.status >= 200 && res.status < 300) {
+      return res.json as T;
+    }
+
+    if (attempt >= MAX_API_ATTEMPTS || !RETRYABLE_STATUS_CODES.includes(res.status)) {
+      throw new Error(`Request failed, status ${res.status}`);
+    }
+
+    await sleep(API_RETRY_DELAY_MS);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function appendQueryParams(url: URL, params: Record<string, string | number>): void {
