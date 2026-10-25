@@ -1,5 +1,6 @@
 import { MarkdownView, Notice, Plugin, TFile, requestUrl } from 'obsidian';
 
+import { factoryServiceProvider } from '@apis/base_api';
 import { BookSearchModal } from '@views/book_search_modal';
 import { BookSuggestModal } from '@views/book_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
@@ -54,7 +55,9 @@ export default class BookSearchPlugin extends Plugin {
   // open modal for book search
   async searchBookMetadata(query?: string): Promise<Book> {
     const searchedBooks = await this.openBookSearchModal(query);
-    return await this.openBookSuggestModal(searchedBooks);
+    const selectedBook = await this.openBookSuggestModal(searchedBooks);
+    const serviceProvider = factoryServiceProvider(this.settings);
+    return (await serviceProvider.getBookDetails?.(selectedBook)) ?? selectedBook;
   }
 
   async getRenderedContents(book: Book) {

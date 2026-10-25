@@ -200,6 +200,10 @@ export class BookSearchSettingTab extends PluginSettingTab {
         showServiceProviderExtraSettingButton();
         hideServiceProviderExtraSettingDropdown();
         hideCoverImageEdgeCurlToggle();
+      } else if (serviceProvider === ServiceProvider.openlibrary) {
+        hideServiceProviderExtraSettingButton();
+        showServiceProviderExtraSettingDropdown();
+        hideCoverImageEdgeCurlToggle();
       } else {
         hideServiceProviderExtraSettingButton();
         showServiceProviderExtraSettingDropdown();
@@ -213,6 +217,7 @@ export class BookSearchSettingTab extends PluginSettingTab {
       .addDropdown(dropDown => {
         dropDown.addOption(ServiceProvider.google, `${ServiceProvider.google} (Global)`);
         dropDown.addOption(ServiceProvider.naver, `${ServiceProvider.naver} (Korean)`);
+        dropDown.addOption(ServiceProvider.openlibrary, `${ServiceProvider.openlibrary} (Global)`);
         dropDown.setValue(this.plugin.settings?.serviceProvider ?? ServiceProvider.google);
         dropDown.onChange(async value => {
           const newValue = value as ServiceProvider;

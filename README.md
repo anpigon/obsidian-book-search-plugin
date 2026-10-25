@@ -124,8 +124,9 @@ You can set the template file location. There is an example template at the bott
 
 ### Service Provider
 
-You can set up the services that you use to search for books. Only Google and Naver(네이버) are available now.
+You can set up the services that you use to search for books. Google, Naver(네이버) and Open Library are available now.
 To use Naver Book Search, clientId and clientSecret are required. I will explain how to get clientId and clientSecret from Naver on my blog.
+Open Library requires no API key. It uses the preferred locale to pick the best matching edition of each book.
 
 ### Cover Image Edge Curl
 
